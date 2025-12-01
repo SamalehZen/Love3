@@ -10,7 +10,14 @@ interface ThemeContextType {
   theme: ThemeColors;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const defaultThemeContext: ThemeContextType = {
+  isDarkMode: true,
+  toggleTheme: () => {},
+  setTheme: () => {},
+  theme: darkTheme
+};
+
+const ThemeContext = createContext<ThemeContextType>(defaultThemeContext);
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -19,25 +26,33 @@ interface ThemeProviderProps {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   console.log('[Love3 Debug] ThemeProvider rendering');
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     console.log('[Love3 Debug] ThemeProvider useEffect running');
-    if (typeof window === 'undefined') {
-      console.log('[Love3 Debug] Window undefined, skipping theme detection');
-      return;
+    try {
+      if (typeof window === 'undefined') {
+        console.log('[Love3 Debug] Window undefined, using default dark mode');
+        setIsReady(true);
+        return;
+      }
+      
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      console.log('[Love3 Debug] System prefers dark mode:', mq.matches);
+      setIsDarkMode(mq.matches);
+      
+      const handler = (e: MediaQueryListEvent) => {
+        console.log('[Love3 Debug] Theme preference changed:', e.matches);
+        setIsDarkMode(e.matches);
+      };
+      mq.addEventListener('change', handler);
+      setIsReady(true);
+      
+      return () => mq.removeEventListener('change', handler);
+    } catch (error) {
+      console.error('[Love3 Debug] Error in ThemeProvider:', error);
+      setIsReady(true);
     }
-    
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    console.log('[Love3 Debug] System prefers dark mode:', mq.matches);
-    setIsDarkMode(mq.matches);
-    
-    const handler = (e: MediaQueryListEvent) => {
-      console.log('[Love3 Debug] Theme preference changed:', e.matches);
-      setIsDarkMode(e.matches);
-    };
-    mq.addEventListener('change', handler);
-    
-    return () => mq.removeEventListener('change', handler);
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -50,7 +65,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const theme: ThemeColors = isDarkMode ? darkTheme : lightTheme;
 
-  console.log('[Love3 Debug] ThemeProvider providing context, isDarkMode:', isDarkMode);
+  console.log('[Love3 Debug] ThemeProvider ready:', isReady, 'isDarkMode:', isDarkMode);
   
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleTheme, setTheme, theme }}>
@@ -61,9 +76,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
 export const useTheme = (): ThemeContextType => {
   const context = useContext(ThemeContext);
-  if (!context) {
-    console.error('[Love3 Debug] useTheme called outside ThemeProvider!');
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
+  console.log('[Love3 Debug] useTheme called, context exists:', !!context);
   return context;
 };

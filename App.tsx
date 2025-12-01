@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, Suspense } from 'react';
 import { Onboarding } from './components/Onboarding';
 import { SwipeCard } from './components/SwipeCard';
 import { ProfileDetail } from './components/ProfileDetail';
@@ -11,7 +11,9 @@ import { PageTransition } from './components/ui/PageTransition';
 import { ViewState, Profile } from './types';
 import { useSwipeHistory } from './hooks/useSwipeHistory';
 import { useTheme } from './contexts/ThemeContext';
-import { Sparkles, Heart } from 'lucide-react';
+import { Sparkles, Heart, Loader2 } from 'lucide-react';
+
+console.log('[Love3 Debug] App.tsx: Module loaded');
 
 const MOCK_PROFILES: Profile[] = [
   {
@@ -77,13 +79,28 @@ const USER_PROFILE: Profile = {
   relationshipStatus: 'Single'
 };
 
-console.log('[Love3 Debug] App.tsx: Module loaded');
+function LoadingScreen() {
+  return (
+    <div className="h-full flex items-center justify-center bg-background">
+      <div className="flex flex-col items-center gap-4">
+        <Loader2 className="w-8 h-8 text-action-purple animate-spin" />
+        <p className="text-gray-400 text-sm">Chargement...</p>
+      </div>
+    </div>
+  );
+}
 
 export function App() {
-  console.log('[Love3 Debug] App component rendering...');
+  console.log('[Love3 Debug] App component function called');
   
-  const { isDarkMode } = useTheme();
-  console.log('[Love3 Debug] Theme context loaded, isDarkMode:', isDarkMode);
+  const [isAppReady, setIsAppReady] = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
+  
+  const themeContext = useTheme();
+  const isDarkMode = themeContext?.isDarkMode ?? true;
+  
+  console.log('[Love3 Debug] Theme loaded, isDarkMode:', isDarkMode);
+  
   const [view, setView] = useState<ViewState>('onboarding');
   const [profileIndex, setProfileIndex] = useState(0);
   const [showMatch, setShowMatch] = useState(false);
@@ -93,17 +110,28 @@ export function App() {
   const { addToHistory, undo, canUndo } = useSwipeHistory({ maxHistory: 10 });
 
   useEffect(() => {
-    console.log('[Love3 Debug] App mounted successfully');
-    console.log('[Love3 Debug] Initial state:', { view, profileIndex, showMatch, showSettings });
-    console.log('[Love3 Debug] Window dimensions:', { 
-      width: window.innerWidth, 
-      height: window.innerHeight,
-      devicePixelRatio: window.devicePixelRatio
-    });
-    console.log('[Love3 Debug] User agent:', navigator.userAgent);
+    console.log('[Love3 Debug] App useEffect - initializing');
+    try {
+      console.log('[Love3 Debug] Window check:', typeof window !== 'undefined');
+      console.log('[Love3 Debug] Document check:', typeof document !== 'undefined');
+      
+      if (typeof window !== 'undefined') {
+        console.log('[Love3 Debug] Window dimensions:', {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          devicePixelRatio: window.devicePixelRatio
+        });
+      }
+      
+      setIsAppReady(true);
+      console.log('[Love3 Debug] App is ready');
+    } catch (error) {
+      console.error('[Love3 Debug] App initialization error:', error);
+      setInitError(error instanceof Error ? error.message : 'Unknown error');
+    }
     
     return () => {
-      console.log('[Love3 Debug] App unmounting');
+      console.log('[Love3 Debug] App cleanup');
     };
   }, []);
 
@@ -249,88 +277,129 @@ export function App() {
     setView('chat');
   }, []);
 
-  const renderContent = () => {
-    console.log('[Love3 Debug] renderContent called, view:', view, 'showSettings:', showSettings);
-    
-    if (showSettings) {
-      console.log('[Love3 Debug] Rendering Settings');
-      return <Settings onBack={() => setShowSettings(false)} />;
-    }
+  if (initError) {
+    console.error('[Love3 Debug] Rendering error state:', initError);
+    return (
+      <div className="flex justify-center min-h-screen bg-black font-sans">
+        <div className="w-full max-w-md h-[100dvh] flex items-center justify-center bg-background p-8">
+          <div className="text-center">
+            <p className="text-red-500 mb-4">Erreur d'initialisation</p>
+            <p className="text-gray-500 text-sm">{initError}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-action-purple text-white rounded-full"
+            >
+              Recharger
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-    switch (view) {
-      case 'onboarding':
-        console.log('[Love3 Debug] Rendering Onboarding');
-        return <Onboarding onComplete={() => setView('swipe')} />;
-      case 'swipe':
-        console.log('[Love3 Debug] Rendering SwipeCard, profileIndex:', profileIndex);
-        return (
-          <SwipeCard 
-            profile={MOCK_PROFILES[profileIndex]}
-            nextProfile={MOCK_PROFILES[(profileIndex + 1) % MOCK_PROFILES.length]}
-            onAction={handleSwipeAction}
-            onUndo={handleUndo}
-            canUndo={canUndo}
-          />
-        );
-      case 'nearby':
-        console.log('[Love3 Debug] Rendering NearbyMap');
-        return (
-          <div className="h-full relative">
-            <MapContainer 
-              center={mapCenter} 
-              places={nearbyPlaces}
-              className="h-full w-full"
+  if (!isAppReady) {
+    console.log('[Love3 Debug] App not ready, showing loading');
+    return (
+      <div className="flex justify-center min-h-screen bg-black font-sans">
+        <div className="w-full max-w-md h-[100dvh] bg-background">
+          <LoadingScreen />
+        </div>
+      </div>
+    );
+  }
+
+  const renderContent = () => {
+    console.log('[Love3 Debug] renderContent - view:', view, 'showSettings:', showSettings);
+    
+    try {
+      if (showSettings) {
+        console.log('[Love3 Debug] Rendering Settings');
+        return <Settings onBack={() => setShowSettings(false)} />;
+      }
+
+      switch (view) {
+        case 'onboarding':
+          console.log('[Love3 Debug] Rendering Onboarding');
+          return <Onboarding onComplete={() => setView('swipe')} />;
+        case 'swipe':
+          console.log('[Love3 Debug] Rendering SwipeCard');
+          return (
+            <SwipeCard 
+              profile={MOCK_PROFILES[profileIndex]}
+              nextProfile={MOCK_PROFILES[(profileIndex + 1) % MOCK_PROFILES.length]}
+              onAction={handleSwipeAction}
+              onUndo={handleUndo}
+              canUndo={canUndo}
             />
-          </div>
-        );
-      case 'matches':
-        console.log('[Love3 Debug] Rendering Matches');
-        return (
-          <PageTransition>
-            <div className={`h-full flex items-center justify-center flex-col gap-6 px-8 ${isDarkMode ? 'bg-background' : 'bg-[#F2F2F7]'}`}>
-              <div className="relative">
-                <div className="w-24 h-24 bg-gradient-to-br from-action-purple/20 to-action-purple/5 rounded-full flex items-center justify-center">
-                  <Sparkles size={40} className="text-action-purple" />
-                </div>
-                <div className="absolute inset-0 rounded-full border border-action-purple/20 animate-ping" />
-                <div className="absolute inset-[-8px] rounded-full border border-action-purple/10 animate-ping" style={{ animationDelay: '0.15s' }} />
-              </div>
-              <div className="text-center">
-                <h2 className={`font-bold text-xl mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Vos fans apparaîtront ici
-                </h2>
-                <p className={`text-sm max-w-[280px] leading-relaxed ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-                  Continuez à swiper pour trouver votre match parfait. Chaque like compte! ✨
-                </p>
-              </div>
-              <button
-                onClick={() => setView('swipe')}
-                className="mt-4 px-6 py-3 bg-gradient-to-r from-action-purple to-blue-600 rounded-full text-white font-semibold shadow-lg hover:shadow-xl transition-shadow flex items-center gap-2"
-              >
-                <Heart size={18} />
-                Commencer à swiper
-              </button>
+          );
+        case 'nearby':
+          console.log('[Love3 Debug] Rendering NearbyMap');
+          return (
+            <div className="h-full relative">
+              <MapContainer 
+                center={mapCenter} 
+                places={nearbyPlaces}
+                className="h-full w-full"
+              />
             </div>
-          </PageTransition>
-        );
-      case 'profile':
-        console.log('[Love3 Debug] Rendering Profile');
-        return (
-          <ProfileDetail onSettingsClick={() => setShowSettings(true)} />
-        );
-      case 'chat':
-        console.log('[Love3 Debug] Rendering ChatInterface');
-        return <ChatInterface />;
-      default:
-        console.error('[Love3 Debug] Unknown view:', view);
-        return (
-          <div className={`p-10 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            View not found
+          );
+        case 'matches':
+          console.log('[Love3 Debug] Rendering Matches');
+          return (
+            <PageTransition>
+              <div className={`h-full flex items-center justify-center flex-col gap-6 px-8 ${isDarkMode ? 'bg-background' : 'bg-[#F2F2F7]'}`}>
+                <div className="relative">
+                  <div className="w-24 h-24 bg-gradient-to-br from-action-purple/20 to-action-purple/5 rounded-full flex items-center justify-center">
+                    <Sparkles size={40} className="text-action-purple" />
+                  </div>
+                  <div className="absolute inset-0 rounded-full border border-action-purple/20 animate-ping" />
+                  <div className="absolute inset-[-8px] rounded-full border border-action-purple/10 animate-ping" style={{ animationDelay: '0.15s' }} />
+                </div>
+                <div className="text-center">
+                  <h2 className={`font-bold text-xl mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Vos fans apparaîtront ici
+                  </h2>
+                  <p className={`text-sm max-w-[280px] leading-relaxed ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Continuez à swiper pour trouver votre match parfait. Chaque like compte!
+                  </p>
+                </div>
+                <button
+                  onClick={() => setView('swipe')}
+                  className="mt-4 px-6 py-3 bg-gradient-to-r from-action-purple to-blue-600 rounded-full text-white font-semibold shadow-lg hover:shadow-xl transition-shadow flex items-center gap-2"
+                >
+                  <Heart size={18} />
+                  Commencer à swiper
+                </button>
+              </div>
+            </PageTransition>
+          );
+        case 'profile':
+          console.log('[Love3 Debug] Rendering Profile');
+          return (
+            <ProfileDetail onSettingsClick={() => setShowSettings(true)} />
+          );
+        case 'chat':
+          console.log('[Love3 Debug] Rendering ChatInterface');
+          return <ChatInterface />;
+        default:
+          console.warn('[Love3 Debug] Unknown view, defaulting to onboarding');
+          return <Onboarding onComplete={() => setView('swipe')} />;
+      }
+    } catch (error) {
+      console.error('[Love3 Debug] Error in renderContent:', error);
+      return (
+        <div className="h-full flex items-center justify-center bg-background text-white p-8">
+          <div className="text-center">
+            <p className="text-red-500 mb-2">Erreur de rendu</p>
+            <p className="text-gray-500 text-sm">{error instanceof Error ? error.message : 'Erreur inconnue'}</p>
           </div>
-        );
+        </div>
+      );
     }
   };
 
+  console.log('[Love3 Debug] Rendering main App UI');
+  
   return (
     <div className="flex justify-center min-h-screen bg-black font-sans">
       <div className="w-full max-w-md h-[100dvh] relative bg-background shadow-2xl overflow-hidden flex flex-col">
