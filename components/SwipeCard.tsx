@@ -13,6 +13,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
   const [dragX, setDragX] = useState(0);
   const [dragY, setDragY] = useState(0);
   const [exitVelocity, setExitVelocity] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   
   const startX = useRef(0);
   const startY = useRef(0);
@@ -20,6 +21,17 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
 
   const SWIPE_THRESHOLD = 100;
   const ROTATION_FACTOR = 0.04;
+
+  // 1. Detect System Theme
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        setIsDarkMode(mq.matches);
+        const handler = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+        mq.addEventListener('change', handler);
+        return () => mq.removeEventListener('change', handler);
+    }
+  }, []);
 
   // Reset state when profile changes
   useEffect(() => {
@@ -123,8 +135,16 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
   const rightBtnScale = dragX > 0 ? 1 + (rawProgress * 0.3) : 1;
   const leftBtnScale = dragX < 0 ? 1 + (rawProgress * 0.3) : 1;
 
+  // --- Theme Colors ---
+  const bgClass = isDarkMode ? 'bg-[#000]' : 'bg-[#F2F2F7]';
+  const textMain = isDarkMode ? 'text-white' : 'text-gray-900';
+  const textSub = isDarkMode ? 'text-gray-400' : 'text-gray-500';
+  const iconBtnBg = isDarkMode ? 'bg-[#1C1C1E]' : 'bg-white';
+  const iconBtnBorder = isDarkMode ? 'border-white/10' : 'border-black/5';
+  const cardBorder = isDarkMode ? 'border-white/5' : 'border-black/5';
+
   return (
-    <div className="relative w-full h-full flex flex-col pt-4 pb-24 px-4 overflow-hidden select-none bg-[#000]">
+    <div className={`relative w-full h-full flex flex-col pt-4 pb-24 px-4 overflow-hidden select-none transition-colors duration-500 ${bgClass}`}>
       
       {/* Styles for Shimmer & Pulse */}
       <style>{`
@@ -147,19 +167,19 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
       {/* Top Header */}
       <div className="flex justify-between items-center mb-4 px-2 z-50">
          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20 p-0.5">
+            <div className={`w-10 h-10 rounded-full overflow-hidden p-0.5 border ${isDarkMode ? 'border-white/20' : 'border-gray-200'}`}>
                 <img src="https://picsum.photos/100/100?random=1" className="w-full h-full rounded-full object-cover" />
             </div>
             <div>
-                <p className="text-gray-400 text-[10px] uppercase tracking-wider font-semibold">Bienvenue</p>
-                <div className="flex items-center gap-1 text-white text-sm font-medium">
+                <p className={`${textSub} text-[10px] uppercase tracking-wider font-semibold`}>Bienvenue</p>
+                <div className={`flex items-center gap-1 ${textMain} text-sm font-medium`}>
                     <MapPin size={12} className="text-action-purple" />
                     Washington, USA
                 </div>
             </div>
          </div>
-         <button className="w-10 h-10 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center hover:bg-white/10 transition active:scale-95 shadow-lg">
-            <Search className="text-gray-300" size={18} />
+         <button className={`w-10 h-10 rounded-full ${iconBtnBg} border ${iconBtnBorder} flex items-center justify-center hover:opacity-80 transition active:scale-95 shadow-sm`}>
+            <Search className={isDarkMode ? 'text-gray-300' : 'text-gray-600'} size={18} />
          </button>
       </div>
 
@@ -169,11 +189,12 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
          {/* --- Background Card (Next Profile) --- */}
          {nextProfile && (
             <div 
-                className="absolute inset-0 z-10 rounded-[36px] overflow-hidden bg-[#1C1C1E] border border-white/5 shadow-2xl"
+                className={`absolute inset-0 z-10 rounded-[36px] overflow-hidden shadow-xl border ${cardBorder}`}
                 style={{
                     transform: `scale(${backCardScale}) translateY(${backCardY}px)`,
                     opacity: backCardOpacity,
-                    transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease'
+                    transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease',
+                    backgroundColor: isDarkMode ? '#1C1C1E' : '#FFFFFF'
                 }}
             >
                  <img 
@@ -191,8 +212,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
          {/* --- Foreground Card (Active) --- */}
          <div 
             ref={cardRef}
-            className="absolute inset-0 z-20 rounded-[36px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-[#1C1C1E] touch-none"
-            style={cardStyle}
+            className={`absolute inset-0 z-20 rounded-[36px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] touch-none border ${cardBorder}`}
+            style={{ ...cardStyle, backgroundColor: isDarkMode ? '#1C1C1E' : '#FFFFFF' }}
             onMouseDown={handleDragStart}
             onTouchStart={handleDragStart}
          >
@@ -208,8 +229,8 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
                 <div className="w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent premium-shimmer absolute top-0 left-0"></div>
             </div>
 
-            {/* Dark Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/90 pointer-events-none" />
+            {/* Dark Gradient Overlay - Always dark at bottom for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/90 pointer-events-none" />
 
             {/* --- REACTION ICONS (Heart / X) --- */}
             {/* Centered Overlay Container */}
@@ -278,22 +299,19 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
                     )}
                 </div>
                 
-                <p className="text-gray-300 text-sm font-medium mb-4 line-clamp-2 drop-shadow-md leading-relaxed opacity-90">
+                <p className="text-gray-200 text-sm font-medium mb-4 line-clamp-2 drop-shadow-md leading-relaxed opacity-90">
                     {profile.bio}
                 </p>
 
                 {/* Interests Chips */}
                 <div className="flex flex-wrap gap-2 mb-2">
                     {profile.interests.slice(0, 3).map((interest, idx) => (
-                        <div key={idx} className="bg-white/10 backdrop-blur-sm border border-white/10 px-3 py-1 rounded-full">
+                        <div key={idx} className="bg-white/10 backdrop-blur-sm border border-white/10 px-3 py-1 rounded-full shadow-sm">
                             <span className="text-[10px] text-white font-medium uppercase tracking-wide">{interest}</span>
                         </div>
                     ))}
                 </div>
             </div>
-
-            {/* Action Buttons Layer (Sits on top of card but handled layout-wise) */}
-            <div className="absolute bottom-0 w-full h-24 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-10"></div>
          </div>
       </div>
 
@@ -309,7 +327,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
                     setTimeout(() => onAction('reject'), 200); 
                 }}
                 style={{ transform: `scale(${leftBtnScale})` }}
-                className="w-16 h-16 rounded-full bg-[#1C1C1E] border border-action-red/20 flex items-center justify-center text-action-red shadow-lg transition-transform duration-200 active:scale-95 group hover:bg-action-red hover:text-white"
+                className={`w-16 h-16 rounded-full ${iconBtnBg} border ${iconBtnBorder} flex items-center justify-center text-action-red shadow-lg transition-transform duration-200 active:scale-95 group hover:bg-action-red hover:text-white`}
             >
                 <X size={32} strokeWidth={2.5} className="group-hover:rotate-90 transition-transform duration-300" />
             </button>
@@ -317,7 +335,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
             {/* Super Like */}
             <button 
                 onClick={(e) => { e.stopPropagation(); onAction('super'); }}
-                className="w-12 h-12 rounded-full bg-action-purple/10 border border-action-purple/30 flex items-center justify-center text-action-purple shadow-lg transition-transform hover:scale-110 active:scale-95 hover:bg-action-purple hover:text-white"
+                className={`w-12 h-12 rounded-full ${isDarkMode ? 'bg-action-purple/10 border-action-purple/30' : 'bg-white border-white'} flex items-center justify-center text-action-purple shadow-md transition-transform hover:scale-110 active:scale-95 hover:bg-action-purple hover:text-white border`}
             >
                 <Gift size={22} strokeWidth={2.5} />
             </button>
