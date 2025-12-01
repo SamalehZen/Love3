@@ -30,18 +30,22 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView }) =>
   ];
 
   return (
-    <div className="fixed bottom-4 sm:bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-2 sm:px-4">
+    <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
       {/* 
           Floating Island Container 
-          - Responsive padding and gap to fit small screens (iPhone SE / Android)
+          - Added overflow-hidden to clip the shimmer
+          - Relative positioning for the absolute shimmer child
       */}
       <div className={`
-        relative pointer-events-auto flex items-center gap-1.5 sm:gap-3 p-1.5 sm:p-3 rounded-full shadow-2xl transition-colors duration-500 max-w-full
+        relative pointer-events-auto flex items-center gap-1.5 sm:gap-3 p-1.5 sm:p-3 rounded-full shadow-2xl transition-colors duration-500 max-w-full overflow-hidden
         ${isDarkMode ? 'bg-[#0F0F11] border border-white/5 shadow-black/60' : 'bg-white border border-gray-100 shadow-gray-200/50'}
       `}>
         
         {/* Continuous Premium Shimmer Overlay */}
-        <div className={`absolute inset-0 pointer-events-none opacity-10 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer-slow rounded-full overflow-hidden`}></div>
+        {/* Z-index 0 to sit behind buttons but on top of bg */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+             <div className={`absolute top-0 left-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 animate-shimmer-continuous`}></div>
+        </div>
 
         {navItems.map((item) => {
           const isActive = currentView === item.id;
@@ -96,13 +100,12 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView }) =>
       </div>
 
       <style>{`
-        @keyframes shimmer-slow {
-            0% { transform: translateX(-150%) skewX(-20deg); }
-            50% { transform: translateX(150%) skewX(-20deg); }
-            100% { transform: translateX(150%) skewX(-20deg); }
+        @keyframes shimmer-continuous {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(50%); }
         }
-        .animate-shimmer-slow {
-            animation: shimmer-slow 6s infinite ease-in-out;
+        .animate-shimmer-continuous {
+            animation: shimmer-continuous 4s infinite linear;
         }
       `}</style>
     </div>
