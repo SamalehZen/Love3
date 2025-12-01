@@ -9,7 +9,6 @@ interface BottomNavProps {
 
 export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView }) => {
   // Navigation Configuration
-  // Note: Chat is handled separately as the center floating button
   const leftItems = [
     { id: 'swipe', icon: Layers, label: 'Accueil' },
     { id: 'nearby', icon: MapPin, label: 'À proximité' },
@@ -24,23 +23,33 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView }) =>
     <div className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto pointer-events-none">
       <div className="relative w-full h-[88px] flex items-end">
         
-        {/* SVG Curve Background */}
-        <svg 
-            viewBox="0 0 375 88" 
-            className="absolute bottom-0 left-0 w-full h-full text-[#1C1C1E] drop-shadow-[0_-5px_10px_rgba(0,0,0,0.5)] pointer-events-auto"
-            preserveAspectRatio="none"
-        >
-          {/* 
-            Path Explanation:
-            Start bottom-left, go up to height (approx 88-20=68), line to center-left area.
-            Curve up for the "hump" (convex).
-            Line to top-right, down to bottom-right, close.
-           */}
-          <path 
-            d="M0,88 L0,20 C0,20 120,20 140,20 C140,20 155,20 165,10 C175,-5 200,-5 210,10 C220,20 235,20 235,20 C255,20 375,20 375,20 L375,88 Z" 
-            fill="currentColor"
-          />
-        </svg>
+        {/* Responsive SVG Curve Background */}
+        <div className="absolute inset-0 w-full h-full pointer-events-auto filter drop-shadow-[0_-5px_10px_rgba(0,0,0,0.5)] text-[#1C1C1E]">
+            <svg 
+                viewBox="0 0 100 88" 
+                preserveAspectRatio="none"
+                className="w-full h-full"
+            >
+                {/* 
+                  Path Logic (Relative coordinates):
+                  Start bottom left (0,88)
+                  Line to top left (0,20)
+                  Line to near center (38,20)
+                  Curve down-then-up for the hole/hump:
+                    Control point 1: (42, 20)
+                    Control point 2: (42, 50) -> Dip down? No, we want a hump.
+                    Actually, design calls for a "convex" hump where the button sits IN or ON it.
+                    Let's match the previous "hump" style but make it responsive.
+                    Center is 50.
+                    Start curve at 35. End curve at 65.
+                    Bezier up to (50, -10).
+                */}
+                <path 
+                    d="M0,88 L0,20 L36,20 C36,20 42,20 45,10 C48,-2 52,-2 55,10 C58,20 64,20 64,20 L100,20 L100,88 Z" 
+                    fill="currentColor"
+                />
+            </svg>
+        </div>
 
         {/* Navigation Content Container */}
         <div className="relative w-full h-[68px] flex justify-between items-center px-4 pointer-events-auto">
@@ -66,17 +75,17 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView }) =>
           </div>
 
           {/* Center Floating Chat Button */}
-          {/* Positioned absolutely relative to the container to sit in the "hump" */}
-          <div className="absolute left-1/2 -translate-x-1/2 -top-10 w-16 h-16 pointer-events-auto">
+          {/* Sits exactly in the SVG hump */}
+          <div className="absolute left-1/2 -translate-x-1/2 -top-8 w-14 h-14 pointer-events-auto">
              <button
                 onClick={() => setView('chat')}
-                className={`w-full h-full rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 ${
+                className={`w-full h-full rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 border-4 border-[#121214] ${
                     currentView === 'chat' 
                     ? 'bg-action-purple scale-110 shadow-[0_0_20px_rgba(123,76,246,0.6)]' 
                     : 'bg-[#2C2C2E] text-gray-400 hover:text-white hover:bg-action-purple hover:-translate-y-1'
                 }`}
              >
-                <MessageCircle size={32} strokeWidth={2.5} className="text-white fill-current" />
+                <MessageCircle size={26} strokeWidth={2.5} className="text-white fill-current" />
              </button>
           </div>
 

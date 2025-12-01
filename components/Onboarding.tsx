@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Heart, X, ChevronRight, Sparkles } from 'lucide-react';
+import { Heart, X, ChevronRight, Sparkles, Check } from 'lucide-react';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -8,6 +8,7 @@ interface OnboardingProps {
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
@@ -29,11 +30,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   }, []);
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    if (isCompleted) return;
     setIsDragging(true);
   };
 
   const handleDragMove = (clientX: number) => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || isCompleted) return;
 
     const rect = containerRef.current.getBoundingClientRect();
     const handleWidth = 56;
@@ -48,7 +50,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   };
 
   const handleDragEnd = () => {
-    if (!isDragging || !containerRef.current) return;
+    if (!isDragging || !containerRef.current || isCompleted) return;
     
     const rect = containerRef.current.getBoundingClientRect();
     const handleWidth = 56;
@@ -56,11 +58,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     const maxDrag = rect.width - handleWidth - padding;
 
     if (dragX > maxDrag * 0.70) {
+      // Success State
       setDragX(maxDrag);
+      setIsCompleted(true);
       setTimeout(() => {
           onComplete();
-      }, 200);
+      }, 600);
     } else {
+      // Snap back
       setDragX(0);
     }
     setIsDragging(false);
@@ -90,7 +95,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       window.removeEventListener('mouseup', handleUp);
       window.removeEventListener('touchend', handleUp);
     };
-  }, [isDragging, dragX]);
+  }, [isDragging, dragX, isCompleted]);
 
   const maxDrag = containerWidth > 0 ? containerWidth - 56 - 8 : 1;
   const textOpacity = Math.max(0, 1 - (dragX / maxDrag) * 1.5);
@@ -106,6 +111,18 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         }
         .animate-shimmer-card {
           animation: shimmer 3s infinite ease-in-out;
+        }
+        @keyframes text-shimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
+        .animate-text-shimmer {
+          background: linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,0.4) 100%);
+          background-size: 200% auto;
+          background-clip: text;
+          -webkit-background-clip: text;
+          color: transparent;
+          animation: text-shimmer 2.5s linear infinite;
         }
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(-3deg); }
@@ -135,7 +152,6 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         <div className="relative w-64 h-[400px]">
           
           {/* Card 1: Man (Back/Left) - "Cancel" Concept */}
-          {/* Adjusted positioning to be more visible (moved left) and animated */}
           <div className="absolute top-6 -left-10 w-full h-full rounded-[32px] transform -rotate-6 scale-95 shadow-2xl border border-white/10 overflow-hidden z-10 bg-[#1C1C1E] animate-float-back">
              <img src={IMG_MAN} alt="User Man" className="w-full h-full object-cover opacity-80 filter grayscale-[20%]" />
              
@@ -199,34 +215,57 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         {/* Slide to Unlock Button */}
         <div 
             ref={containerRef}
-            className="w-full h-16 bg-[#1C1C1E]/80 backdrop-blur-xl rounded-full relative border border-white/10 overflow-hidden select-none shadow-2xl"
+            className={`w-full h-16 rounded-full relative border overflow-hidden select-none shadow-2xl transition-all duration-300 ${
+                isCompleted 
+                ? 'bg-action-green/20 border-action-green/50' 
+                : 'bg-[#1C1C1E]/80 backdrop-blur-xl border-white/10'
+            }`}
         >
            {/* Shimmer Text */}
            <div 
              className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300"
-             style={{ opacity: textOpacity }}
+             style={{ opacity: isCompleted ? 0 : textOpacity }}
            >
-              <span className="text-white/60 text-sm font-semibold flex items-center gap-2 tracking-widest uppercase">
+              <span className="text-sm font-bold tracking-widest uppercase flex items-center gap-2 animate-text-shimmer">
                 Commencer 
                 <span className="flex">
-                    <ChevronRight size={14} className="opacity-40 animate-pulse" />
-                    <ChevronRight size={14} className="opacity-70 animate-pulse delay-75" />
-                    <ChevronRight size={14} className="opacity-100 animate-pulse delay-150" />
+                    <ChevronRight size={14} className="opacity-40 animate-pulse text-white" />
+                    <ChevronRight size={14} className="opacity-70 animate-pulse delay-75 text-white" />
+                    <ChevronRight size={14} className="opacity-100 animate-pulse delay-150 text-white" />
                 </span>
+              </span>
+           </div>
+
+           {/* Success Text */}
+           <div 
+             className="absolute inset-0 flex items-center justify-center pointer-events-none transition-all duration-300 transform"
+             style={{ 
+                 opacity: isCompleted ? 1 : 0,
+                 transform: isCompleted ? 'translateY(0)' : 'translateY(10px)'
+             }}
+           >
+              <span className="text-action-green text-sm font-bold tracking-widest uppercase flex items-center gap-2">
+                Bienvenue
               </span>
            </div>
 
            {/* Draggable Handle */}
            <div 
-              className="absolute top-1 left-1 w-14 h-14 bg-white rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing z-20 shadow-[0_0_25px_rgba(255,255,255,0.4)]"
+              className={`absolute top-1 left-1 w-14 h-14 rounded-full flex items-center justify-center cursor-grab active:cursor-grabbing z-20 shadow-[0_0_25px_rgba(255,255,255,0.4)] transition-all duration-300 ${
+                  isCompleted ? 'bg-action-green scale-110' : 'bg-white'
+              }`}
               style={{ 
                   transform: `translateX(${dragX}px)`,
-                  transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                  transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s'
               }}
               onMouseDown={handleDragStart}
               onTouchStart={handleDragStart}
            >
-               <Heart className={`text-action-purple fill-current transition-transform duration-300 ${isDragging ? 'scale-110' : ''}`} size={22} />
+               {isCompleted ? (
+                   <Check className="text-white" size={24} strokeWidth={3} />
+               ) : (
+                   <Heart className={`text-action-purple fill-current transition-transform duration-300 ${isDragging ? 'scale-110' : ''}`} size={22} />
+               )}
            </div>
         </div>
       </div>
