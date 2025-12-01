@@ -11,13 +11,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView }) =>
   // Navigation Configuration
   // Note: Chat is handled separately as the center floating button
   const leftItems = [
-    { id: 'swipe', icon: Layers, label: 'Home' },
-    { id: 'nearby', icon: MapPin, label: 'Nearby' },
+    { id: 'swipe', icon: Layers, label: 'Accueil' },
+    { id: 'nearby', icon: MapPin, label: 'À proximité' },
   ];
 
   const rightItems = [
-    { id: 'matches', icon: Star, label: 'My Fans' },
-    { id: 'profile', icon: User, label: 'Profile' },
+    { id: 'matches', icon: Star, label: 'Fans' },
+    { id: 'profile', icon: User, label: 'Profil' },
   ];
 
   return (

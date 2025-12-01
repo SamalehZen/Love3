@@ -124,7 +124,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
                 <img src="https://picsum.photos/100/100?random=1" className="w-full h-full rounded-full object-cover" />
             </div>
             <div>
-                <p className="text-gray-400 text-xs">Hello Damien!</p>
+                <p className="text-gray-400 text-xs">Bonjour Damien!</p>
                 <div className="flex items-center gap-1 text-white text-sm font-medium">
                     <MapPin size={12} className="text-gray-400" />
                     Washington, USA
@@ -188,14 +188,14 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
                 className="absolute top-10 right-8 border-[6px] border-red-500 rounded-lg px-4 py-2 rotate-12 pointer-events-none transition-opacity duration-200"
                 style={{ opacity: nopeOpacity }}
             >
-                <span className="text-red-500 font-bold text-4xl tracking-widest drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">NOPE</span>
+                <span className="text-red-500 font-bold text-4xl tracking-widest drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">NON</span>
             </div>
 
             <div 
                 className="absolute top-10 left-8 border-[6px] border-green-500 rounded-lg px-4 py-2 -rotate-12 pointer-events-none transition-opacity duration-200"
                 style={{ opacity: likeOpacity }}
             >
-                <span className="text-green-500 font-bold text-4xl tracking-widest drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]">LIKE</span>
+                <span className="text-green-500 font-bold text-4xl tracking-widest drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]">OUI</span>
             </div>
 
             <div className="absolute top-6 left-6 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg pointer-events-none">

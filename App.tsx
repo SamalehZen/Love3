@@ -60,50 +60,93 @@ export function App() {
   const [view, setView] = useState<ViewState>('onboarding');
   const [profileIndex, setProfileIndex] = useState(0);
 
-  // Mock Map Data centered on Washington DC
-  // Updated to match the screenshot "Helen" example + surrounding users
-  const dcCenter = { lat: 38.9072, lng: -77.0369 };
+  // Default Center: Djibouti City
+  const mapCenter = { lat: 11.585, lng: 43.148 };
+  
+  // 10 Profiles distributed across Djibouti (Balbala, Heron, Centre Ville, etc.)
   const nearbyPlaces: Place[] = [
     { 
-        id: 'helen',
-        name: "Helen",
+        id: 'amina',
+        name: "Amina",
         age: 23,
-        location: { lat: 38.9072, lng: -77.0369 }, // Center
+        location: { lat: 11.594, lng: 43.149 }, // Centre Ville (Près de la Place Menelik)
         isOnline: true,
         isVerified: true,
-        imageUrl: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=400&q=80" // High quality portrait
+        imageUrl: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=400&q=80" 
     },
     { 
-        id: 2,
-        name: "Irene", 
+        id: 'moussa',
+        name: "Moussa", 
         age: 25,
-        location: { lat: 38.912, lng: -77.042 }, 
+        location: { lat: 11.555, lng: 43.125 }, // Balbala (Cheikh Moussa)
         isOnline: false,
-        imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80"
     },
     { 
-        id: 3,
-        name: "Sarah", 
-        age: 29,
-        location: { lat: 38.898, lng: -77.025 }, 
-        isOnline: true,
-        imageUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80"
-    },
-    { 
-        id: 4,
-        name: "Emily", 
+        id: 'fatouma',
+        name: "Fatouma", 
         age: 22,
-        location: { lat: 38.918, lng: -77.05 }, 
+        location: { lat: 11.608, lng: 43.154 }, // Héron (Près de la plage)
         isOnline: true,
-        imageUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=200&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80"
     },
-     { 
-        id: 5,
-        name: "Jessica", 
+    { 
+        id: 'hassan',
+        name: "Hassan", 
+        age: 28,
+        location: { lat: 11.575, lng: 43.155 }, // Gabode
+        isOnline: true,
+        isVerified: true,
+        imageUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80"
+    },
+    { 
+        id: 'kadra',
+        name: "Kadra", 
         age: 24,
-        location: { lat: 38.902, lng: -77.03 }, 
+        location: { lat: 11.558, lng: 43.150 }, // Ambouli (Route de l'aéroport)
         isOnline: false,
-        imageUrl: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=200&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=400&q=80"
+    },
+    { 
+        id: 'ahmed',
+        name: "Ahmed", 
+        age: 26,
+        location: { lat: 11.578, lng: 43.138 }, // Quartier 7
+        isOnline: true,
+        imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+    },
+    { 
+        id: 'samia',
+        name: "Samia", 
+        age: 21,
+        location: { lat: 11.588, lng: 43.144 }, // Marabout
+        isOnline: true,
+        imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80"
+    },
+    { 
+        id: 'youssouf',
+        name: "Youssouf", 
+        age: 29,
+        location: { lat: 11.535, lng: 43.110 }, // PK12
+        isOnline: false,
+        imageUrl: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&w=400&q=80"
+    },
+    { 
+        id: 'noura',
+        name: "Noura", 
+        age: 25,
+        location: { lat: 11.590, lng: 43.170 }, // Haramous
+        isOnline: true,
+        isVerified: true,
+        imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
+    },
+    { 
+        id: 'ibrahim',
+        name: "Ibrahim", 
+        age: 27,
+        location: { lat: 11.596, lng: 43.142 }, // Quartier Commercial
+        isOnline: true,
+        imageUrl: "https://images.unsplash.com/photo-1522075469751-3a3694fb60ed?auto=format&fit=crop&w=400&q=80"
     }
   ];
 
@@ -138,7 +181,7 @@ export function App() {
         return (
            <div className="w-full h-full bg-background relative">
              <MapContainer 
-                center={dcCenter} 
+                center={mapCenter} 
                 places={nearbyPlaces}
                 className="h-full w-full"
              />
@@ -150,8 +193,8 @@ export function App() {
              <div className="w-20 h-20 bg-surface rounded-full flex items-center justify-center mb-4">
                 <Sparkles size={40} className="text-action-purple" />
             </div>
-             <h2 className="text-white text-2xl font-bold mb-2">My Fans</h2>
-            <p>See who likes you back!</p>
+             <h2 className="text-white text-2xl font-bold mb-2">Mes Fans</h2>
+            <p>Voyez qui vous aime en retour !</p>
           </div>
         );
       default:

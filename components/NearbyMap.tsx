@@ -137,7 +137,7 @@ const MapComponent = memo(
                     <!-- Status Pill -->
                     <div class="flex items-center gap-1.5 mb-3 bg-white/5 px-3 py-1 rounded-full border border-white/5">
                         <span class="w-1.5 h-1.5 bg-[#EAB308] rounded-full shadow-[0_0_6px_#EAB308]"></span>
-                        <span class="text-[11px] text-gray-300 font-medium tracking-wide">${place.isOnline ? 'In real time' : 'Recently active'}</span>
+                        <span class="text-[11px] text-gray-300 font-medium tracking-wide">${place.isOnline ? 'En temps réel' : 'Récemment actif'}</span>
                     </div>
 
                     <!-- Quick Actions -->
@@ -223,14 +223,14 @@ const MapComponent = memo(
                 <button 
                     className="px-6 py-2.5 rounded-full text-gray-400 text-sm font-medium hover:text-white transition-colors"
                 >
-                    <span className="flex items-center gap-2">🔥 For you</span>
+                    <span className="flex items-center gap-2">🔥 Pour vous</span>
                 </button>
                 <button 
                     className="px-6 py-2.5 rounded-full bg-[#2C2C2E] text-white text-sm font-medium shadow-md transition-transform"
                 >
                      <span className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                        Nearby
+                        À proximité
                      </span>
                 </button>
             </div>

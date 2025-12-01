@@ -1,10 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Settings, Edit2, Pizza, Book, Plane, Palette, Sun, CheckCircle, X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
+import { 
+  Settings, Edit2, Pizza, Book, Plane, Palette, Sun, CheckCircle, 
+  X, ChevronLeft, ChevronRight, ZoomIn, Heart, Users, Eye, 
+  Crown, Briefcase, GraduationCap, Ruler, Wine, Plus, Camera, ChevronRight as ChevronRightIcon
+} from 'lucide-react';
 
 const GALLERY_IMAGES = [
   "https://picsum.photos/300/400?random=21",
   "https://picsum.photos/300/400?random=22",
-  "https://picsum.photos/600/400?random=23"
+  "https://picsum.photos/600/400?random=23",
+  "https://picsum.photos/300/400?random=24",
+  "https://picsum.photos/300/400?random=25"
 ];
 
 export const ProfileDetail: React.FC = () => {
@@ -70,78 +76,212 @@ export const ProfileDetail: React.FC = () => {
 
   return (
     <div className="h-full overflow-y-auto no-scrollbar bg-background pb-24">
-      {/* Header Image */}
-      <div className="relative w-full h-96">
-        <img 
-          src="https://picsum.photos/600/800?random=20" 
-          alt="Profile" 
-          className="w-full h-full object-cover"
-        />
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-background" />
-        
-        {/* Top Nav */}
-        <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center pt-8">
-            <button className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition">
-                <Settings className="text-white" size={20} />
+      
+      {/* Dashboard Header */}
+      <div className="sticky top-0 z-30 bg-[#121214]/90 backdrop-blur-lg px-6 py-4 flex justify-between items-center border-b border-white/5">
+        <h1 className="text-lg font-bold text-white tracking-wide">Mon Profil</h1>
+        <div className="flex items-center gap-3">
+             <button className="px-3 py-1.5 rounded-full bg-white/5 text-[11px] font-semibold text-gray-300 border border-white/10 hover:bg-white/10 transition">
+                Aperçu
             </button>
-            <button className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition">
-                <Edit2 className="text-white" size={18} />
+            <button className="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-gray-400 hover:text-white transition">
+                <Settings size={20} />
             </button>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="-mt-20 relative px-6 z-10">
-         <div className="flex items-center gap-2 mb-1">
-             <h1 className="text-3xl font-bold text-white">Lay M, 25</h1>
-             <CheckCircle className="text-blue-500 fill-current" size={24} />
-         </div>
-         <p className="text-gray-400 text-sm mb-6">Washington, USA</p>
+      <div className="px-6 pt-6">
+        
+        {/* Profile Identity Card */}
+        <div className="flex items-center gap-5 mb-8">
+            <div className="relative group cursor-pointer">
+                <div className="w-24 h-24 rounded-full p-[3px] bg-gradient-to-tr from-action-purple via-blue-500 to-action-green">
+                    <img 
+                        src="https://picsum.photos/600/800?random=20" 
+                        className="w-full h-full rounded-full object-cover border-4 border-background" 
+                        alt="Profile Avatar"
+                    />
+                </div>
+                <div className="absolute bottom-0 right-0 bg-surface text-white p-1.5 rounded-full border border-white/10 shadow-lg">
+                    <Edit2 size={14} className="text-gray-300" />
+                </div>
+            </div>
+            <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                    <h2 className="text-2xl font-bold text-white">Lay M, 25</h2>
+                    <CheckCircle className="text-blue-500 fill-current" size={20} />
+                </div>
+                <p className="text-gray-400 text-sm mb-3">Washington, USA</p>
+                
+                {/* Completion Bar */}
+                <div className="w-full h-1.5 bg-surface rounded-full overflow-hidden flex">
+                    <div className="w-[85%] bg-action-purple h-full rounded-full"></div>
+                </div>
+                <p className="text-[10px] text-gray-500 mt-1.5 font-medium">Profil complété à 85%</p>
+            </div>
+        </div>
 
-         <div className="mb-8">
-            <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3">About</h3>
-            <p className="text-gray-200 text-base leading-relaxed">
-                Hi there! 👋 I'm 25, into coffee ☕, travel ✈️, and late-night talks ✨. Always open to new people and good vibes 🌎.
-            </p>
-         </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-3 mb-8">
+            <div className="bg-surface border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center gap-1 shadow-lg">
+                <div className="w-8 h-8 rounded-full bg-action-red/20 flex items-center justify-center mb-1">
+                    <Heart size={16} className="text-action-red fill-current" />
+                </div>
+                <span className="text-xl font-bold text-white">128</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Likes</span>
+            </div>
+            <div className="bg-surface border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center gap-1 shadow-lg">
+                <div className="w-8 h-8 rounded-full bg-action-purple/20 flex items-center justify-center mb-1">
+                    <Users size={16} className="text-action-purple fill-current" />
+                </div>
+                <span className="text-xl font-bold text-white">43</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Matchs</span>
+            </div>
+            <div className="bg-surface border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center gap-1 shadow-lg">
+                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center mb-1">
+                    <Eye size={16} className="text-blue-400 fill-current" />
+                </div>
+                <span className="text-xl font-bold text-white">1.2k</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Vues</span>
+            </div>
+        </div>
 
-         <div className="mb-8">
-            <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3">Interests</h3>
-            <div className="flex flex-wrap gap-3">
+        {/* Premium Banner */}
+        <div className="relative w-full rounded-2xl p-5 mb-8 overflow-hidden group cursor-pointer">
+            {/* Background Gradients */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700]/10 via-[#FFA500]/10 to-[#FFD700]/5 border border-[#FFD700]/20 rounded-2xl"></div>
+            <div className="absolute -right-10 -top-10 w-32 h-32 bg-[#FFD700]/20 blur-3xl rounded-full"></div>
+            
+            <div className="relative z-10 flex justify-between items-center">
+                <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <Crown size={20} className="text-[#FFD700] fill-current" />
+                        <h3 className="text-[#FFD700] font-bold text-lg">Connexa Gold</h3>
+                    </div>
+                    <p className="text-gray-300 text-xs max-w-[200px] leading-relaxed">
+                        Boostez votre visibilité x10 et voyez qui vous a liké.
+                    </p>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-[#FFD700] flex items-center justify-center shadow-[0_0_15px_rgba(255,215,0,0.4)] group-hover:scale-110 transition-transform">
+                    <ChevronRightIcon size={18} className="text-black" />
+                </div>
+            </div>
+        </div>
+
+        {/* About Section */}
+        <div className="mb-8">
+            <div className="flex justify-between items-end mb-3">
+                <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider">À propos de moi</h3>
+                <button className="text-action-purple text-xs font-medium hover:underline">Modifier</button>
+            </div>
+            <div className="bg-surface border border-white/5 rounded-2xl p-4">
+                <p className="text-gray-200 text-sm leading-relaxed">
+                    Salut ! 👋 J'ai 25 ans, fan de café ☕, de voyages ✈️, et de discussions nocturnes ✨. Toujours ouverte aux nouvelles rencontres et aux bonnes ondes 🌎.
+                </p>
+            </div>
+        </div>
+
+        {/* Basics Grid (L'essentiel) */}
+        <div className="mb-8">
+            <div className="flex justify-between items-end mb-3">
+                <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider">L'essentiel</h3>
+                <button className="text-action-purple text-xs font-medium hover:underline">Modifier</button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+                <div className="bg-surface border border-white/5 rounded-xl p-3 flex items-center gap-3">
+                    <Briefcase size={18} className="text-gray-400" />
+                    <div>
+                        <p className="text-[10px] text-gray-500">Travail</p>
+                        <p className="text-xs text-white font-medium">Designer</p>
+                    </div>
+                </div>
+                <div className="bg-surface border border-white/5 rounded-xl p-3 flex items-center gap-3">
+                    <GraduationCap size={18} className="text-gray-400" />
+                    <div>
+                        <p className="text-[10px] text-gray-500">Études</p>
+                        <p className="text-xs text-white font-medium">Arts Univ.</p>
+                    </div>
+                </div>
+                <div className="bg-surface border border-white/5 rounded-xl p-3 flex items-center gap-3">
+                    <Ruler size={18} className="text-gray-400" />
+                    <div>
+                        <p className="text-[10px] text-gray-500">Taille</p>
+                        <p className="text-xs text-white font-medium">175 cm</p>
+                    </div>
+                </div>
+                 <div className="bg-surface border border-white/5 rounded-xl p-3 flex items-center gap-3">
+                    <Wine size={18} className="text-gray-400" />
+                    <div>
+                        <p className="text-[10px] text-gray-500">Boisson</p>
+                        <p className="text-xs text-white font-medium">Parfois</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* Interests */}
+        <div className="mb-8">
+            <div className="flex justify-between items-end mb-3">
+                <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Intérêts</h3>
+                <button className="text-action-purple text-xs font-medium hover:underline">Modifier</button>
+            </div>
+            <div className="flex flex-wrap gap-2">
                 {[
                     { icon: Pizza, label: 'Street Food', color: 'text-orange-500' },
-                    { icon: Book, label: 'Books', color: 'text-blue-400' },
-                    { icon: Plane, label: 'Travel', color: 'text-blue-300' },
-                    { icon: Palette, label: 'Digital Art', color: 'text-purple-400' },
-                    { icon: Sun, label: 'Beach Time', color: 'text-yellow-400' }
+                    { icon: Book, label: 'Livres', color: 'text-blue-400' },
+                    { icon: Plane, label: 'Voyage', color: 'text-blue-300' },
+                    { icon: Palette, label: 'Art', color: 'text-purple-400' },
+                    { icon: Sun, label: 'Plage', color: 'text-yellow-400' }
                 ].map((interest, idx) => {
                     const Icon = interest.icon;
                     return (
-                        <div key={idx} className="flex items-center gap-2 bg-chip px-4 py-2.5 rounded-full border border-white/5">
-                            <Icon size={16} className={interest.color} />
-                            <span className="text-gray-200 text-sm">{interest.label}</span>
+                        <div key={idx} className="flex items-center gap-1.5 bg-chip px-3 py-2 rounded-full border border-white/5">
+                            <Icon size={14} className={interest.color} />
+                            <span className="text-gray-200 text-xs font-medium">{interest.label}</span>
                         </div>
                     );
                 })}
+                <button className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-dashed border-white/20 text-gray-400 hover:text-white hover:border-white/40 transition">
+                    <Plus size={14} />
+                </button>
             </div>
          </div>
          
-         {/* Gallery Grid */}
-         <div className="grid grid-cols-2 gap-3 mb-8">
-             {GALLERY_IMAGES.map((src, index) => (
-                <div 
-                  key={index} 
-                  className={`h-48 rounded-2xl bg-surface overflow-hidden cursor-pointer active:scale-95 transition-transform ${index === 2 ? 'col-span-2' : ''}`}
-                  onClick={() => setSelectedIndex(index)}
-                >
-                    <img src={src} className="w-full h-full object-cover" alt={`Gallery ${index}`} />
-                </div>
-             ))}
+         {/* Editable Gallery */}
+         <div className="mb-8">
+             <div className="flex justify-between items-end mb-3">
+                <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Ma Galerie</h3>
+                <span className="text-gray-500 text-[10px]">Maintenez pour réorganiser</span>
+            </div>
+             <div className="grid grid-cols-3 gap-3">
+                 {GALLERY_IMAGES.map((src, index) => (
+                    <div 
+                      key={index} 
+                      className={`relative aspect-[3/4] rounded-xl bg-surface overflow-hidden cursor-pointer active:scale-95 transition-transform group`}
+                      onClick={() => setSelectedIndex(index)}
+                    >
+                        <img src={src} className="w-full h-full object-cover" alt={`Gallery ${index}`} />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                        {index === 0 && (
+                            <div className="absolute top-2 left-2 bg-action-purple px-1.5 py-0.5 rounded text-[9px] font-bold text-white uppercase tracking-wide">
+                                Principal
+                            </div>
+                        )}
+                    </div>
+                 ))}
+                 {/* Add Photo Button */}
+                 <div className="aspect-[3/4] rounded-xl bg-surface border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-white/5 transition-colors group">
+                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Camera size={20} className="text-gray-400 group-hover:text-white" />
+                    </div>
+                    <span className="text-[10px] text-gray-500 font-medium">Ajouter</span>
+                 </div>
+             </div>
          </div>
+
       </div>
 
-      {/* Full Screen Lightbox */}
+      {/* Full Screen Lightbox (Existing Logic) */}
       {selectedIndex !== null && (
         <div 
             className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center touch-none animate-in fade-in duration-300"
@@ -155,7 +295,6 @@ export const ProfileDetail: React.FC = () => {
                 <X size={24} />
             </button>
 
-            {/* Navigation Arrows (Hidden on mobile generally, but good for larger screens) */}
             <button 
                 onClick={handlePrev}
                 className="absolute left-4 p-3 bg-white/10 rounded-full text-white hover:bg-white/20 z-50 hidden sm:block"
@@ -198,7 +337,7 @@ export const ProfileDetail: React.FC = () => {
             {!isZoomed && (
                 <div className="absolute bottom-24 bg-black/50 px-4 py-1.5 rounded-full backdrop-blur-md border border-white/10 flex items-center gap-2 animate-pulse">
                     <ZoomIn size={14} className="text-gray-300" />
-                    <span className="text-xs text-gray-300">Double tap to zoom</span>
+                    <span className="text-xs text-gray-300">Double tap pour zoomer</span>
                 </div>
             )}
         </div>

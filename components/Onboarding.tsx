@@ -151,14 +151,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       {/* Content */}
       <div className="w-full mb-8 z-10">
         <h2 className="text-4xl font-bold text-white text-center leading-tight mb-4">
-          Find Your <br />
+          Trouvez Votre <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-orange to-primary-red">
-            Perfect Match
+            Match Idéal
           </span>
         </h2>
         
         <p className="text-gray-400 text-center text-sm mb-10 px-6">
-          Meet New People, Spark Real Connections, And See Where It Goes.
+          Rencontrez de nouvelles personnes, créez de vrais liens et voyez où cela vous mène.
         </p>
 
         {/* Slide to Unlock Button */}
@@ -172,7 +172,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
              style={{ opacity: textOpacity }}
            >
               <span className="text-white/50 text-lg font-semibold flex items-center gap-1">
-                Get Started 
+                Commencer 
                 <span className="flex">
                     <ChevronRight size={16} className="opacity-40 animate-pulse" />
                     <ChevronRight size={16} className="opacity-70 animate-pulse delay-75" />
