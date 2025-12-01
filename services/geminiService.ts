@@ -1,9 +1,16 @@
 import { GoogleGenAI } from "@google/genai";
 import { Message } from "../types";
 
-// Initialize Gemini Client
-// Note: process.env.API_KEY is injected by the environment.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper to get the AI client lazily.
+// This prevents the app from crashing on startup if process is undefined in the browser.
+const getAIClient = () => {
+  // Ensure process.env.API_KEY is available or handle gracefully
+  const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : undefined;
+  if (!apiKey) {
+    console.warn("API Key not found. Chat features may not work.");
+  }
+  return new GoogleGenAI({ apiKey: apiKey || '' });
+};
 
 /**
  * Generates a thoughtful chat response using the high-reasoning model.
@@ -11,8 +18,9 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
  */
 export const generateChatResponse = async (history: Message[], userMessage: string): Promise<string> => {
   try {
-    // We construct a simple prompt history. In a real app, we'd use ai.chats.create
-    // But for stateless simplicity here, we'll append context.
+    const ai = getAIClient();
+    
+    // We construct a simple prompt history.
     const systemPrompt = `You are "Connexa AI", a helpful, witty, and charming dating coach and assistant living inside a dating app. 
     Your goal is to help the user improve their profile, suggest conversation starters, and just be a fun companion.
     Keep responses concise (under 3 sentences usually) and conversational. Use emojis sparingly but effectively.`;
@@ -47,6 +55,7 @@ export const generateChatResponse = async (history: Message[], userMessage: stri
  */
 export const generateFastWittyReply = async (context: string): Promise<string> => {
   try {
+    const ai = getAIClient();
     const response = await ai.models.generateContent({
       model: 'gemini-flash-lite-latest', // Mapped from "gemini-2.5-flash-lite" as per guidelines
       contents: `Generate a single, short, witty, and flirtatious reply to this message: "${context}". Do not include quotes. Max 15 words.`,
