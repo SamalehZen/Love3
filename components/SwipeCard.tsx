@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Heart, Gift, MapPin, Search, Star } from 'lucide-react';
+import { X, Heart, Gift, MapPin, Search, Star, Sparkles } from 'lucide-react';
 import { Profile } from '../types';
 
 interface SwipeCardProps {
@@ -18,10 +18,10 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
   const startY = useRef(0);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const SWIPE_THRESHOLD = 120;
-  const ROTATION_FACTOR = 0.05;
+  const SWIPE_THRESHOLD = 100;
+  const ROTATION_FACTOR = 0.04;
 
-  // Reset state when profile changes to ensure new card starts fresh
+  // Reset state when profile changes
   useEffect(() => {
     setDragX(0);
     setDragY(0);
@@ -54,15 +54,15 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
 
     if (Math.abs(dragX) > SWIPE_THRESHOLD) {
       const direction = dragX > 0 ? 'like' : 'reject';
-      const velocity = dragX > 0 ? 1000 : -1000;
+      // High velocity for a satisfying "woosh" exit
+      const velocity = dragX > 0 ? 1500 : -1500;
       setExitVelocity(velocity);
       
-      // Delay action to allow exit animation to play
       setTimeout(() => {
         onAction(direction);
-      }, 200);
+      }, 300);
     } else {
-      // Snap back
+      // Spring snap back
       setDragX(0);
       setDragY(0);
     }
@@ -88,51 +88,78 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
     };
   }, [isDragging, dragX]);
 
-  // Calculations for animations
+  // --- Animation Physics ---
+
   const isExiting = exitVelocity !== 0;
   
-  // Calculate swipe progress (0 to 1). If exiting, force to 1 to complete animations.
-  const rawProgress = Math.min(Math.abs(dragX) / (SWIPE_THRESHOLD * 1.2), 1);
+  // Progress 0 -> 1 based on drag distance
+  const rawProgress = Math.min(Math.abs(dragX) / (SWIPE_THRESHOLD * 1.5), 1);
   const swipeProgress = isExiting ? 1 : rawProgress;
 
+  // Rotation logic: tilt more as you drag
   const rotation = dragX * ROTATION_FACTOR;
   
-  // Opacities for LIKE/NOPE stamps
-  const likeOpacity = Math.min(Math.max(dragX / (SWIPE_THRESHOLD * 0.8), 0), 1);
-  const nopeOpacity = Math.min(Math.max(-dragX / (SWIPE_THRESHOLD * 0.8), 0), 1);
-  
-  // Back card animation: Scales up and moves up as front card leaves
-  const backCardScale = 0.92 + (0.08 * swipeProgress); // 0.92 -> 1.0
-  const backCardY = 30 - (30 * swipeProgress);         // 30px -> 0px
-  const backCardOpacity = 0.5 + (0.5 * swipeProgress); // Fade in
+  // Icon Scale: Grows as you drag. 
+  // If exiting (user let go), pulse it up to 1.5x for effect.
+  const iconScale = isExiting ? 1.8 : 0.5 + (rawProgress * 0.8); 
+  const iconOpacity = isExiting ? 1 : Math.min(rawProgress * 1.5, 1);
+
+  // Background Card Animation (3D Stack effect)
+  const backCardScale = 0.94 + (0.06 * swipeProgress); // 0.94 -> 1.0
+  const backCardY = 20 - (20 * swipeProgress);         // 20px -> 0px
+  const backCardOpacity = 0.6 + (0.4 * swipeProgress); 
 
   const cardStyle = {
     transform: exitVelocity 
-      ? `translate(${exitVelocity}px, ${dragY}px) rotate(${exitVelocity * 0.05}deg)`
+      ? `translate(${exitVelocity}px, ${dragY}px) rotate(${exitVelocity * 0.03}deg)`
       : `translate(${dragX}px, ${dragY}px) rotate(${rotation}deg)`,
-    transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.19, 1, 0.22, 1)',
     cursor: isDragging ? 'grabbing' : 'grab',
   };
 
+  // Dynamic Button Scaling based on drag direction
+  // Dragging Right -> Heart Button grows
+  // Dragging Left -> X Button grows
+  const rightBtnScale = dragX > 0 ? 1 + (rawProgress * 0.3) : 1;
+  const leftBtnScale = dragX < 0 ? 1 + (rawProgress * 0.3) : 1;
+
   return (
-    <div className="relative w-full h-full flex flex-col pt-4 pb-24 px-4 overflow-hidden select-none">
-        
-      {/* Top Bar */}
+    <div className="relative w-full h-full flex flex-col pt-4 pb-24 px-4 overflow-hidden select-none bg-[#000]">
+      
+      {/* Styles for Shimmer & Pulse */}
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-150%) skewX(-15deg); }
+          100% { transform: translateX(150%) skewX(-15deg); }
+        }
+        .premium-shimmer {
+          animation: shimmer 2.5s infinite;
+        }
+        @keyframes pulse-ring {
+          0% { transform: scale(0.8); opacity: 0.5; }
+          100% { transform: scale(1.3); opacity: 0; }
+        }
+        .pulse-effect {
+          animation: pulse-ring 1s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+      `}</style>
+
+      {/* Top Header */}
       <div className="flex justify-between items-center mb-4 px-2 z-50">
          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-red p-0.5">
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20 p-0.5">
                 <img src="https://picsum.photos/100/100?random=1" className="w-full h-full rounded-full object-cover" />
             </div>
             <div>
-                <p className="text-gray-400 text-xs">Bonjour Damien!</p>
+                <p className="text-gray-400 text-[10px] uppercase tracking-wider font-semibold">Bienvenue</p>
                 <div className="flex items-center gap-1 text-white text-sm font-medium">
-                    <MapPin size={12} className="text-gray-400" />
+                    <MapPin size={12} className="text-action-purple" />
                     Washington, USA
                 </div>
             </div>
          </div>
-         <button className="w-10 h-10 rounded-full bg-surface border border-white/10 flex items-center justify-center hover:bg-white/10 transition">
-            <Search className="text-gray-300" size={20} />
+         <button className="w-10 h-10 rounded-full bg-[#1C1C1E] border border-white/10 flex items-center justify-center hover:bg-white/10 transition active:scale-95 shadow-lg">
+            <Search className="text-gray-300" size={18} />
          </button>
       </div>
 
@@ -142,27 +169,21 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
          {/* --- Background Card (Next Profile) --- */}
          {nextProfile && (
             <div 
-                className="absolute inset-0 z-10 rounded-[32px] overflow-hidden bg-surface border border-white/5 shadow-xl"
+                className="absolute inset-0 z-10 rounded-[36px] overflow-hidden bg-[#1C1C1E] border border-white/5 shadow-2xl"
                 style={{
                     transform: `scale(${backCardScale}) translateY(${backCardY}px)`,
                     opacity: backCardOpacity,
-                    transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease'
+                    transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease'
                 }}
             >
                  <img 
                     src={nextProfile.imageUrl} 
                     alt={nextProfile.name} 
-                    className="w-full h-full object-cover filter brightness-75"
+                    className="w-full h-full object-cover filter brightness-[0.6]"
                 />
-                 {/* Dark overlay that fades out as it comes to front */}
-                <div 
-                    className="absolute inset-0 bg-black/50 transition-opacity duration-300" 
-                    style={{ opacity: 1 - swipeProgress }} 
-                />
-                
-                {/* Info preview */}
-                <div className="absolute bottom-0 w-full p-6 pb-8 bg-gradient-to-t from-black/90 to-transparent">
-                    <h2 className="text-xl font-bold text-white/50">{nextProfile.name}, {nextProfile.age}</h2>
+                 {/* Next Card Preview Info */}
+                 <div className="absolute bottom-0 w-full p-6 bg-gradient-to-t from-black/90 to-transparent opacity-50">
+                    <h2 className="text-xl font-bold text-white/50">{nextProfile.name}</h2>
                 </div>
             </div>
          )}
@@ -170,76 +191,151 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
          {/* --- Foreground Card (Active) --- */}
          <div 
             ref={cardRef}
-            className="absolute inset-0 z-20 rounded-[32px] overflow-hidden shadow-2xl bg-surface touch-none"
+            className="absolute inset-0 z-20 rounded-[36px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-[#1C1C1E] touch-none"
             style={cardStyle}
             onMouseDown={handleDragStart}
             onTouchStart={handleDragStart}
          >
-            {/* Same content as before */}
+            {/* Image */}
             <img 
                 src={profile.imageUrl} 
                 alt={profile.name} 
-                className="w-full h-full object-cover pointer-events-none"
+                className="w-full h-full object-cover pointer-events-none select-none"
             />
-            
-            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/90 pointer-events-none" />
-            
-            <div 
-                className="absolute top-10 right-8 border-[6px] border-red-500 rounded-lg px-4 py-2 rotate-12 pointer-events-none transition-opacity duration-200"
-                style={{ opacity: nopeOpacity }}
-            >
-                <span className="text-red-500 font-bold text-4xl tracking-widest drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">NON</span>
+
+            {/* Premium Shimmer Overlay */}
+            <div className="absolute inset-0 pointer-events-none z-10 opacity-20 overflow-hidden rounded-[36px]">
+                <div className="w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent premium-shimmer absolute top-0 left-0"></div>
             </div>
 
-            <div 
-                className="absolute top-10 left-8 border-[6px] border-green-500 rounded-lg px-4 py-2 -rotate-12 pointer-events-none transition-opacity duration-200"
-                style={{ opacity: likeOpacity }}
-            >
-                <span className="text-green-500 font-bold text-4xl tracking-widest drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]">OUI</span>
+            {/* Dark Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/90 pointer-events-none" />
+
+            {/* --- REACTION ICONS (Heart / X) --- */}
+            {/* Centered Overlay Container */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
+                
+                {/* LIKE ANIMATION (Swipe Right) */}
+                <div 
+                    className="flex flex-col items-center justify-center"
+                    style={{ 
+                        opacity: dragX > 0 ? iconOpacity : 0,
+                        transform: `scale(${dragX > 0 ? iconScale : 0.5}) rotate(-10deg)`,
+                        transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                    }}
+                >
+                    <div className="relative">
+                        {/* Glowing Pulse Ring behind */}
+                        <div className={`absolute inset-0 rounded-full bg-action-green/30 blur-xl ${isExiting && dragX > 0 ? 'pulse-effect' : ''}`}></div>
+                        <Heart 
+                            size={120} 
+                            fill="currentColor"
+                            className="text-[#4ADE80] drop-shadow-[0_0_20px_rgba(74,222,128,0.6)]" 
+                        />
+                        <Sparkles className="absolute -top-4 -right-4 text-white animate-bounce" size={40} />
+                    </div>
+                    <span className="text-white font-bold text-2xl tracking-widest mt-4 drop-shadow-md">LIKE</span>
+                </div>
+
+                {/* REJECT ANIMATION (Swipe Left) */}
+                <div 
+                    className="flex flex-col items-center justify-center"
+                    style={{ 
+                        opacity: dragX < 0 ? iconOpacity : 0,
+                        transform: `scale(${dragX < 0 ? iconScale : 0.5}) rotate(10deg)`,
+                        transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                    }}
+                >
+                     <div className="relative">
+                        <div className={`absolute inset-0 rounded-full bg-action-red/30 blur-xl ${isExiting && dragX < 0 ? 'pulse-effect' : ''}`}></div>
+                        <X 
+                            size={120} 
+                            strokeWidth={3} 
+                            className="text-[#EF4444] drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]" 
+                        />
+                     </div>
+                     <span className="text-white font-bold text-2xl tracking-widest mt-4 drop-shadow-md">NON</span>
+                </div>
             </div>
 
-            <div className="absolute top-6 left-6 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg pointer-events-none">
-                <span className="text-white text-sm font-semibold flex items-center gap-1">
-                    <Star size={12} className="text-yellow-400 fill-current" />
+
+            {/* Match Badge */}
+            <div className="absolute top-6 left-6 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 shadow-lg pointer-events-none z-20">
+                <span className="text-white text-xs font-bold flex items-center gap-1.5 tracking-wide">
+                    <Star size={12} fill="currentColor" className="text-yellow-400" />
                     Match {profile.matchPercentage}%
                 </span>
             </div>
 
-            <div className="absolute bottom-0 w-full p-6 pb-8 pointer-events-none">
-                <div className="flex items-center gap-2 mb-1">
-                    <h2 className="text-3xl font-bold text-white tracking-tight drop-shadow-md">{profile.name}, {profile.age}</h2>
+            {/* Bottom Info Section */}
+            <div className="absolute bottom-0 w-full p-6 pb-28 z-20 pointer-events-none">
+                <div className="flex items-center gap-2 mb-2 translate-y-2">
+                    <h2 className="text-[32px] font-bold text-white tracking-tight drop-shadow-lg leading-none">
+                        {profile.name}, {profile.age}
+                    </h2>
                     {profile.isOnline && (
-                        <span className="w-3 h-3 bg-action-green rounded-full shadow-[0_0_10px_rgba(50,213,131,0.8)] animate-pulse"></span>
+                        <span className="w-2.5 h-2.5 bg-action-green rounded-full shadow-[0_0_10px_#32D583] animate-pulse mt-2"></span>
                     )}
                 </div>
-                <p className="text-gray-300 text-sm font-medium mb-6 drop-shadow-md">{profile.location}</p>
                 
-                <div className="flex items-center justify-between px-4 pointer-events-auto">
-                    <button 
-                        onClick={(e) => { e.stopPropagation(); setExitVelocity(-1000); setTimeout(() => onAction('reject'), 200); }}
-                        className="w-16 h-16 rounded-full bg-[#1C1C1E]/80 backdrop-blur-sm border border-action-red/30 flex items-center justify-center text-action-red hover:bg-action-red hover:text-white hover:scale-110 transition-all duration-300 shadow-lg active:scale-95 group"
-                    >
-                        <X size={32} strokeWidth={2.5} className="group-hover:rotate-90 transition-transform duration-300" />
-                    </button>
+                <p className="text-gray-300 text-sm font-medium mb-4 line-clamp-2 drop-shadow-md leading-relaxed opacity-90">
+                    {profile.bio}
+                </p>
 
-                    <button 
-                        onClick={(e) => { e.stopPropagation(); onAction('super'); }}
-                        className="w-14 h-14 rounded-full bg-action-purple/20 backdrop-blur-sm border border-action-purple/50 flex items-center justify-center text-action-purple hover:bg-action-purple hover:text-white hover:scale-110 transition-all duration-300 shadow-lg active:scale-95 group mx-4"
-                    >
-                        <Gift size={24} strokeWidth={2.5} className="group-hover:animate-bounce" />
-                    </button>
-
-                    <button 
-                        onClick={(e) => { e.stopPropagation(); setExitVelocity(1000); setTimeout(() => onAction('like'), 200); }}
-                        className="w-16 h-16 rounded-full bg-gradient-to-br from-[#4ADE80] to-[#22C55E] flex items-center justify-center text-white hover:scale-110 hover:shadow-[0_0_20px_rgba(34,197,94,0.6)] transition-all duration-300 shadow-lg shadow-green-500/30 active:scale-95 group"
-                    >
-                        <Heart size={32} fill="currentColor" className="group-hover:scale-110 transition-transform duration-300" />
-                    </button>
+                {/* Interests Chips */}
+                <div className="flex flex-wrap gap-2 mb-2">
+                    {profile.interests.slice(0, 3).map((interest, idx) => (
+                        <div key={idx} className="bg-white/10 backdrop-blur-sm border border-white/10 px-3 py-1 rounded-full">
+                            <span className="text-[10px] text-white font-medium uppercase tracking-wide">{interest}</span>
+                        </div>
+                    ))}
                 </div>
             </div>
-         </div>
 
+            {/* Action Buttons Layer (Sits on top of card but handled layout-wise) */}
+            <div className="absolute bottom-0 w-full h-24 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-10"></div>
+         </div>
       </div>
+
+      {/* Floating Action Buttons (Outside Perspective) */}
+      {/* These stay fixed while the card moves, but animate their scale based on drag */}
+      <div className="w-full flex items-center justify-between px-8 pb-4 pt-2 z-50">
+            
+            {/* Reject Button */}
+            <button 
+                onClick={(e) => { 
+                    e.stopPropagation(); 
+                    setExitVelocity(-1000); 
+                    setTimeout(() => onAction('reject'), 200); 
+                }}
+                style={{ transform: `scale(${leftBtnScale})` }}
+                className="w-16 h-16 rounded-full bg-[#1C1C1E] border border-action-red/20 flex items-center justify-center text-action-red shadow-lg transition-transform duration-200 active:scale-95 group hover:bg-action-red hover:text-white"
+            >
+                <X size={32} strokeWidth={2.5} className="group-hover:rotate-90 transition-transform duration-300" />
+            </button>
+
+            {/* Super Like */}
+            <button 
+                onClick={(e) => { e.stopPropagation(); onAction('super'); }}
+                className="w-12 h-12 rounded-full bg-action-purple/10 border border-action-purple/30 flex items-center justify-center text-action-purple shadow-lg transition-transform hover:scale-110 active:scale-95 hover:bg-action-purple hover:text-white"
+            >
+                <Gift size={22} strokeWidth={2.5} />
+            </button>
+
+            {/* Like Button */}
+            <button 
+                onClick={(e) => { 
+                    e.stopPropagation(); 
+                    setExitVelocity(1000); 
+                    setTimeout(() => onAction('like'), 200); 
+                }}
+                style={{ transform: `scale(${rightBtnScale})` }}
+                className="w-16 h-16 rounded-full bg-gradient-to-br from-[#32D583] to-[#22C55E] flex items-center justify-center text-white shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-transform duration-200 active:scale-95 group hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]"
+            >
+                <Heart size={32} fill="currentColor" className="group-hover:scale-110 transition-transform duration-300" />
+            </button>
+      </div>
+
     </div>
   );
 };
