@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Onboarding } from './components/Onboarding';
 import { SwipeCard } from './components/SwipeCard';
@@ -19,7 +20,8 @@ const MOCK_PROFILES: Profile[] = [
     imageUrl: "https://picsum.photos/600/800?random=100",
     interests: ["Art", "Coffee"],
     matchPercentage: 86,
-    isOnline: true
+    isOnline: true,
+    relationshipStatus: 'Single'
   },
   {
     id: 2,
@@ -30,7 +32,8 @@ const MOCK_PROFILES: Profile[] = [
     imageUrl: "https://picsum.photos/600/800?random=101",
     interests: ["Travel", "Hiking"],
     matchPercentage: 92,
-    isOnline: false
+    isOnline: false,
+    relationshipStatus: 'Single'
   },
   {
     id: 3,
@@ -41,7 +44,8 @@ const MOCK_PROFILES: Profile[] = [
     imageUrl: "https://picsum.photos/600/800?random=102",
     interests: ["Coding", "Sci-Fi"],
     matchPercentage: 74,
-    isOnline: true
+    isOnline: true,
+    relationshipStatus: 'Open'
   },
   {
     id: 4,
@@ -52,7 +56,8 @@ const MOCK_PROFILES: Profile[] = [
     imageUrl: "https://picsum.photos/600/800?random=103",
     interests: ["Food", "Cinema"],
     matchPercentage: 88,
-    isOnline: true
+    isOnline: true,
+    relationshipStatus: 'Single'
   }
 ];
 
@@ -72,150 +77,159 @@ export function App() {
         location: { lat: 11.594, lng: 43.149 }, // Centre Ville (Près de la Place Menelik)
         isOnline: true,
         isVerified: true,
-        imageUrl: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=400&q=80" 
-    },
-    { 
-        id: 'moussa',
-        name: "Moussa", 
-        age: 25,
-        location: { lat: 11.555, lng: 43.125 }, // Balbala (Cheikh Moussa)
-        isOnline: false,
-        imageUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80"
-    },
-    { 
-        id: 'fatouma',
-        name: "Fatouma", 
-        age: 22,
-        location: { lat: 11.608, lng: 43.154 }, // Héron (Près de la plage)
-        isOnline: true,
-        imageUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80"
+        relationshipStatus: 'Single',
+        imageUrl: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=800&q=80"
     },
     { 
         id: 'hassan',
-        name: "Hassan", 
-        age: 28,
-        location: { lat: 11.575, lng: 43.155 }, // Gabode
-        isOnline: true,
-        isVerified: true,
-        imageUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80"
-    },
-    { 
-        id: 'kadra',
-        name: "Kadra", 
-        age: 24,
-        location: { lat: 11.558, lng: 43.150 }, // Ambouli (Route de l'aéroport)
-        isOnline: false,
-        imageUrl: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=400&q=80"
-    },
-    { 
-        id: 'ahmed',
-        name: "Ahmed", 
+        name: "Hassan",
         age: 26,
-        location: { lat: 11.578, lng: 43.138 }, // Quartier 7
-        isOnline: true,
-        imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
-    },
-    { 
-        id: 'samia',
-        name: "Samia", 
-        age: 21,
-        location: { lat: 11.588, lng: 43.144 }, // Marabout
-        isOnline: true,
-        imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80"
-    },
-    { 
-        id: 'youssouf',
-        name: "Youssouf", 
-        age: 29,
-        location: { lat: 11.535, lng: 43.110 }, // PK12
+        location: { lat: 11.564, lng: 43.125 }, // Balbala
         isOnline: false,
-        imageUrl: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&w=400&q=80"
+        isVerified: true,
+        relationshipStatus: 'Taken',
+        imageUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80"
     },
     { 
-        id: 'noura',
-        name: "Noura", 
-        age: 25,
-        location: { lat: 11.590, lng: 43.170 }, // Haramous
+        id: 'fatouma',
+        name: "Fatouma",
+        age: 24,
+        location: { lat: 11.605, lng: 43.160 }, // Héron
+        isOnline: true,
+        isVerified: false,
+        relationshipStatus: 'Single',
+        imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80"
+    },
+    { 
+        id: 'moussa',
+        name: "Moussa",
+        age: 28,
+        location: { lat: 11.580, lng: 43.138 }, // Quartier 7
         isOnline: true,
         isVerified: true,
-        imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
+        relationshipStatus: 'Complicated',
+        imageUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80"
+    },
+    { 
+        id: 'safia',
+        name: "Safia",
+        age: 22,
+        location: { lat: 11.570, lng: 43.155 }, // Marabout
+        isOnline: false,
+        isVerified: true,
+        relationshipStatus: 'Single',
+        imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80"
+    },
+    { 
+        id: 'ali',
+        name: "Ali",
+        age: 25,
+        location: { lat: 11.550, lng: 43.110 }, // Hodan (Balbala Sud)
+        isOnline: true,
+        isVerified: false,
+        relationshipStatus: 'Open',
+        imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"
+    },
+    { 
+        id: 'yasmin',
+        name: "Yasmin",
+        age: 21,
+        location: { lat: 11.558, lng: 43.165 }, // Gabode
+        isOnline: true,
+        isVerified: true,
+        relationshipStatus: 'Single',
+        imageUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80"
+    },
+    { 
+        id: 'omar',
+        name: "Omar",
+        age: 29,
+        location: { lat: 11.530, lng: 43.150 }, // Ambouli
+        isOnline: false,
+        isVerified: true,
+        relationshipStatus: 'Single',
+        imageUrl: "https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?auto=format&fit=crop&w=800&q=80"
+    },
+    { 
+        id: 'khadija',
+        name: "Khadija",
+        age: 24,
+        location: { lat: 11.590, lng: 43.140 }, // Quartier 1
+        isOnline: true,
+        isVerified: true,
+        relationshipStatus: 'Single',
+        imageUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80"
     },
     { 
         id: 'ibrahim',
-        name: "Ibrahim", 
+        name: "Ibrahim",
         age: 27,
-        location: { lat: 11.596, lng: 43.142 }, // Quartier Commercial
-        isOnline: true,
-        imageUrl: "https://images.unsplash.com/photo-1522075469751-3a3694fb60ed?auto=format&fit=crop&w=400&q=80"
-    }
+        location: { lat: 11.575, lng: 43.130 }, // Quartier 5
+        isOnline: false,
+        isVerified: false,
+        relationshipStatus: 'Taken',
+        imageUrl: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?auto=format&fit=crop&w=800&q=80"
+    },
   ];
 
   const handleSwipeAction = (action: 'like' | 'reject' | 'super') => {
-    // Logic to handle swipe
-    console.log(`User ${action}ed profile ${MOCK_PROFILES[profileIndex].name}`);
-    
-    // Move to next profile, loop back for demo purposes
-    // We delay slightly to allow the "exit" animation in SwipeCard to finish visually before we swap data
-    setTimeout(() => {
-        setProfileIndex((prev) => (prev + 1) % MOCK_PROFILES.length);
-    }, 50); 
+    // Advance profile
+    setProfileIndex((prev) => (prev + 1) % MOCK_PROFILES.length);
   };
 
-  const renderView = () => {
+  const renderContent = () => {
     switch (view) {
       case 'onboarding':
         return <Onboarding onComplete={() => setView('swipe')} />;
       case 'swipe':
         return (
-            <SwipeCard 
-                profile={MOCK_PROFILES[profileIndex]} 
-                nextProfile={MOCK_PROFILES[(profileIndex + 1) % MOCK_PROFILES.length]}
-                onAction={handleSwipeAction} 
-            />
+          <SwipeCard 
+            profile={MOCK_PROFILES[profileIndex]}
+            nextProfile={MOCK_PROFILES[(profileIndex + 1) % MOCK_PROFILES.length]}
+            onAction={handleSwipeAction}
+          />
         );
-      case 'profile':
-        return <ProfileDetail />;
-      case 'chat':
-        return <ChatInterface />;
       case 'nearby':
         return (
-           <div className="w-full h-full bg-background relative">
+          <div className="h-full relative">
              <MapContainer 
                 center={mapCenter} 
                 places={nearbyPlaces}
                 className="h-full w-full"
              />
-           </div>
+          </div>
         );
       case 'matches':
         return (
-          <div className="flex flex-col items-center justify-center h-full bg-background text-gray-400 p-8 text-center">
-             <div className="w-20 h-20 bg-surface rounded-full flex items-center justify-center mb-4">
+          <div className="h-full flex items-center justify-center text-white flex-col gap-4">
+             <div className="w-20 h-20 bg-action-purple/20 rounded-full flex items-center justify-center animate-pulse">
                 <Sparkles size={40} className="text-action-purple" />
-            </div>
-             <h2 className="text-white text-2xl font-bold mb-2">Mes Fans</h2>
-            <p>Voyez qui vous aime en retour !</p>
+             </div>
+             <p className="font-semibold text-lg">Vos fans apparaîtront ici</p>
+             <p className="text-sm text-gray-500 max-w-xs text-center">Continuez à swiper pour trouver votre match parfait.</p>
           </div>
         );
+      case 'profile':
+        return <ProfileDetail />;
+      case 'chat':
+        return <ChatInterface />;
       default:
-        return null;
+        return <div className="text-white p-10">View not found</div>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#000] flex justify-center items-center font-sans">
-      <div className="w-full max-w-md h-screen bg-background relative shadow-2xl overflow-hidden sm:rounded-[40px] sm:h-[90vh] sm:border-8 sm:border-[#1C1C1E]">
-        
+    <div className="flex justify-center min-h-screen bg-black font-sans">
+      <div className="w-full max-w-md h-[100dvh] relative bg-background shadow-2xl overflow-hidden flex flex-col">
         {/* Main Content Area */}
-        <main className="h-full w-full">
-          {renderView()}
-        </main>
+        <div className="flex-1 relative overflow-hidden">
+          {renderContent()}
+        </div>
 
-        {/* Bottom Navigation - Only show if not on onboarding */}
-        {view !== 'onboarding' && (
+        {/* Navigation - Only show if not onboarding/chat */}
+        {view !== 'onboarding' && view !== 'chat' && (
           <BottomNav currentView={view} setView={setView} />
         )}
-        
       </div>
     </div>
   );

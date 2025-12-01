@@ -1,3 +1,4 @@
+
 export interface Profile {
   id: number;
   name: string;
@@ -8,6 +9,7 @@ export interface Profile {
   interests: string[];
   matchPercentage: number;
   isOnline: boolean;
+  relationshipStatus?: 'Single' | 'Taken' | 'Complicated' | 'Open';
 }
 
 export interface Message {
