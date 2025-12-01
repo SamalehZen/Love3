@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Onboarding } from './components/Onboarding';
 import { SwipeCard } from './components/SwipeCard';
 import { ProfileDetail } from './components/ProfileDetail';
@@ -77,8 +77,13 @@ const USER_PROFILE: Profile = {
   relationshipStatus: 'Single'
 };
 
+console.log('[Love3 Debug] App.tsx: Module loaded');
+
 export function App() {
+  console.log('[Love3 Debug] App component rendering...');
+  
   const { isDarkMode } = useTheme();
+  console.log('[Love3 Debug] Theme context loaded, isDarkMode:', isDarkMode);
   const [view, setView] = useState<ViewState>('onboarding');
   const [profileIndex, setProfileIndex] = useState(0);
   const [showMatch, setShowMatch] = useState(false);
@@ -86,6 +91,25 @@ export function App() {
   const [showSettings, setShowSettings] = useState(false);
 
   const { addToHistory, undo, canUndo } = useSwipeHistory({ maxHistory: 10 });
+
+  useEffect(() => {
+    console.log('[Love3 Debug] App mounted successfully');
+    console.log('[Love3 Debug] Initial state:', { view, profileIndex, showMatch, showSettings });
+    console.log('[Love3 Debug] Window dimensions:', { 
+      width: window.innerWidth, 
+      height: window.innerHeight,
+      devicePixelRatio: window.devicePixelRatio
+    });
+    console.log('[Love3 Debug] User agent:', navigator.userAgent);
+    
+    return () => {
+      console.log('[Love3 Debug] App unmounting');
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log('[Love3 Debug] View changed to:', view);
+  }, [view]);
 
   const mapCenter = { lat: 11.585, lng: 43.148 };
   
@@ -226,14 +250,19 @@ export function App() {
   }, []);
 
   const renderContent = () => {
+    console.log('[Love3 Debug] renderContent called, view:', view, 'showSettings:', showSettings);
+    
     if (showSettings) {
+      console.log('[Love3 Debug] Rendering Settings');
       return <Settings onBack={() => setShowSettings(false)} />;
     }
 
     switch (view) {
       case 'onboarding':
+        console.log('[Love3 Debug] Rendering Onboarding');
         return <Onboarding onComplete={() => setView('swipe')} />;
       case 'swipe':
+        console.log('[Love3 Debug] Rendering SwipeCard, profileIndex:', profileIndex);
         return (
           <SwipeCard 
             profile={MOCK_PROFILES[profileIndex]}
@@ -244,6 +273,7 @@ export function App() {
           />
         );
       case 'nearby':
+        console.log('[Love3 Debug] Rendering NearbyMap');
         return (
           <div className="h-full relative">
             <MapContainer 
@@ -254,6 +284,7 @@ export function App() {
           </div>
         );
       case 'matches':
+        console.log('[Love3 Debug] Rendering Matches');
         return (
           <PageTransition>
             <div className={`h-full flex items-center justify-center flex-col gap-6 px-8 ${isDarkMode ? 'bg-background' : 'bg-[#F2F2F7]'}`}>
@@ -283,12 +314,15 @@ export function App() {
           </PageTransition>
         );
       case 'profile':
+        console.log('[Love3 Debug] Rendering Profile');
         return (
           <ProfileDetail onSettingsClick={() => setShowSettings(true)} />
         );
       case 'chat':
+        console.log('[Love3 Debug] Rendering ChatInterface');
         return <ChatInterface />;
       default:
+        console.error('[Love3 Debug] Unknown view:', view);
         return (
           <div className={`p-10 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             View not found

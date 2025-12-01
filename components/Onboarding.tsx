@@ -7,9 +7,19 @@ interface OnboardingProps {
   onComplete: () => void;
 }
 
+console.log('[Love3 Debug] Onboarding.tsx: Module loaded');
+
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
+  console.log('[Love3 Debug] Onboarding component rendering');
+  
   const { isDarkMode } = useTheme();
   const { trigger } = useHaptic();
+  
+  useEffect(() => {
+    console.log('[Love3 Debug] Onboarding mounted');
+    console.log('[Love3 Debug] Onboarding isDarkMode:', isDarkMode);
+    return () => console.log('[Love3 Debug] Onboarding unmounting');
+  }, [isDarkMode]);
   
   const [isDragging, setIsDragging] = useState(false);
   const [dragX, setDragX] = useState(0);

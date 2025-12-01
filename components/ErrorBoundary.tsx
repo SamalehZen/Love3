@@ -1,6 +1,8 @@
 import React, { Component, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
+console.log('[Love3 Debug] ErrorBoundary.tsx: Module loaded');
+
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -18,11 +20,22 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   static getDerivedStateFromError(error: Error): State {
+    console.error('[Love3 Debug] ErrorBoundary caught error:', error.message);
+    console.error('[Love3 Debug] Error stack:', error.stack);
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error('[Love3 Debug] ErrorBoundary componentDidCatch:');
+    console.error('[Love3 Debug] Error:', error.message);
+    console.error('[Love3 Debug] Error stack:', error.stack);
+    console.error('[Love3 Debug] Component stack:', errorInfo.componentStack);
+    console.error('[Love3 Debug] Full error info:', JSON.stringify({
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack
+    }, null, 2));
   }
 
   handleReload = () => {
@@ -34,7 +47,10 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   render() {
+    console.log('[Love3 Debug] ErrorBoundary render, hasError:', this.state.hasError);
+    
     if (this.state.hasError) {
+      console.log('[Love3 Debug] Rendering error fallback UI');
       if (this.props.fallback) {
         return this.props.fallback;
       }
@@ -85,6 +101,7 @@ export class ErrorBoundary extends Component<Props, State> {
       );
     }
 
+    console.log('[Love3 Debug] ErrorBoundary rendering children normally');
     return this.props.children;
   }
 }
