@@ -4,8 +4,9 @@ import { SwipeCard } from './components/SwipeCard';
 import { ProfileDetail } from './components/ProfileDetail';
 import { BottomNav } from './components/BottomNav';
 import { ChatInterface } from './components/ChatInterface';
+import { MapContainer, Place } from './components/NearbyMap';
 import { ViewState, Profile } from './types';
-import { MapPin, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 // Mock Data
 const MOCK_PROFILES: Profile[] = [
@@ -55,9 +56,56 @@ const MOCK_PROFILES: Profile[] = [
   }
 ];
 
-function App() {
+export function App() {
   const [view, setView] = useState<ViewState>('onboarding');
   const [profileIndex, setProfileIndex] = useState(0);
+
+  // Mock Map Data centered on Washington DC
+  // Updated to match the screenshot "Helen" example + surrounding users
+  const dcCenter = { lat: 38.9072, lng: -77.0369 };
+  const nearbyPlaces: Place[] = [
+    { 
+        id: 'helen',
+        name: "Helen",
+        age: 23,
+        location: { lat: 38.9072, lng: -77.0369 }, // Center
+        isOnline: true,
+        isVerified: true,
+        imageUrl: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=400&q=80" // High quality portrait
+    },
+    { 
+        id: 2,
+        name: "Irene", 
+        age: 25,
+        location: { lat: 38.912, lng: -77.042 }, 
+        isOnline: false,
+        imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
+    },
+    { 
+        id: 3,
+        name: "Sarah", 
+        age: 29,
+        location: { lat: 38.898, lng: -77.025 }, 
+        isOnline: true,
+        imageUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80"
+    },
+    { 
+        id: 4,
+        name: "Emily", 
+        age: 22,
+        location: { lat: 38.918, lng: -77.05 }, 
+        isOnline: true,
+        imageUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=200&q=80"
+    },
+     { 
+        id: 5,
+        name: "Jessica", 
+        age: 24,
+        location: { lat: 38.902, lng: -77.03 }, 
+        isOnline: false,
+        imageUrl: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=200&q=80"
+    }
+  ];
 
   const handleSwipeAction = (action: 'like' | 'reject' | 'super') => {
     // Logic to handle swipe
@@ -88,13 +136,13 @@ function App() {
         return <ChatInterface />;
       case 'nearby':
         return (
-          <div className="flex flex-col items-center justify-center h-full bg-background text-gray-400 p-8 text-center">
-            <div className="w-20 h-20 bg-surface rounded-full flex items-center justify-center mb-4 animate-pulse">
-                <MapPin size={40} className="text-primary-orange" />
-            </div>
-            <h2 className="text-white text-2xl font-bold mb-2">Nearby People</h2>
-            <p className="text-sm">Finding people in your area...</p>
-          </div>
+           <div className="w-full h-full bg-background relative">
+             <MapContainer 
+                center={dcCenter} 
+                places={nearbyPlaces}
+                className="h-full w-full"
+             />
+           </div>
         );
       case 'matches':
         return (
@@ -129,5 +177,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
