@@ -76,13 +76,13 @@ export const ChatInterface: React.FC = () => {
     setIsTyping(false);
   };
 
-  // Theme Colors
+  // Theme Colors - Updated to Green Primary
   const theme = {
       bg: isDarkMode ? 'bg-background' : 'bg-[#F2F2F7]',
       headerBorder: isDarkMode ? 'border-white/5' : 'border-gray-200',
       textMain: isDarkMode ? 'text-white' : 'text-gray-900',
       textSub: isDarkMode ? 'text-gray-400' : 'text-gray-500',
-      userBubble: 'bg-[#FF6B3C] text-white', // Primary Orange
+      userBubble: 'bg-[#32D583] text-black', // Primary Green with Black text
       aiBubble: isDarkMode ? 'bg-surface border border-white/5 text-gray-200' : 'bg-white border border-gray-200 text-gray-800 shadow-sm',
       inputBg: isDarkMode ? 'bg-surface' : 'bg-white',
       inputBorder: isDarkMode ? 'border-white/10' : 'border-gray-200',
@@ -108,7 +108,7 @@ export const ChatInterface: React.FC = () => {
           </div>
         </div>
         <button className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isDarkMode ? 'bg-surface hover:bg-white/5 border-white/10' : 'bg-white hover:bg-gray-50 border-gray-200 shadow-sm'} border`}>
-          <Sparkles className="text-[#FF6B3C]" size={20} />
+          <Sparkles className="text-[#32D583]" size={20} />
         </button>
       </div>
 
@@ -120,11 +120,11 @@ export const ChatInterface: React.FC = () => {
             <div key={msg.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-sm ${
                 isUser 
-                  ? `${theme.userBubble} rounded-tr-none` 
+                  ? `${theme.userBubble} rounded-tr-none font-medium` 
                   : `${theme.aiBubble} rounded-tl-none`
               }`}>
                 <p className="text-sm leading-relaxed">{msg.text}</p>
-                <p className={`text-[10px] opacity-60 mt-1 text-right ${isUser ? 'text-white' : theme.textSub}`}>
+                <p className={`text-[10px] opacity-60 mt-1 text-right ${isUser ? 'text-black/70' : theme.textSub}`}>
                   {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
@@ -173,12 +173,12 @@ export const ChatInterface: React.FC = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Type a message..."
-            className={`flex-1 rounded-full pl-5 pr-12 py-3.5 border focus:outline-none focus:border-[#FF6B3C]/50 text-sm transition-colors ${theme.inputBg} ${theme.textMain} ${theme.inputBorder} placeholder-gray-400`}
+            className={`flex-1 rounded-full pl-5 pr-12 py-3.5 border focus:outline-none focus:border-[#32D583]/50 text-sm transition-colors ${theme.inputBg} ${theme.textMain} ${theme.inputBorder} placeholder-gray-400`}
           />
           <button 
             onClick={handleSend}
             disabled={!input.trim()}
-            className="absolute right-2 p-2 bg-[#FF6B3C] rounded-full text-white disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform shadow-md"
+            className="absolute right-2 p-2 bg-[#32D583] rounded-full text-black disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform shadow-md"
           >
             <Send size={18} />
           </button>

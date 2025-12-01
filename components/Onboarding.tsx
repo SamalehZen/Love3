@@ -178,7 +178,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         <div className="text-center mt-6 sm:mt-8 px-8 relative z-20">
             <h1 className={`text-3xl sm:text-4xl font-bold mb-3 tracking-tight leading-tight transition-colors duration-500 ${theme.textTitle}`}>
                 Trouvez Votre <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B3C] to-[#FF3A1F]">Match Idéal</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#32D583] to-[#22C55E]">Match Idéal</span>
             </h1>
             <p className={`text-xs sm:text-sm leading-relaxed max-w-[280px] mx-auto transition-colors duration-500 ${theme.textSub}`}>
                 Rencontrez de nouvelles personnes, créez de vraies connexions et voyez où cela mène.
