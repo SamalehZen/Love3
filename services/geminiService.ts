@@ -1,14 +1,35 @@
 import { GoogleGenAI } from "@google/genai";
 import { Message } from "../types";
 
-// Helper to get the AI client lazily.
-// This prevents the app from crashing on startup if process is undefined in the browser.
-const getAIClient = () => {
-  // Ensure process.env.API_KEY is available or handle gracefully
-  const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : undefined;
-  if (!apiKey) {
-    console.warn("API Key not found. Chat features may not work.");
+// Helper to safely access environment variables in browser across different build tools
+const getEnvVar = (key: string): string | undefined => {
+  // 1. Check standard process.env (Node/Webpack/Next.js/CRA)
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key] || 
+           process.env[`NEXT_PUBLIC_${key}`] || 
+           process.env[`VITE_${key}`] || 
+           process.env[`REACT_APP_${key}`];
   }
+  
+  // 2. Check Vite's import.meta.env
+  // @ts-ignore
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    // @ts-ignore
+    return import.meta.env[key] || import.meta.env[`VITE_${key}`];
+  }
+  
+  return undefined;
+};
+
+// Helper to get the AI client lazily.
+const getAIClient = () => {
+  const apiKey = getEnvVar('API_KEY');
+  
+  if (!apiKey) {
+    console.warn("Gemini API Key missing! Check your Vercel Environment Variables. Use VITE_API_KEY or NEXT_PUBLIC_API_KEY.");
+  }
+  
+  // Return client with key (or empty string to avoid immediate crash, though calls will fail)
   return new GoogleGenAI({ apiKey: apiKey || '' });
 };
 
@@ -45,7 +66,7 @@ export const generateChatResponse = async (history: Message[], userMessage: stri
     return response.text || "I'm having trouble connecting to the love cloud right now. Try again?";
   } catch (error) {
     console.error("Chat generation error:", error);
-    return "Oops, my wires got crossed. Can you say that again?";
+    return "Oops, my wires got crossed. Can you check your connection or API Key?";
   }
 };
 
@@ -57,7 +78,7 @@ export const generateFastWittyReply = async (context: string): Promise<string> =
   try {
     const ai = getAIClient();
     const response = await ai.models.generateContent({
-      model: 'gemini-flash-lite-latest', // Mapped from "gemini-2.5-flash-lite" as per guidelines
+      model: 'gemini-flash-lite-latest', 
       contents: `Generate a single, short, witty, and flirtatious reply to this message: "${context}". Do not include quotes. Max 15 words.`,
     });
 
