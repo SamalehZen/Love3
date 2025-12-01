@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, memo } from 'react';
 import L from 'leaflet';
-import { SlidersHorizontal, Menu, Crosshair, MessageCircle, User } from 'lucide-react';
+import { SlidersHorizontal, Menu, Crosshair, MapPin } from 'lucide-react';
 
 interface Location {
   lat: number;
@@ -21,23 +21,39 @@ interface MapContainerProps {
   center: Location;
   places?: Place[];
   className?: string;
-  height?: string;
 }
 
 const MapComponent = memo(
   ({ center, places = [], className = '' }: MapContainerProps) => {
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstance = useRef<L.Map | null>(null);
+    const tileLayerRef = useRef<L.TileLayer | null>(null);
     const markersRef = useRef<L.Marker[]>([]);
     
-    // State to track which user is currently "active"
+    // State
     const [selectedPlaceId, setSelectedPlaceId] = useState<string | number | null>(places[0]?.id || null);
+    const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark, update on mount
 
+    // 1. Detect System Theme
     useEffect(() => {
-      if (!mapRef.current || mapInstance.current) return;
+        // Check initial
+        if (typeof window !== 'undefined') {
+            const mq = window.matchMedia('(prefers-color-scheme: dark)');
+            setIsDarkMode(mq.matches);
 
-      try {
-        // Initialize Leaflet map
+            // Listen for changes
+            const handler = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+            mq.addEventListener('change', handler);
+            return () => mq.removeEventListener('change', handler);
+        }
+    }, []);
+
+    // 2. Initialize Map & Handle Theme Changes
+    useEffect(() => {
+      if (!mapRef.current) return;
+
+      if (!mapInstance.current) {
+        // Init Map
         const map = L.map(mapRef.current, {
           center: [center.lat, center.lng],
           zoom: 14,
@@ -47,44 +63,31 @@ const MapComponent = memo(
 
         mapInstance.current = map;
 
-        // Dark theme tiles with inverted filter for "Deep Charcoal" luxury look
-        const tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-          attribution: '',
-          maxZoom: 20,
-        });
-
-        tiles.addTo(map);
-        
-        // CSS hack to invert tiles for deep dark mode matching #121214
-        tiles.getContainer()!.style.filter = 'invert(100%) hue-rotate(180deg) brightness(0.8) contrast(1.2) grayscale(0.8)';
-        
-        // Add a subtle "Radar" circle overlay at center
-        L.circle([center.lat, center.lng], {
-            color: '#32D583',
-            fillColor: '#32D583',
-            fillOpacity: 0.05,
-            radius: 800,
-            weight: 1,
-            dashArray: '10, 20'
-        }).addTo(map);
-
-        // --- NEW: Handle map background click to deselect ---
-        map.on('click', () => {
-            setSelectedPlaceId(null);
-        });
-
-        return () => {
-          if (mapInstance.current) {
-            map.remove();
-            mapInstance.current = null;
-          }
-        };
-      } catch (error) {
-        console.error('Map init error:', error);
+        // Add Click to Deselect
+        map.on('click', () => setSelectedPlaceId(null));
       }
-    }, [center.lat, center.lng]);
 
-    // Handle Markers rendering based on selection
+      const map = mapInstance.current;
+
+      // Select Tile Layer based on Theme
+      // Dark: CartoDB Dark Matter (No labels for cleaner look, or with labels)
+      // Light: CartoDB Voyager (Premium, pastel look)
+      const darkTiles = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      const lightTiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+      const url = isDarkMode ? darkTiles : lightTiles;
+
+      if (tileLayerRef.current) {
+          tileLayerRef.current.setUrl(url);
+      } else {
+          tileLayerRef.current = L.tileLayer(url, {
+              attribution: '',
+              maxZoom: 20,
+          }).addTo(map);
+      }
+
+    }, [center.lat, center.lng, isDarkMode]);
+
+    // 3. Render Markers
     useEffect(() => {
       if (!mapInstance.current) return;
       const map = mapInstance.current;
@@ -93,161 +96,170 @@ const MapComponent = memo(
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
 
-      places.forEach((place) => {
+      places.forEach((place, index) => {
         const isSelected = place.id === selectedPlaceId;
 
-        // --- 1. HERO MARKER (Selected) ---
-        if (isSelected) {
-            const html = `
-            <div class="relative flex flex-col items-center justify-center w-[300px] h-[300px] pointer-events-none select-none">
-                
-                <!-- Radar Pulse Animation -->
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border border-[#EAB308]/20 rounded-full animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#EAB308]/5 rounded-full blur-2xl"></div>
+        // Staggered Animation Delay based on index
+        const delay = index * 50; 
 
-                <!-- Main Avatar Container -->
-                <div class="relative z-20 pointer-events-auto cursor-pointer group transition-transform duration-500 hover:scale-105">
-                     <!-- Golden Gradient Border & Glow -->
-                     <div class="absolute -inset-1.5 bg-gradient-to-br from-[#EAB308] via-[#CA8A04] to-[#EAB308] rounded-full blur-md opacity-60 group-hover:opacity-100 transition duration-500 animate-pulse"></div>
-                     
-                     <!-- Image -->
-                     <div class="relative w-32 h-32 rounded-full border-[3px] border-[#1C1C1E] overflow-hidden bg-[#1C1C1E] shadow-2xl z-10">
-                        <img src="${place.imageUrl}" class="w-full h-full object-cover" />
-                     </div>
-                     
-                     <!-- Teardrop Point (Visual) -->
-                     <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 h-6 bg-[#CA8A04] rotate-45 transform origin-center -z-0 shadow-[0_0_15px_rgba(234,179,8,0.8)]"></div>
-                     
-                     <!-- Online Badge -->
-                     ${place.isOnline ? `
-                     <div class="absolute bottom-1 right-2 w-7 h-7 bg-[#1C1C1E] rounded-full flex items-center justify-center z-30">
-                        <div class="w-4 h-4 bg-[#32D583] rounded-full shadow-[0_0_8px_#32D583] animate-pulse"></div>
-                     </div>` : ''}
-                </div>
-
-                <!-- Floating Info Card -->
-                <div class="mt-6 bg-[#121214]/80 backdrop-blur-xl border border-white/10 rounded-[20px] p-4 shadow-2xl flex flex-col items-center min-w-[180px] animate-in slide-in-from-bottom-4 fade-in duration-500 pointer-events-auto">
-                    
-                    <!-- Name & Age -->
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="text-white font-bold text-xl tracking-tight">${place.name}, ${place.age}</span>
-                        ${place.isVerified ? '<div class="bg-blue-500/20 p-1 rounded-full"><svg class="w-3 h-3 text-blue-400 fill-current" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>' : ''}
-                    </div>
-                    
-                    <!-- Status Pill -->
-                    <div class="flex items-center gap-1.5 mb-3 bg-white/5 px-3 py-1 rounded-full border border-white/5">
-                        <span class="w-1.5 h-1.5 bg-[#EAB308] rounded-full shadow-[0_0_6px_#EAB308]"></span>
-                        <span class="text-[11px] text-gray-300 font-medium tracking-wide">${place.isOnline ? 'En temps réel' : 'Récemment actif'}</span>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    <div class="flex items-center gap-4 w-full justify-center border-t border-white/10 pt-3">
-                         <button class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all active:scale-95 group/btn">
-                            <svg class="w-5 h-5 text-white group-hover/btn:text-[#EAB308] transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                         </button>
-                         <button class="w-10 h-10 rounded-full bg-[#7B4CF6] hover:bg-[#6D42DB] flex items-center justify-center transition-all shadow-[0_0_15px_rgba(123,76,246,0.3)] hover:shadow-[0_0_20px_rgba(123,76,246,0.5)] active:scale-95 group/btn">
-                            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                         </button>
-                    </div>
-                </div>
-            </div>
-            `;
-
-            const icon = L.divIcon({
-                html,
-                className: 'custom-hero-marker',
-                iconSize: [300, 300],
-                iconAnchor: [150, 115], // Carefully tuned to center over location
-            });
-
-            const marker = L.marker([place.location.lat, place.location.lng], { icon, zIndexOffset: 1000 }).addTo(map);
-            
-            // Fly to selection
-            map.flyTo([place.location.lat, place.location.lng], 15, { animate: true, duration: 0.8 });
-            
-            markersRef.current.push(marker);
-        } 
+        // --- Marker HTML ---
+        // We use a cleaner, more discrete design.
+        // Active: 64px, Gold Border, Subtle Pulse.
+        // Passive: 44px, Theme Border, No Pulse.
         
-        // --- 2. PASSIVE MARKER (Others) ---
-        else {
-            const html = `
-            <div class="relative group cursor-pointer transition-transform duration-300 hover:scale-110">
-                <div class="w-[52px] h-[52px] rounded-full p-[2px] bg-gradient-to-tr from-white/20 to-transparent shadow-lg backdrop-blur-sm border border-white/5">
-                    <div class="w-full h-full rounded-full overflow-hidden bg-[#1C1C1E]">
+        const size = isSelected ? 64 : 44;
+        const anchor = size / 2;
+
+        const borderColor = isSelected 
+            ? 'border-[#EAB308]' // Gold
+            : isDarkMode ? 'border-[#2C2C2E]' : 'border-white'; // Theme compliant
+
+        const shadow = isSelected
+            ? 'shadow-[0_10px_25px_rgba(234,179,8,0.4)]'
+            : 'shadow-lg';
+
+        const html = `
+            <div 
+                class="relative group cursor-pointer marker-pop-in" 
+                style="animation-delay: ${delay}ms"
+            >
+                <!-- Pulse Ring (Active Only) -->
+                ${isSelected ? `<div class="absolute inset-0 rounded-full border border-[#EAB308]/50 animate-ping opacity-75"></div>` : ''}
+                
+                <!-- Avatar Container -->
+                <div class="relative w-[${size}px] h-[${size}px] rounded-full p-[3px] bg-background transition-all duration-500 ease-out ${isSelected ? 'scale-110' : 'hover:scale-105'}">
+                    <div class="w-full h-full rounded-full overflow-hidden border-2 ${borderColor} ${shadow} bg-gray-200">
                         ${place.imageUrl 
-                            ? `<img src="${place.imageUrl}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />`
-                            : `<div class="w-full h-full bg-gray-800 flex items-center justify-center text-white font-bold">${place.name[0]}</div>`
+                            ? `<img src="${place.imageUrl}" class="w-full h-full object-cover" />`
+                            : `<div class="w-full h-full flex items-center justify-center font-bold text-xs">${place.name[0]}</div>`
                         }
                     </div>
+                    
+                    <!-- Online Dot -->
+                    ${place.isOnline ? `
+                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-background rounded-full flex items-center justify-center">
+                        <div class="w-2.5 h-2.5 bg-[#32D583] rounded-full"></div>
+                    </div>` : ''}
                 </div>
-                <!-- Mini Online Dot -->
-                ${place.isOnline ? `<div class="absolute bottom-0 right-0 w-3 h-3 bg-[#32D583] border-2 border-[#121214] rounded-full"></div>` : ''}
             </div>
-            `;
+        `;
 
-            const icon = L.divIcon({
-                html,
-                className: 'custom-passive-marker',
-                iconSize: [52, 52],
-                iconAnchor: [26, 26],
-            });
+        const icon = L.divIcon({
+            html,
+            className: 'custom-marker-wrapper', // Clean wrapper
+            iconSize: [size, size],
+            iconAnchor: [anchor, anchor],
+        });
 
-            const marker = L.marker([place.location.lat, place.location.lng], { icon }).addTo(map);
-            
-            // On Click -> Become Selected
-            marker.on('click', (e) => {
-                L.DomEvent.stopPropagation(e); // Prevent map click logic
-                setSelectedPlaceId(place.id);
-            });
-            
-            markersRef.current.push(marker);
-        }
+        const marker = L.marker([place.location.lat, place.location.lng], { icon, zIndexOffset: isSelected ? 1000 : 100 }).addTo(map);
 
+        marker.on('click', (e) => {
+            L.DomEvent.stopPropagation(e);
+            setSelectedPlaceId(place.id);
+            map.flyTo([place.location.lat, place.location.lng], 15, { animate: true, duration: 0.8 });
+        });
+
+        markersRef.current.push(marker);
       });
 
-    }, [places, selectedPlaceId]);
+    }, [places, selectedPlaceId, isDarkMode]);
+
+    // Find active place data for the floating card
+    const activePlace = places.find(p => p.id === selectedPlaceId);
 
     return (
-      <div className={`relative w-full h-full bg-[#121214] overflow-hidden ${className}`}>
+      <div className={`relative w-full h-full overflow-hidden transition-colors duration-500 ${isDarkMode ? 'bg-[#121214]' : 'bg-[#F5F5F7]'} ${className}`}>
         
-        {/* --- Floating Top Navigation --- */}
+        {/* CSS for Marker Animation */}
+        <style>{`
+            @keyframes popIn {
+                0% { opacity: 0; transform: scale(0.3) translateY(10px); }
+                60% { transform: scale(1.1); }
+                100% { opacity: 1; transform: scale(1) translateY(0); }
+            }
+            .marker-pop-in {
+                animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+                opacity: 0; /* Start hidden */
+            }
+        `}</style>
+
+        {/* --- Top Floating Nav (Glassmorphism) --- */}
         <div className="absolute top-0 left-0 w-full z-[400] px-6 pt-6 flex justify-between items-start pointer-events-none">
             
-            {/* Menu Button */}
-            <button className="w-12 h-12 bg-[#1C1C1E]/60 backdrop-blur-xl rounded-full flex items-center justify-center text-white border border-white/5 shadow-lg pointer-events-auto active:scale-95 transition-transform">
+            <button className={`w-12 h-12 rounded-full flex items-center justify-center border shadow-sm pointer-events-auto transition-colors active:scale-95
+                ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10 text-white' : 'bg-white/80 border-black/5 text-gray-800'} backdrop-blur-xl`}>
                 <Menu size={24} />
             </button>
 
-            {/* Toggle Switch (For you / Nearby) */}
-            <div className="bg-[#1C1C1E]/80 backdrop-blur-xl rounded-full p-1.5 flex items-center border border-white/5 shadow-2xl pointer-events-auto">
-                <button 
-                    className="px-6 py-2.5 rounded-full text-gray-400 text-sm font-medium hover:text-white transition-colors"
-                >
-                    <span className="flex items-center gap-2">🔥 Pour vous</span>
+            {/* Switcher */}
+            <div className={`rounded-full p-1 flex items-center border shadow-lg pointer-events-auto backdrop-blur-xl
+                ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/5' : 'bg-white/80 border-black/5'}`}>
+                <button className="px-5 py-2 rounded-full transition-colors">
+                    <span className={`text-sm font-semibold ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Pour vous</span>
                 </button>
-                <button 
-                    className="px-6 py-2.5 rounded-full bg-[#2C2C2E] text-white text-sm font-medium shadow-md transition-transform"
-                >
-                     <span className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                <button className={`px-5 py-2 rounded-full shadow-sm transition-transform
+                    ${isDarkMode ? 'bg-[#2C2C2E] text-white' : 'bg-white text-black'}`}>
+                     <span className="flex items-center gap-2 text-sm font-semibold">
+                        <MapPin size={12} className={isDarkMode ? 'text-[#EAB308]' : 'text-black'} fill="currentColor" />
                         À proximité
                      </span>
                 </button>
             </div>
 
-            {/* Filters Button */}
-            <button className="w-12 h-12 bg-[#1C1C1E]/60 backdrop-blur-xl rounded-full flex items-center justify-center text-white border border-white/5 shadow-lg pointer-events-auto active:scale-95 transition-transform">
+            <button className={`w-12 h-12 rounded-full flex items-center justify-center border shadow-sm pointer-events-auto transition-colors active:scale-95
+                ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10 text-white' : 'bg-white/80 border-black/5 text-gray-800'} backdrop-blur-xl`}>
                 <SlidersHorizontal size={20} />
             </button>
         </div>
 
         {/* --- Map Container --- */}
-        <div ref={mapRef} className="absolute inset-0 z-0 bg-[#121214]" />
-        
-        {/* --- Bottom Right Controls --- */}
-        <div className="absolute bottom-24 right-6 z-[400] flex flex-col gap-4">
+        <div ref={mapRef} className="absolute inset-0 z-0" />
+
+        {/* --- Floating Profile Card (Bottom Center) --- */}
+        {activePlace && (
+            <div className="absolute bottom-28 left-6 right-6 z-[400] flex justify-center pointer-events-none">
+                <div className={`w-full max-w-sm p-4 rounded-[24px] border shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-6 fade-in duration-500 pointer-events-auto
+                    ${isDarkMode 
+                        ? 'bg-[#1C1C1E]/90 border-white/10 text-white' 
+                        : 'bg-white/90 border-white/40 text-gray-900'
+                    }`}>
+                    
+                    <div className="flex items-center gap-4">
+                        {/* Avatar (Card) */}
+                        <div className="relative">
+                            <div className="w-16 h-16 rounded-full overflow-hidden">
+                                <img src={activePlace.imageUrl} className="w-full h-full object-cover" />
+                            </div>
+                             {activePlace.isOnline && (
+                                <div className="absolute bottom-0 right-0 w-4 h-4 bg-[#32D583] border-[3px] border-white dark:border-[#1C1C1E] rounded-full"></div>
+                             )}
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-xl font-bold">{activePlace.name}, {activePlace.age}</h3>
+                                {activePlace.isVerified && <span className="text-blue-500">✓</span>}
+                            </div>
+                            <p className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                {activePlace.isOnline ? 'En ligne maintenant' : 'Vu récemment'}
+                            </p>
+                        </div>
+
+                        {/* Action */}
+                        <button className="w-12 h-12 rounded-full bg-gradient-to-r from-action-purple to-blue-600 flex items-center justify-center text-white shadow-lg hover:scale-105 transition-transform active:scale-95">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {/* --- Recenter Button --- */}
+        <div className="absolute bottom-28 right-6 z-[300]">
              <button 
-                className="w-12 h-12 bg-[#1C1C1E]/80 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/10 shadow-xl hover:bg-[#2C2C2E] transition active:scale-95"
+                className={`w-12 h-12 rounded-full flex items-center justify-center border shadow-xl transition active:scale-95 backdrop-blur-md
+                ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10 text-white hover:bg-[#2C2C2E]' : 'bg-white/80 border-black/5 text-gray-800 hover:bg-gray-50'}`}
                 onClick={() => {
                    if(mapInstance.current) mapInstance.current.flyTo([center.lat, center.lng], 14);
                 }}
