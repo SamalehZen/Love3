@@ -114,6 +114,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         .animate-float {
             animation: float 6s ease-in-out infinite;
         }
+        @keyframes float-back {
+          0%, 100% { transform: translateY(0px) rotate(-8deg) translateX(-10px); }
+          50% { transform: translateY(-5px) rotate(-6deg) translateX(-10px); }
+        }
+        .animate-float-back {
+            animation: float-back 7s ease-in-out infinite;
+        }
       `}</style>
 
       {/* Background Ambience */}
@@ -124,15 +131,23 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
       {/* Hero Visual - Premium 2 Card Layout */}
       <div className="flex-1 w-full flex items-center justify-center relative -mt-8">
-        <div className="relative w-72 h-[480px]">
+        {/* Reduced Container Size */}
+        <div className="relative w-64 h-[400px]">
           
           {/* Card 1: Man (Back/Left) - "Cancel" Concept */}
-          <div className="absolute top-8 -left-6 w-full h-full rounded-[32px] transform -rotate-6 scale-95 shadow-2xl border border-white/10 overflow-hidden z-10 bg-[#1C1C1E]">
-             <img src={IMG_MAN} alt="User Man" className="w-full h-full object-cover opacity-60 filter grayscale-[30%]" />
+          {/* Adjusted positioning to be more visible (moved left) and animated */}
+          <div className="absolute top-6 -left-10 w-full h-full rounded-[32px] transform -rotate-6 scale-95 shadow-2xl border border-white/10 overflow-hidden z-10 bg-[#1C1C1E] animate-float-back">
+             <img src={IMG_MAN} alt="User Man" className="w-full h-full object-cover opacity-80 filter grayscale-[20%]" />
+             
+             {/* Shimmer Overlay for Back Card */}
+             <div className="absolute inset-0 z-30 pointer-events-none opacity-60">
+                 <div className="w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer-card" style={{ animationDelay: '1.5s' }}></div>
+             </div>
+
              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
              
-             {/* Cancel Icon Badge */}
-             <div className="absolute bottom-8 left-6 backdrop-blur-md bg-white/10 border border-white/20 w-14 h-14 rounded-full flex items-center justify-center shadow-lg">
+             {/* Cancel Icon Badge - Animated */}
+             <div className="absolute bottom-8 left-6 backdrop-blur-md bg-white/10 border border-white/20 w-12 h-12 rounded-full flex items-center justify-center shadow-lg animate-pulse">
                 <X className="text-white" size={24} />
              </div>
           </div>
@@ -150,18 +165,18 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
              
              {/* Text Info */}
              <div className="absolute bottom-24 left-6 z-30">
-                 <h2 className="text-3xl font-bold text-white tracking-tight">Julia, 24</h2>
-                 <p className="text-gray-300 text-sm font-medium">Paris, France</p>
+                 <h2 className="text-2xl font-bold text-white tracking-tight">Julia, 24</h2>
+                 <p className="text-gray-300 text-xs font-medium">Paris, France</p>
              </div>
 
              {/* Love Icon Badge */}
-             <div className="absolute bottom-6 right-6 bg-gradient-to-tr from-action-purple to-pink-500 w-16 h-16 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(123,76,246,0.5)] border-2 border-white/20 z-30">
-                <Heart className="text-white fill-current" size={28} />
+             <div className="absolute bottom-6 right-6 bg-gradient-to-tr from-action-purple to-pink-500 w-14 h-14 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(123,76,246,0.5)] border-2 border-white/20 z-30">
+                <Heart className="text-white fill-current" size={24} />
              </div>
              
              {/* Decorative Sparkle */}
              <div className="absolute top-6 right-6 opacity-80 animate-pulse">
-                <Sparkles className="text-yellow-400" size={24} />
+                <Sparkles className="text-yellow-400" size={20} />
              </div>
           </div>
 
