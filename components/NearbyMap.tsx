@@ -193,23 +193,23 @@ const MapComponent = memo(
         `}</style>
 
         {/* --- Top Nav --- */}
-        <div className="absolute top-0 left-0 w-full z-[400] px-6 pt-6 flex justify-between items-start pointer-events-none">
-            <button className={`w-12 h-12 rounded-full flex items-center justify-center border shadow-sm pointer-events-auto transition-colors active:scale-95 ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10 text-white' : 'bg-white/80 border-black/5 text-gray-800'} backdrop-blur-xl`}>
-                <Menu size={24} />
+        <div className="absolute top-0 left-0 w-full z-[400] px-4 sm:px-6 pt-6 flex justify-between items-start pointer-events-none">
+            <button className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border shadow-sm pointer-events-auto transition-colors active:scale-95 ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10 text-white' : 'bg-white/80 border-black/5 text-gray-800'} backdrop-blur-xl`}>
+                <Menu size={20} />
             </button>
             <div className={`rounded-full p-1 flex items-center border shadow-lg pointer-events-auto backdrop-blur-xl ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/5' : 'bg-white/80 border-black/5'}`}>
-                <button className="px-5 py-2 rounded-full transition-colors">
-                    <span className={`text-sm font-semibold ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Pour vous</span>
+                <button className="px-3 sm:px-5 py-2 rounded-full transition-colors">
+                    <span className={`text-xs sm:text-sm font-semibold ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Pour vous</span>
                 </button>
-                <button className={`px-5 py-2 rounded-full shadow-sm transition-transform ${isDarkMode ? 'bg-[#2C2C2E] text-white' : 'bg-white text-black'}`}>
-                     <span className="flex items-center gap-2 text-sm font-semibold">
+                <button className={`px-3 sm:px-5 py-2 rounded-full shadow-sm transition-transform ${isDarkMode ? 'bg-[#2C2C2E] text-white' : 'bg-white text-black'}`}>
+                     <span className="flex items-center gap-2 text-xs sm:text-sm font-semibold">
                         <MapPin size={12} className={isDarkMode ? 'text-[#EAB308]' : 'text-black'} fill="currentColor" />
                         À proximité
                      </span>
                 </button>
             </div>
-            <button className={`w-12 h-12 rounded-full flex items-center justify-center border shadow-sm pointer-events-auto transition-colors active:scale-95 ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10 text-white' : 'bg-white/80 border-black/5 text-gray-800'} backdrop-blur-xl`}>
-                <SlidersHorizontal size={20} />
+            <button className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border shadow-sm pointer-events-auto transition-colors active:scale-95 ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10 text-white' : 'bg-white/80 border-black/5 text-gray-800'} backdrop-blur-xl`}>
+                <SlidersHorizontal size={18} />
             </button>
         </div>
 
@@ -218,20 +218,20 @@ const MapComponent = memo(
 
         {/* --- Floating Info Card (Bottom) --- */}
         {activePlace && !isProfileOpen && (
-            <div className="absolute bottom-28 left-6 right-6 z-[400] flex justify-center pointer-events-none">
-                <div className={`w-full max-w-sm p-4 rounded-[24px] border shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-6 fade-in duration-500 pointer-events-auto ${isDarkMode ? 'bg-[#1C1C1E]/90 border-white/10 text-white' : 'bg-white/90 border-white/40 text-gray-900'}`}>
-                    <div className="flex items-center gap-4">
+            <div className="absolute bottom-24 sm:bottom-28 left-4 right-4 z-[400] flex justify-center pointer-events-none">
+                <div className={`w-full max-w-sm p-3 sm:p-4 rounded-[24px] border shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-6 fade-in duration-500 pointer-events-auto ${isDarkMode ? 'bg-[#1C1C1E]/90 border-white/10 text-white' : 'bg-white/90 border-white/40 text-gray-900'}`}>
+                    <div className="flex items-center gap-3 sm:gap-4">
                         <div className="relative">
-                            <div className="w-16 h-16 rounded-full overflow-hidden">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden">
                                 <img src={activePlace.imageUrl} className="w-full h-full object-cover" />
                             </div>
                              {activePlace.isOnline && (
-                                <div className="absolute bottom-0 right-0 w-4 h-4 bg-[#32D583] border-[3px] border-white dark:border-[#1C1C1E] rounded-full shadow-lg"></div>
+                                <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#32D583] border-[3px] border-white dark:border-[#1C1C1E] rounded-full shadow-lg"></div>
                              )}
                         </div>
                         <div className="flex-1">
                             <div className="flex items-center gap-2">
-                                <h3 className="text-xl font-bold">{activePlace.name}, {activePlace.age}</h3>
+                                <h3 className="text-lg sm:text-xl font-bold">{activePlace.name}, {activePlace.age}</h3>
                                 {activePlace.isVerified && <span className="text-blue-500">✓</span>}
                             </div>
                             <div className="flex items-center gap-2 mt-1">
@@ -243,12 +243,12 @@ const MapComponent = memo(
                         <div className="flex gap-2">
                              <button 
                                 onClick={() => setIsProfileOpen(true)}
-                                className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/20 transition-colors"
+                                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/20 transition-colors"
                              >
-                                <User size={20} />
+                                <User size={18} />
                             </button>
-                            <button className="w-10 h-10 rounded-full bg-gradient-to-r from-action-purple to-blue-600 flex items-center justify-center text-white shadow-lg hover:scale-105 transition-transform active:scale-95">
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                            <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-action-purple to-blue-600 flex items-center justify-center text-white shadow-lg hover:scale-105 transition-transform active:scale-95">
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                             </button>
                         </div>
                     </div>
@@ -345,15 +345,15 @@ const MapComponent = memo(
         )}
 
         {/* --- Recenter Button --- */}
-        <div className="absolute bottom-28 right-6 z-[300]">
+        <div className="absolute bottom-24 sm:bottom-28 right-4 sm:right-6 z-[300]">
              <button 
-                className={`w-12 h-12 rounded-full flex items-center justify-center border shadow-xl transition active:scale-95 backdrop-blur-md
+                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border shadow-xl transition active:scale-95 backdrop-blur-md
                 ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10 text-white hover:bg-[#2C2C2E]' : 'bg-white/80 border-black/5 text-gray-800 hover:bg-gray-50'}`}
                 onClick={() => {
                    if(mapInstance.current) mapInstance.current.flyTo([center.lat, center.lng], 14);
                 }}
              >
-                <Crosshair size={24} />
+                <Crosshair size={20} />
              </button>
         </div>
 

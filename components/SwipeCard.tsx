@@ -291,7 +291,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
             {/* Bottom Info Section */}
             <div className="absolute bottom-0 w-full p-6 pb-28 z-20 pointer-events-none">
                 <div className="flex items-center gap-2 mb-2 translate-y-2">
-                    <h2 className="text-[32px] font-bold text-white tracking-tight drop-shadow-lg leading-none">
+                    <h2 className="text-[28px] sm:text-[32px] font-bold text-white tracking-tight drop-shadow-lg leading-none">
                         {profile.name}, {profile.age}
                     </h2>
                     {profile.isOnline && (
@@ -299,7 +299,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
                     )}
                 </div>
                 
-                <p className="text-gray-200 text-sm font-medium mb-4 line-clamp-2 drop-shadow-md leading-relaxed opacity-90">
+                <p className="text-gray-200 text-xs sm:text-sm font-medium mb-4 line-clamp-2 drop-shadow-md leading-relaxed opacity-90">
                     {profile.bio}
                 </p>
 
@@ -327,17 +327,17 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
                     setTimeout(() => onAction('reject'), 200); 
                 }}
                 style={{ transform: `scale(${leftBtnScale})` }}
-                className={`w-16 h-16 rounded-full ${iconBtnBg} border ${iconBtnBorder} flex items-center justify-center text-action-red shadow-lg transition-transform duration-200 active:scale-95 group hover:bg-action-red hover:text-white`}
+                className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${iconBtnBg} border ${iconBtnBorder} flex items-center justify-center text-action-red shadow-lg transition-transform duration-200 active:scale-95 group hover:bg-action-red hover:text-white`}
             >
-                <X size={32} strokeWidth={2.5} className="group-hover:rotate-90 transition-transform duration-300" />
+                <X size={28} strokeWidth={2.5} className="group-hover:rotate-90 transition-transform duration-300 sm:w-8 sm:h-8" />
             </button>
 
             {/* Super Like */}
             <button 
                 onClick={(e) => { e.stopPropagation(); onAction('super'); }}
-                className={`w-12 h-12 rounded-full ${isDarkMode ? 'bg-action-purple/10 border-action-purple/30' : 'bg-white border-white'} flex items-center justify-center text-action-purple shadow-md transition-transform hover:scale-110 active:scale-95 hover:bg-action-purple hover:text-white border`}
+                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full ${isDarkMode ? 'bg-action-purple/10 border-action-purple/30' : 'bg-white border-white'} flex items-center justify-center text-action-purple shadow-md transition-transform hover:scale-110 active:scale-95 hover:bg-action-purple hover:text-white border`}
             >
-                <Gift size={22} strokeWidth={2.5} />
+                <Gift size={20} strokeWidth={2.5} className="sm:w-[22px] sm:h-[22px]" />
             </button>
 
             {/* Like Button */}
@@ -348,9 +348,9 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
                     setTimeout(() => onAction('like'), 200); 
                 }}
                 style={{ transform: `scale(${rightBtnScale})` }}
-                className="w-16 h-16 rounded-full bg-gradient-to-br from-[#32D583] to-[#22C55E] flex items-center justify-center text-white shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-transform duration-200 active:scale-95 group hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#32D583] to-[#22C55E] flex items-center justify-center text-white shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-transform duration-200 active:scale-95 group hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]"
             >
-                <Heart size={32} fill="currentColor" className="group-hover:scale-110 transition-transform duration-300" />
+                <Heart size={28} fill="currentColor" className="group-hover:scale-110 transition-transform duration-300 sm:w-8 sm:h-8" />
             </button>
       </div>
 

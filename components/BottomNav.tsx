@@ -30,20 +30,18 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView }) =>
   ];
 
   return (
-    <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
+    <div className="fixed bottom-4 sm:bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-2 sm:px-4">
       {/* 
           Floating Island Container 
-          - Dark Mode: Deep Black #0F0F11 with subtle border
-          - Light Mode: White with subtle border
-          - Added overflow-hidden for shimmer effect
+          - Responsive padding and gap to fit small screens (iPhone SE / Android)
       */}
       <div className={`
-        relative pointer-events-auto flex items-center gap-2 p-2.5 rounded-full shadow-2xl transition-colors duration-500 overflow-hidden
-        ${isDarkMode ? 'bg-[#0F0F11] border border-white/10 shadow-black/60' : 'bg-white border border-gray-100 shadow-gray-200/50'}
+        relative pointer-events-auto flex items-center gap-1.5 sm:gap-3 p-1.5 sm:p-3 rounded-full shadow-2xl transition-colors duration-500 max-w-full
+        ${isDarkMode ? 'bg-[#0F0F11] border border-white/5 shadow-black/60' : 'bg-white border border-gray-100 shadow-gray-200/50'}
       `}>
         
         {/* Continuous Premium Shimmer Overlay */}
-        <div className={`absolute inset-0 pointer-events-none opacity-10 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer-slow`}></div>
+        <div className={`absolute inset-0 pointer-events-none opacity-10 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer-slow rounded-full overflow-hidden`}></div>
 
         {navItems.map((item) => {
           const isActive = currentView === item.id;
@@ -54,33 +52,43 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView }) =>
               key={item.id}
               onClick={() => setView(item.id as ViewState)}
               className={`
-                relative flex items-center h-14 rounded-full transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden cursor-pointer z-10
-                ${isActive 
-                    ? 'bg-[#32D583] text-[#0F0F11] shadow-[0_0_20px_rgba(50,213,131,0.3)]' /* Active: Green Bg, Black Text, Green Glow */
-                    : `${isDarkMode ? 'bg-[#1C1C1E] text-gray-500 hover:bg-[#2C2C2E]' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}` /* Inactive: Grey Bg */
-                }
+                relative flex items-center rounded-full transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] overflow-hidden cursor-pointer z-10
+                h-12 sm:h-16
+                ${isDarkMode ? 'bg-[#1C1C1E]' : 'bg-gray-100 hover:bg-gray-200'}
               `}
               style={{
-                  // Fluid width transition: Active expands, Inactive shrinks to circle
-                  maxWidth: isActive ? '170px' : '56px',
-                  minWidth: '56px',
-                  paddingLeft: isActive ? '22px' : '0',
-                  paddingRight: isActive ? '26px' : '0',
-                  justifyContent: isActive ? 'flex-start' : 'center'
+                  // Fluid width transition: Active expands, Inactive remains circle
+                  // Responsive sizing for mobile (smaller bases) vs desktop
+                  maxWidth: isActive ? '160px' : '48px',
+                  minWidth: '44px', // Smaller minimum for tight screens
+                  paddingLeft: '6px', 
+                  paddingRight: isActive ? '16px' : '6px', 
               }}
             >
-              {/* Icon */}
-              <Icon 
-                size={24} 
-                strokeWidth={isActive ? 2.5 : 2} 
-                className={`shrink-0 z-10 transition-transform duration-300 ${isActive ? 'scale-110' : 'scale-100'}`} 
-              />
+              {/* Icon Circle Wrapper 
+                  - Active: Becomes GREEN (#32D583) with Black Icon
+                  - Inactive: Transparent (shows button bg) with Grey Icon
+              */}
+              <div className={`
+                h-9 w-9 sm:h-12 sm:w-12 rounded-full flex items-center justify-center shrink-0 transition-colors duration-300
+                ${isActive 
+                    ? 'bg-[#32D583] text-[#0F0F11] shadow-[0_0_15px_rgba(50,213,131,0.4)]' 
+                    : `${isDarkMode ? 'text-gray-500' : 'text-gray-400'}` 
+                }
+              `}>
+                <Icon 
+                  className={`w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-300 ${isActive ? 'scale-105' : 'scale-100'}`} 
+                  strokeWidth={isActive ? 2.5 : 2} 
+                />
+              </div>
               
               {/* Label (Revealed on Active) */}
               <div 
-                className={`overflow-hidden flex items-center whitespace-nowrap transition-all duration-500 ${isActive ? 'w-auto opacity-100 ml-3' : 'w-0 opacity-0 ml-0'}`}
+                className={`overflow-hidden flex items-center whitespace-nowrap transition-all duration-500 ${isActive ? 'w-auto opacity-100 ml-2 sm:ml-3' : 'w-0 opacity-0 ml-0'}`}
               >
-                <span className="text-[15px] font-bold tracking-wide">{item.label}</span>
+                <span className={`text-xs sm:text-[15px] font-bold tracking-wide ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {item.label}
+                </span>
               </div>
             </button>
           );

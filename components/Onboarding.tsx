@@ -110,15 +110,15 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       <div className={`absolute inset-0 bg-gradient-to-b ${theme.overlay} pointer-events-none transition-colors duration-500`}></div>
 
       {/* --- HERO SECTION: Stacked Cards --- */}
-      <div className="flex-1 flex flex-col items-center justify-center relative z-10 -mt-10">
+      <div className="flex-1 flex flex-col items-center justify-center relative z-10 -mt-6">
         
-        {/* Card Container - Width restricted to force overlap */}
-        <div className="relative w-80 h-[380px] flex items-center justify-center">
+        {/* Card Container - Responsive Width (85% of viewport width) to fit small screens */}
+        <div className="relative w-[85vw] max-w-[320px] h-[360px] flex items-center justify-center">
 
             {/* --- BACK CARD (Man) --- */}
             {/* Positioned Left & Behind with Float Animation */}
             <div 
-                className={`absolute w-48 h-72 rounded-[28px] overflow-hidden shadow-2xl border-[3px] animate-float-back transition-colors duration-500 ${isDarkMode ? 'border-white/5' : 'border-white'}`}
+                className={`absolute w-44 h-64 sm:w-48 sm:h-72 rounded-[28px] overflow-hidden shadow-2xl border-[3px] animate-float-back transition-colors duration-500 ${isDarkMode ? 'border-white/5' : 'border-white'}`}
                 style={{ zIndex: 10 }}
             >
                 <img src={IMG_MAN} className="w-full h-full object-cover" />
@@ -138,16 +138,16 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             </div>
 
             {/* Floating Icon: Red X (Left of Man) - STATIC */}
-            <div className="absolute top-1/2 left-0 z-30 transform -translate-y-16 -translate-x-6">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-red-500/10 border-2 border-red-500/30 transition-colors duration-500 ${isDarkMode ? 'bg-[#1C1C1E]' : 'bg-white'}`}>
-                     <X className="text-red-500" size={20} strokeWidth={3} />
+            <div className="absolute top-1/2 left-0 z-30 transform -translate-y-16 -translate-x-4 sm:-translate-x-6">
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-lg shadow-red-500/10 border-2 border-red-500/30 transition-colors duration-500 ${isDarkMode ? 'bg-[#1C1C1E]' : 'bg-white'}`}>
+                     <X className="text-red-500" size={18} strokeWidth={3} />
                 </div>
             </div>
 
             {/* --- FRONT CARD (Woman) --- */}
             {/* Positioned Right & Front with Float Animation */}
             <div 
-                className={`absolute w-48 h-72 rounded-[28px] overflow-hidden border-[3px] animate-float-front transition-colors duration-500 ${theme.cardBorder} ${theme.cardShadow}`}
+                className={`absolute w-44 h-64 sm:w-48 sm:h-72 rounded-[28px] overflow-hidden border-[3px] animate-float-front transition-colors duration-500 ${theme.cardBorder} ${theme.cardShadow}`}
                 style={{ zIndex: 20 }}
             >
                 <img src={IMG_WOMAN} className="w-full h-full object-cover" />
@@ -155,7 +155,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 
                 {/* Info */}
                 <div className="absolute bottom-5 left-5">
-                    <h3 className="text-white font-bold text-lg flex items-center gap-2">
+                    <h3 className="text-white font-bold text-base sm:text-lg flex items-center gap-2">
                         Julia Lode, 27 <span className="w-2.5 h-2.5 bg-green-500 rounded-full border border-black shadow-[0_0_8px_#22c55e]"></span>
                     </h3>
                     <p className="text-gray-300 text-xs">Los Angeles</p>
@@ -166,35 +166,35 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             </div>
 
              {/* Floating Icon: GREEN Heart (Bottom Right of Woman) - STATIC */}
-             <div className="absolute bottom-12 -right-2 z-30">
-                <div className={`w-14 h-14 rounded-full bg-[#32D583] flex items-center justify-center shadow-lg shadow-[#32D583]/30 border-4 transition-colors duration-500 ${isDarkMode ? 'border-[#121214]' : 'border-[#F2F2F7]'}`}>
-                    <Heart className="text-white fill-current" size={24} />
+             <div className="absolute bottom-10 sm:bottom-12 -right-0 sm:-right-2 z-30">
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#32D583] flex items-center justify-center shadow-lg shadow-[#32D583]/30 border-4 transition-colors duration-500 ${isDarkMode ? 'border-[#121214]' : 'border-[#F2F2F7]'}`}>
+                    <Heart className="text-white fill-current" size={20} />
                 </div>
             </div>
 
         </div>
 
         {/* Text Content */}
-        <div className="text-center mt-8 px-8 relative z-20">
-            <h1 className={`text-4xl font-bold mb-3 tracking-tight leading-tight transition-colors duration-500 ${theme.textTitle}`}>
+        <div className="text-center mt-6 sm:mt-8 px-8 relative z-20">
+            <h1 className={`text-3xl sm:text-4xl font-bold mb-3 tracking-tight leading-tight transition-colors duration-500 ${theme.textTitle}`}>
                 Trouvez Votre <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B3C] to-[#FF3A1F]">Match Idéal</span>
             </h1>
-            <p className={`text-sm leading-relaxed max-w-[280px] mx-auto transition-colors duration-500 ${theme.textSub}`}>
+            <p className={`text-xs sm:text-sm leading-relaxed max-w-[280px] mx-auto transition-colors duration-500 ${theme.textSub}`}>
                 Rencontrez de nouvelles personnes, créez de vraies connexions et voyez où cela mène.
             </p>
         </div>
       </div>
 
       {/* --- SLIDER SECTION --- */}
-      <div className="px-6 pb-12 w-full max-w-sm mx-auto z-20">
+      <div className="px-6 pb-8 sm:pb-12 w-full max-w-sm mx-auto z-20">
         <div 
             ref={containerRef}
-            className={`relative h-16 rounded-full flex items-center px-2 overflow-hidden border transition-all duration-500 ${isCompleted ? 'border-action-green/50' : ''} ${theme.sliderBg}`}
+            className={`relative h-14 sm:h-16 rounded-full flex items-center px-2 overflow-hidden border transition-all duration-500 ${isCompleted ? 'border-action-green/50' : ''} ${theme.sliderBg}`}
         >
              {/* Slider Track Text */}
              <div className="absolute inset-0 flex items-center justify-center">
-                 <span className={`text-sm font-semibold tracking-widest uppercase transition-all duration-500 ${
+                 <span className={`text-xs sm:text-sm font-semibold tracking-widest uppercase transition-all duration-500 ${
                      isCompleted 
                      ? 'text-action-green scale-110' 
                      : 'animate-pulse'
@@ -215,7 +215,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
              {/* Draggable Handle */}
              <div
-                className={`absolute w-12 h-12 rounded-full shadow-lg flex items-center justify-center cursor-grab active:cursor-grabbing z-10 transition-transform duration-75 ${
+                className={`absolute w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-lg flex items-center justify-center cursor-grab active:cursor-grabbing z-10 transition-transform duration-75 ${
                     isCompleted ? 'bg-action-green text-black scale-110' : 'bg-action-red text-white'
                 }`}
                 style={{ 
@@ -225,7 +225,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 onMouseDown={handleDragStart}
                 onTouchStart={handleDragStart}
              >
-                {isCompleted ? <Heart fill="currentColor" size={20} /> : <Heart fill="currentColor" size={20} />}
+                {isCompleted ? <Heart fill="currentColor" size={18} /> : <Heart fill="currentColor" size={18} />}
              </div>
         </div>
       </div>
@@ -250,19 +250,30 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         
         /* Floating Animations maintaining the tilt */
         @keyframes float-back {
-            0%, 100% { transform: translateX(-65px) rotate(-15deg) translateY(0); }
-            50% { transform: translateX(-65px) rotate(-15deg) translateY(-8px); }
+            0%, 100% { transform: translateX(-40px) rotate(-15deg) translateY(0); }
+            50% { transform: translateX(-40px) rotate(-15deg) translateY(-8px); }
         }
         .animate-float-back {
             animation: float-back 4s ease-in-out infinite;
         }
 
         @keyframes float-front {
-            0%, 100% { transform: translateX(45px) translateY(10px) rotate(6deg); }
-            50% { transform: translateX(45px) translateY(2px) rotate(6deg); }
+            0%, 100% { transform: translateX(30px) translateY(10px) rotate(6deg); }
+            50% { transform: translateX(30px) translateY(2px) rotate(6deg); }
         }
         .animate-float-front {
             animation: float-front 5s ease-in-out infinite;
+        }
+        /* Mobile adjustments for animations */
+        @media (max-width: 640px) {
+             @keyframes float-back {
+                0%, 100% { transform: translateX(-25px) rotate(-15deg) translateY(0); }
+                50% { transform: translateX(-25px) rotate(-15deg) translateY(-6px); }
+            }
+            @keyframes float-front {
+                0%, 100% { transform: translateX(20px) translateY(6px) rotate(6deg); }
+                50% { transform: translateX(20px) translateY(0px) rotate(6deg); }
+            }
         }
       `}</style>
     </div>
