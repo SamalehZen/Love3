@@ -16,10 +16,34 @@ const GALLERY_IMAGES = [
 export const ProfileDetail: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   
   // Touch handling refs
   const touchStartX = useRef(0);
   const lastTap = useRef(0);
+
+  // 1. Detect System Theme
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        setIsDarkMode(mq.matches);
+        const handler = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+        mq.addEventListener('change', handler);
+        return () => mq.removeEventListener('change', handler);
+    }
+  }, []);
+
+  // Theme Constants
+  const theme = {
+      bg: isDarkMode ? 'bg-background' : 'bg-[#F2F2F7]',
+      textMain: isDarkMode ? 'text-white' : 'text-gray-900',
+      textSub: isDarkMode ? 'text-gray-400' : 'text-gray-500',
+      surface: isDarkMode ? 'bg-surface border-white/5' : 'bg-white border-gray-200 shadow-sm',
+      header: isDarkMode ? 'bg-[#121214]/90 border-white/5' : 'bg-white/90 border-gray-200',
+      iconBtn: isDarkMode ? 'bg-white/5 text-gray-300 hover:bg-white/10' : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+      chip: isDarkMode ? 'bg-chip border-white/5' : 'bg-white border-gray-200 shadow-sm',
+      border: isDarkMode ? 'border-white/10' : 'border-black/5'
+  };
 
   // Reset zoom when changing slides
   useEffect(() => {
@@ -75,16 +99,16 @@ export const ProfileDetail: React.FC = () => {
   };
 
   return (
-    <div className="h-full overflow-y-auto no-scrollbar bg-background pb-24">
+    <div className={`h-full overflow-y-auto no-scrollbar pb-24 transition-colors duration-500 ${theme.bg}`}>
       
       {/* Dashboard Header */}
-      <div className="sticky top-0 z-30 bg-[#121214]/90 backdrop-blur-lg px-6 py-4 flex justify-between items-center border-b border-white/5">
-        <h1 className="text-lg font-bold text-white tracking-wide">Mon Profil</h1>
+      <div className={`sticky top-0 z-30 backdrop-blur-lg px-6 py-4 flex justify-between items-center border-b transition-colors duration-500 ${theme.header}`}>
+        <h1 className={`text-lg font-bold tracking-wide ${theme.textMain}`}>Mon Profil</h1>
         <div className="flex items-center gap-3">
-             <button className="px-3 py-1.5 rounded-full bg-white/5 text-[11px] font-semibold text-gray-300 border border-white/10 hover:bg-white/10 transition">
+             <button className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition ${isDarkMode ? 'bg-white/5 text-gray-300 border-white/10 hover:bg-white/10' : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200'}`}>
                 Aperçu
             </button>
-            <button className="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-gray-400 hover:text-white transition">
+            <button className={`w-9 h-9 rounded-full flex items-center justify-center transition ${isDarkMode ? 'bg-surface text-gray-400 hover:text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
                 <Settings size={20} />
             </button>
         </div>
@@ -98,58 +122,58 @@ export const ProfileDetail: React.FC = () => {
                 <div className="w-24 h-24 rounded-full p-[3px] bg-gradient-to-tr from-action-purple via-blue-500 to-action-green">
                     <img 
                         src="https://picsum.photos/600/800?random=20" 
-                        className="w-full h-full rounded-full object-cover border-4 border-background" 
+                        className={`w-full h-full rounded-full object-cover border-4 ${isDarkMode ? 'border-background' : 'border-[#F2F2F7]'}`} 
                         alt="Profile Avatar"
                     />
                 </div>
-                <div className="absolute bottom-0 right-0 bg-surface text-white p-1.5 rounded-full border border-white/10 shadow-lg">
-                    <Edit2 size={14} className="text-gray-300" />
+                <div className={`absolute bottom-0 right-0 p-1.5 rounded-full border shadow-lg ${theme.surface}`}>
+                    <Edit2 size={14} className={theme.textSub} />
                 </div>
             </div>
             <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                    <h2 className="text-2xl font-bold text-white">Lay M, 25</h2>
+                    <h2 className={`text-2xl font-bold ${theme.textMain}`}>Lay M, 25</h2>
                     <CheckCircle className="text-blue-500 fill-current" size={20} />
                 </div>
-                <p className="text-gray-400 text-sm mb-3">Washington, USA</p>
+                <p className={`${theme.textSub} text-sm mb-3`}>Washington, USA</p>
                 
                 {/* Completion Bar */}
-                <div className="w-full h-1.5 bg-surface rounded-full overflow-hidden flex">
+                <div className={`w-full h-1.5 rounded-full overflow-hidden flex ${isDarkMode ? 'bg-surface' : 'bg-gray-200'}`}>
                     <div className="w-[85%] bg-action-purple h-full rounded-full"></div>
                 </div>
-                <p className="text-[10px] text-gray-500 mt-1.5 font-medium">Profil complété à 85%</p>
+                <p className={`text-[10px] mt-1.5 font-medium ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Profil complété à 85%</p>
             </div>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-3 gap-3 mb-8">
-            <div className="bg-surface border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center gap-1 shadow-lg">
+            <div className={`rounded-2xl p-3 flex flex-col items-center justify-center gap-1 border transition-colors duration-500 ${theme.surface}`}>
                 <div className="w-8 h-8 rounded-full bg-action-red/20 flex items-center justify-center mb-1">
                     <Heart size={16} className="text-action-red fill-current" />
                 </div>
-                <span className="text-xl font-bold text-white">128</span>
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Likes</span>
+                <span className={`text-xl font-bold ${theme.textMain}`}>128</span>
+                <span className={`text-[10px] uppercase tracking-wider font-semibold ${theme.textSub}`}>Likes</span>
             </div>
-            <div className="bg-surface border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center gap-1 shadow-lg">
+            <div className={`rounded-2xl p-3 flex flex-col items-center justify-center gap-1 border transition-colors duration-500 ${theme.surface}`}>
                 <div className="w-8 h-8 rounded-full bg-action-purple/20 flex items-center justify-center mb-1">
                     <Users size={16} className="text-action-purple fill-current" />
                 </div>
-                <span className="text-xl font-bold text-white">43</span>
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Matchs</span>
+                <span className={`text-xl font-bold ${theme.textMain}`}>43</span>
+                <span className={`text-[10px] uppercase tracking-wider font-semibold ${theme.textSub}`}>Matchs</span>
             </div>
-            <div className="bg-surface border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center gap-1 shadow-lg">
+            <div className={`rounded-2xl p-3 flex flex-col items-center justify-center gap-1 border transition-colors duration-500 ${theme.surface}`}>
                 <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center mb-1">
                     <Eye size={16} className="text-blue-400 fill-current" />
                 </div>
-                <span className="text-xl font-bold text-white">1.2k</span>
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Vues</span>
+                <span className={`text-xl font-bold ${theme.textMain}`}>1.2k</span>
+                <span className={`text-[10px] uppercase tracking-wider font-semibold ${theme.textSub}`}>Vues</span>
             </div>
         </div>
 
         {/* Premium Banner */}
-        <div className="relative w-full rounded-2xl p-5 mb-8 overflow-hidden group cursor-pointer">
-            {/* Background Gradients */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700]/10 via-[#FFA500]/10 to-[#FFD700]/5 border border-[#FFD700]/20 rounded-2xl"></div>
+        <div className="relative w-full rounded-2xl p-5 mb-8 overflow-hidden group cursor-pointer shadow-lg">
+            {/* Background Gradients - Adjusted for light mode readability if needed, keeping gold theme */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700]/10 via-[#FFA500]/10 to-[#FFD700]/5 border border-[#FFD700]/20 rounded-2xl bg-[#121214]"></div>
             <div className="absolute -right-10 -top-10 w-32 h-32 bg-[#FFD700]/20 blur-3xl rounded-full"></div>
             
             <div className="relative z-10 flex justify-between items-center">
@@ -171,11 +195,11 @@ export const ProfileDetail: React.FC = () => {
         {/* About Section */}
         <div className="mb-8">
             <div className="flex justify-between items-end mb-3">
-                <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider">À propos de moi</h3>
+                <h3 className={`text-xs font-semibold uppercase tracking-wider ${theme.textSub}`}>À propos de moi</h3>
                 <button className="text-action-purple text-xs font-medium hover:underline">Modifier</button>
             </div>
-            <div className="bg-surface border border-white/5 rounded-2xl p-4">
-                <p className="text-gray-200 text-sm leading-relaxed">
+            <div className={`rounded-2xl p-4 border transition-colors duration-500 ${theme.surface}`}>
+                <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
                     Salut ! 👋 J'ai 25 ans, fan de café ☕, de voyages ✈️, et de discussions nocturnes ✨. Toujours ouverte aux nouvelles rencontres et aux bonnes ondes 🌎.
                 </p>
             </div>
@@ -184,36 +208,36 @@ export const ProfileDetail: React.FC = () => {
         {/* Basics Grid (L'essentiel) */}
         <div className="mb-8">
             <div className="flex justify-between items-end mb-3">
-                <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider">L'essentiel</h3>
+                <h3 className={`text-xs font-semibold uppercase tracking-wider ${theme.textSub}`}>L'essentiel</h3>
                 <button className="text-action-purple text-xs font-medium hover:underline">Modifier</button>
             </div>
             <div className="grid grid-cols-2 gap-3">
-                <div className="bg-surface border border-white/5 rounded-xl p-3 flex items-center gap-3">
-                    <Briefcase size={18} className="text-gray-400" />
+                <div className={`rounded-xl p-3 flex items-center gap-3 border transition-colors duration-500 ${theme.surface}`}>
+                    <Briefcase size={18} className={theme.textSub} />
                     <div>
-                        <p className="text-[10px] text-gray-500">Travail</p>
-                        <p className="text-xs text-white font-medium">Designer</p>
+                        <p className={`text-[10px] ${theme.textSub}`}>Travail</p>
+                        <p className={`text-xs font-medium ${theme.textMain}`}>Designer</p>
                     </div>
                 </div>
-                <div className="bg-surface border border-white/5 rounded-xl p-3 flex items-center gap-3">
-                    <GraduationCap size={18} className="text-gray-400" />
+                <div className={`rounded-xl p-3 flex items-center gap-3 border transition-colors duration-500 ${theme.surface}`}>
+                    <GraduationCap size={18} className={theme.textSub} />
                     <div>
-                        <p className="text-[10px] text-gray-500">Études</p>
-                        <p className="text-xs text-white font-medium">Arts Univ.</p>
+                        <p className={`text-[10px] ${theme.textSub}`}>Études</p>
+                        <p className={`text-xs font-medium ${theme.textMain}`}>Arts Univ.</p>
                     </div>
                 </div>
-                <div className="bg-surface border border-white/5 rounded-xl p-3 flex items-center gap-3">
-                    <Ruler size={18} className="text-gray-400" />
+                <div className={`rounded-xl p-3 flex items-center gap-3 border transition-colors duration-500 ${theme.surface}`}>
+                    <Ruler size={18} className={theme.textSub} />
                     <div>
-                        <p className="text-[10px] text-gray-500">Taille</p>
-                        <p className="text-xs text-white font-medium">175 cm</p>
+                        <p className={`text-[10px] ${theme.textSub}`}>Taille</p>
+                        <p className={`text-xs font-medium ${theme.textMain}`}>175 cm</p>
                     </div>
                 </div>
-                 <div className="bg-surface border border-white/5 rounded-xl p-3 flex items-center gap-3">
-                    <Wine size={18} className="text-gray-400" />
+                 <div className={`rounded-xl p-3 flex items-center gap-3 border transition-colors duration-500 ${theme.surface}`}>
+                    <Wine size={18} className={theme.textSub} />
                     <div>
-                        <p className="text-[10px] text-gray-500">Boisson</p>
-                        <p className="text-xs text-white font-medium">Parfois</p>
+                        <p className={`text-[10px] ${theme.textSub}`}>Boisson</p>
+                        <p className={`text-xs font-medium ${theme.textMain}`}>Parfois</p>
                     </div>
                 </div>
             </div>
@@ -222,7 +246,7 @@ export const ProfileDetail: React.FC = () => {
         {/* Interests */}
         <div className="mb-8">
             <div className="flex justify-between items-end mb-3">
-                <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Intérêts</h3>
+                <h3 className={`text-xs font-semibold uppercase tracking-wider ${theme.textSub}`}>Intérêts</h3>
                 <button className="text-action-purple text-xs font-medium hover:underline">Modifier</button>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -235,13 +259,13 @@ export const ProfileDetail: React.FC = () => {
                 ].map((interest, idx) => {
                     const Icon = interest.icon;
                     return (
-                        <div key={idx} className="flex items-center gap-1.5 bg-chip px-3 py-2 rounded-full border border-white/5">
+                        <div key={idx} className={`flex items-center gap-1.5 px-3 py-2 rounded-full border transition-colors duration-500 ${theme.chip}`}>
                             <Icon size={14} className={interest.color} />
-                            <span className="text-gray-200 text-xs font-medium">{interest.label}</span>
+                            <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>{interest.label}</span>
                         </div>
                     );
                 })}
-                <button className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-dashed border-white/20 text-gray-400 hover:text-white hover:border-white/40 transition">
+                <button className={`flex items-center gap-1.5 px-3 py-2 rounded-full border border-dashed transition ${isDarkMode ? 'border-white/20 text-gray-400 hover:text-white hover:border-white/40' : 'border-gray-300 text-gray-500 hover:text-gray-800 hover:border-gray-400'}`}>
                     <Plus size={14} />
                 </button>
             </div>
@@ -250,14 +274,14 @@ export const ProfileDetail: React.FC = () => {
          {/* Editable Gallery */}
          <div className="mb-8">
              <div className="flex justify-between items-end mb-3">
-                <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Ma Galerie</h3>
-                <span className="text-gray-500 text-[10px]">Maintenez pour réorganiser</span>
+                <h3 className={`text-xs font-semibold uppercase tracking-wider ${theme.textSub}`}>Ma Galerie</h3>
+                <span className={`text-[10px] ${theme.textSub}`}>Maintenez pour réorganiser</span>
             </div>
              <div className="grid grid-cols-3 gap-3">
                  {GALLERY_IMAGES.map((src, index) => (
                     <div 
                       key={index} 
-                      className={`relative aspect-[3/4] rounded-xl bg-surface overflow-hidden cursor-pointer active:scale-95 transition-transform group`}
+                      className={`relative aspect-[3/4] rounded-xl overflow-hidden cursor-pointer active:scale-95 transition-transform group ${isDarkMode ? 'bg-surface' : 'bg-gray-100'}`}
                       onClick={() => setSelectedIndex(index)}
                     >
                         <img src={src} className="w-full h-full object-cover" alt={`Gallery ${index}`} />
@@ -270,18 +294,18 @@ export const ProfileDetail: React.FC = () => {
                     </div>
                  ))}
                  {/* Add Photo Button */}
-                 <div className="aspect-[3/4] rounded-xl bg-surface border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-white/5 transition-colors group">
-                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Camera size={20} className="text-gray-400 group-hover:text-white" />
+                 <div className={`aspect-[3/4] rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors group ${isDarkMode ? 'bg-surface border-white/10 hover:bg-white/5' : 'bg-white border-gray-200 hover:bg-gray-50'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform ${isDarkMode ? 'bg-white/5' : 'bg-gray-100'}`}>
+                        <Camera size={20} className={`${theme.textSub} group-hover:text-action-purple`} />
                     </div>
-                    <span className="text-[10px] text-gray-500 font-medium">Ajouter</span>
+                    <span className={`text-[10px] font-medium ${theme.textSub}`}>Ajouter</span>
                  </div>
              </div>
          </div>
 
       </div>
 
-      {/* Full Screen Lightbox (Existing Logic) */}
+      {/* Full Screen Lightbox (Always Dark for immersive experience) */}
       {selectedIndex !== null && (
         <div 
             className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center touch-none animate-in fade-in duration-300"

@@ -9,11 +9,23 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragX, setDragX] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Static "Luxury" Images
   const IMG_WOMAN = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop";
   const IMG_MAN = "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop";
+
+  // 1. Detect System Theme
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        setIsDarkMode(mq.matches);
+        const handler = (e: MediaQueryListEvent) => setIsDarkMode(e.matches);
+        mq.addEventListener('change', handler);
+        return () => mq.removeEventListener('change', handler);
+    }
+  }, []);
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     if (isCompleted) return;
@@ -75,12 +87,27 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     };
   }, [isDragging, dragX, isCompleted]);
 
+  // Theme Constants
+  const theme = {
+      bg: isDarkMode ? 'bg-[#0f0f0f]' : 'bg-[#F2F2F7]',
+      overlay: isDarkMode 
+        ? 'from-[#32D583]/20 via-[#121214] to-[#121214]' 
+        : 'from-[#32D583]/10 via-[#F2F2F7] to-[#F2F2F7]',
+      textTitle: isDarkMode ? 'text-white' : 'text-gray-900',
+      textSub: isDarkMode ? 'text-gray-400' : 'text-gray-500',
+      cardBorder: isDarkMode ? 'border-white/10' : 'border-white',
+      cardShadow: isDarkMode ? 'shadow-[0_20px_50px_rgba(0,0,0,0.5)]' : 'shadow-[0_20px_50px_rgba(0,0,0,0.1)]',
+      sliderBg: isDarkMode ? 'bg-[#1C1C1E] border-white/10' : 'bg-white border-gray-200 shadow-sm',
+      shimmerText: isDarkMode 
+        ? 'from-white/20 via-white to-white/20' 
+        : 'from-gray-400 via-gray-900 to-gray-400',
+  };
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f0f] relative overflow-hidden">
+    <div className={`h-full flex flex-col relative overflow-hidden transition-colors duration-500 ${theme.bg}`}>
       
-      {/* Background Gradient - Green Theme */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#32D583]/20 via-[#121214] to-[#121214] pointer-events-none"></div>
+      {/* Background Gradient */}
+      <div className={`absolute inset-0 bg-gradient-to-b ${theme.overlay} pointer-events-none transition-colors duration-500`}></div>
 
       {/* --- HERO SECTION: Stacked Cards --- */}
       <div className="flex-1 flex flex-col items-center justify-center relative z-10 -mt-10">
@@ -91,7 +118,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             {/* --- BACK CARD (Man) --- */}
             {/* Positioned Left & Behind with Float Animation */}
             <div 
-                className="absolute w-48 h-72 rounded-[28px] overflow-hidden shadow-2xl border-[3px] border-white/5 animate-float-back"
+                className={`absolute w-48 h-72 rounded-[28px] overflow-hidden shadow-2xl border-[3px] animate-float-back transition-colors duration-500 ${isDarkMode ? 'border-white/5' : 'border-white'}`}
                 style={{ zIndex: 10 }}
             >
                 <img src={IMG_MAN} className="w-full h-full object-cover" />
@@ -112,7 +139,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
             {/* Floating Icon: Red X (Left of Man) - STATIC */}
             <div className="absolute top-1/2 left-0 z-30 transform -translate-y-16 -translate-x-6">
-                <div className="w-12 h-12 rounded-full bg-[#1C1C1E] flex items-center justify-center shadow-lg shadow-red-500/10 border-2 border-red-500/30">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-red-500/10 border-2 border-red-500/30 transition-colors duration-500 ${isDarkMode ? 'bg-[#1C1C1E]' : 'bg-white'}`}>
                      <X className="text-red-500" size={20} strokeWidth={3} />
                 </div>
             </div>
@@ -120,7 +147,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             {/* --- FRONT CARD (Woman) --- */}
             {/* Positioned Right & Front with Float Animation */}
             <div 
-                className="absolute w-48 h-72 rounded-[28px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-[3px] border-white/10 animate-float-front"
+                className={`absolute w-48 h-72 rounded-[28px] overflow-hidden border-[3px] animate-float-front transition-colors duration-500 ${theme.cardBorder} ${theme.cardShadow}`}
                 style={{ zIndex: 20 }}
             >
                 <img src={IMG_WOMAN} className="w-full h-full object-cover" />
@@ -140,7 +167,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
              {/* Floating Icon: GREEN Heart (Bottom Right of Woman) - STATIC */}
              <div className="absolute bottom-12 -right-2 z-30">
-                <div className="w-14 h-14 rounded-full bg-[#32D583] flex items-center justify-center shadow-lg shadow-[#32D583]/30 border-4 border-[#121214]">
+                <div className={`w-14 h-14 rounded-full bg-[#32D583] flex items-center justify-center shadow-lg shadow-[#32D583]/30 border-4 transition-colors duration-500 ${isDarkMode ? 'border-[#121214]' : 'border-[#F2F2F7]'}`}>
                     <Heart className="text-white fill-current" size={24} />
                 </div>
             </div>
@@ -149,11 +176,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
         {/* Text Content */}
         <div className="text-center mt-8 px-8 relative z-20">
-            <h1 className="text-4xl font-bold text-white mb-3 tracking-tight leading-tight">
+            <h1 className={`text-4xl font-bold mb-3 tracking-tight leading-tight transition-colors duration-500 ${theme.textTitle}`}>
                 Trouvez Votre <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B3C] to-[#FF3A1F]">Match Idéal</span>
             </h1>
-            <p className="text-gray-400 text-sm leading-relaxed max-w-[280px] mx-auto">
+            <p className={`text-sm leading-relaxed max-w-[280px] mx-auto transition-colors duration-500 ${theme.textSub}`}>
                 Rencontrez de nouvelles personnes, créez de vraies connexions et voyez où cela mène.
             </p>
         </div>
@@ -163,17 +190,17 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       <div className="px-6 pb-12 w-full max-w-sm mx-auto z-20">
         <div 
             ref={containerRef}
-            className={`relative h-16 bg-[#1C1C1E] rounded-full flex items-center px-2 overflow-hidden border transition-colors duration-500 ${isCompleted ? 'border-action-green/50' : 'border-white/10'}`}
+            className={`relative h-16 rounded-full flex items-center px-2 overflow-hidden border transition-all duration-500 ${isCompleted ? 'border-action-green/50' : ''} ${theme.sliderBg}`}
         >
              {/* Slider Track Text */}
              <div className="absolute inset-0 flex items-center justify-center">
                  <span className={`text-sm font-semibold tracking-widest uppercase transition-all duration-500 ${
                      isCompleted 
                      ? 'text-action-green scale-110' 
-                     : 'text-white/30 animate-pulse'
+                     : 'animate-pulse'
                  }`}>
                     {isCompleted ? 'Bienvenue' : (
-                        <span className="bg-gradient-to-r from-white/20 via-white to-white/20 bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer-text">
+                        <span className={`bg-gradient-to-r ${theme.shimmerText} bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer-text`}>
                             Commencer &gt;&gt;&gt;
                         </span>
                     )}

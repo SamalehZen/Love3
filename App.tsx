@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Onboarding } from './components/Onboarding';
 import { SwipeCard } from './components/SwipeCard';
@@ -226,8 +225,8 @@ export function App() {
           {renderContent()}
         </div>
 
-        {/* Navigation - Only show if not onboarding/chat */}
-        {view !== 'onboarding' && view !== 'chat' && (
+        {/* Navigation - Only show if not onboarding */}
+        {view !== 'onboarding' && (
           <BottomNav currentView={view} setView={setView} />
         )}
       </div>

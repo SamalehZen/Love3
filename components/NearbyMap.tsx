@@ -68,7 +68,9 @@ const MapComponent = memo(
       }
 
       const map = mapInstance.current;
+      // Premium Dark Tiles
       const darkTiles = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      // Premium Light Tiles
       const lightTiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
       const url = isDarkMode ? darkTiles : lightTiles;
 
@@ -93,13 +95,21 @@ const MapComponent = memo(
         const size = isSelected ? 64 : 44;
         const anchor = size / 2;
 
+        // Luxury Border Colors
         const borderColor = isSelected 
-            ? 'border-[#EAB308]' 
-            : isDarkMode ? 'border-[#2C2C2E]' : 'border-white';
+            ? 'border-[#EAB308]' // Gold for selected
+            : isDarkMode 
+                ? 'border-white/20' // Subtle glass edge for unselected in dark mode
+                : 'border-white';   // Crisp white for light mode
 
+        // Shadow Depth
         const shadow = isSelected
-            ? 'shadow-[0_10px_25px_rgba(234,179,8,0.4)]'
-            : 'shadow-lg';
+            ? 'shadow-[0_10px_30px_rgba(234,179,8,0.5)]'
+            : isDarkMode ? 'shadow-[0_4px_12px_rgba(0,0,0,0.5)]' : 'shadow-lg';
+
+        // Background handling for image container (prevents white flash on load)
+        const containerBg = isDarkMode ? 'bg-[#1C1C1E]' : 'bg-white';
+        const fallbackText = isDarkMode ? 'text-white' : 'text-gray-900';
 
         const shimmerOverlay = isSelected 
             ? `<div class="absolute inset-0 z-20 overflow-hidden rounded-full pointer-events-none">
@@ -112,19 +122,19 @@ const MapComponent = memo(
                 class="relative group cursor-pointer marker-pop-in" 
                 style="animation-delay: ${delay}ms"
             >
-                ${isSelected ? `<div class="absolute inset-0 rounded-full border border-[#EAB308]/50 animate-ping opacity-75"></div>` : ''}
+                ${isSelected ? `<div class="absolute inset-0 rounded-full border border-[#EAB308]/60 animate-ping opacity-75 duration-1000"></div>` : ''}
                 
-                <div class="relative w-[${size}px] h-[${size}px] rounded-full p-[3px] bg-background transition-all duration-500 ease-out ${isSelected ? 'scale-110' : 'hover:scale-105'}">
-                    <div class="w-full h-full rounded-full overflow-hidden border-2 ${borderColor} ${shadow} bg-gray-200 relative">
+                <div class="relative w-[${size}px] h-[${size}px] rounded-full p-[3px] transition-all duration-500 ease-out ${isSelected ? 'scale-110' : 'hover:scale-105'}">
+                    <div class="w-full h-full rounded-full overflow-hidden border-2 ${borderColor} ${shadow} ${containerBg} relative">
                         ${shimmerOverlay}
                         ${place.imageUrl 
                             ? `<img src="${place.imageUrl}" class="w-full h-full object-cover relative z-10" />`
-                            : `<div class="w-full h-full flex items-center justify-center font-bold text-xs relative z-10">${place.name[0]}</div>`
+                            : `<div class="w-full h-full flex items-center justify-center font-bold text-xs relative z-10 ${fallbackText}">${place.name[0]}</div>`
                         }
                     </div>
                     
                     ${place.isOnline ? `
-                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-background rounded-full flex items-center justify-center z-30">
+                    <div class="absolute bottom-0 right-0 w-3.5 h-3.5 ${isDarkMode ? 'bg-[#121214]' : 'bg-white'} rounded-full flex items-center justify-center z-30">
                         <div class="w-2.5 h-2.5 bg-[#32D583] rounded-full shadow-[0_0_8px_#32D583]"></div>
                     </div>` : ''}
                 </div>
