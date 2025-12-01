@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Heart, Gift, MapPin, Search, Star, Sparkles } from 'lucide-react';
+import { X, Heart, Gift, MapPin, Search, Star, Sparkles, HeartCrack } from 'lucide-react';
 import { Profile } from '../types';
 
 interface SwipeCardProps {
@@ -131,7 +131,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
 
   // Dynamic Button Scaling based on drag direction
   // Dragging Right -> Heart Button grows
-  // Dragging Left -> X Button grows
+  // Dragging Left -> Reject Button grows
   const rightBtnScale = dragX > 0 ? 1 + (rawProgress * 0.3) : 1;
   const leftBtnScale = dragX < 0 ? 1 + (rawProgress * 0.3) : 1;
 
@@ -269,10 +269,10 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
                 >
                      <div className="relative">
                         <div className={`absolute inset-0 rounded-full bg-action-red/30 blur-xl ${isExiting && dragX < 0 ? 'pulse-effect' : ''}`}></div>
-                        <X 
+                        <HeartCrack 
                             size={120} 
-                            strokeWidth={3} 
-                            className="text-[#EF4444] drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]" 
+                            strokeWidth={2} 
+                            className="text-[#EF4444] drop-shadow-[0_0_20px_rgba(239,68,68,0.6)] fill-transparent" 
                         />
                      </div>
                      <span className="text-white font-bold text-2xl tracking-widest mt-4 drop-shadow-md">NON</span>
@@ -329,7 +329,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({ profile, nextProfile, onAc
                 style={{ transform: `scale(${leftBtnScale})` }}
                 className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${iconBtnBg} border ${iconBtnBorder} flex items-center justify-center text-action-red shadow-lg transition-transform duration-200 active:scale-95 group hover:bg-action-red hover:text-white`}
             >
-                <X size={28} strokeWidth={2.5} className="group-hover:rotate-90 transition-transform duration-300 sm:w-8 sm:h-8" />
+                <HeartCrack size={28} strokeWidth={2} className="group-hover:rotate-12 transition-transform duration-300 sm:w-8 sm:h-8" />
             </button>
 
             {/* Super Like */}
