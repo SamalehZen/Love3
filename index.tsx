@@ -4,6 +4,7 @@ import { App } from './App';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import './styles/main.css';
 
 console.log('[Love3 Debug] index.tsx: Script loaded at', new Date().toISOString());
 
