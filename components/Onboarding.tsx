@@ -104,9 +104,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       <div className={`absolute inset-0 bg-gradient-to-b ${themeStyles.overlay} pointer-events-none transition-colors duration-500`}></div>
 
       <div className="flex-1 flex flex-col items-center justify-center relative z-10 -mt-6">
-        <div className="relative w-[85vw] max-w-[320px] h-[360px] flex items-center justify-center">
+        <div className="relative w-[85vw] max-w-[320px] md:max-w-[400px] lg:max-w-[450px] h-[360px] md:h-[420px] lg:h-[480px] flex items-center justify-center">
           <div 
-            className={`absolute w-44 h-64 sm:w-48 sm:h-72 rounded-[28px] overflow-hidden shadow-2xl border-[3px] animate-float-back transition-colors duration-500 ${isDarkMode ? 'border-white/5' : 'border-white'}`}
+            className={`absolute w-44 h-64 sm:w-48 sm:h-72 md:w-56 md:h-80 lg:w-64 lg:h-96 rounded-[28px] overflow-hidden shadow-2xl border-[3px] animate-float-back transition-colors duration-500 ${isDarkMode ? 'border-white/5' : 'border-white'}`}
             style={{ zIndex: 10 }}
           >
             <img src={IMG_MAN} className="w-full h-full object-cover" alt="Profile" loading="lazy" />
@@ -130,7 +130,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           </div>
 
           <div 
-            className={`absolute w-44 h-64 sm:w-48 sm:h-72 rounded-[28px] overflow-hidden border-[3px] animate-float-front transition-colors duration-500 ${themeStyles.cardBorder} ${themeStyles.cardShadow}`}
+            className={`absolute w-44 h-64 sm:w-48 sm:h-72 md:w-56 md:h-80 lg:w-64 lg:h-96 rounded-[28px] overflow-hidden border-[3px] animate-float-front transition-colors duration-500 ${themeStyles.cardBorder} ${themeStyles.cardShadow}`}
             style={{ zIndex: 20 }}
           >
             <img src={IMG_WOMAN} className="w-full h-full object-cover" alt="Profile" loading="lazy" />
@@ -154,7 +154,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         </div>
 
         <div className="text-center mt-6 sm:mt-8 px-8 relative z-20">
-          <h1 className={`text-3xl sm:text-4xl font-bold mb-3 tracking-tight leading-tight transition-colors duration-500 ${themeStyles.textTitle}`}>
+          <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight leading-tight transition-colors duration-500 ${themeStyles.textTitle}`}>
             Trouvez Votre <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#32D583] to-[#22C55E]">Match Idéal</span>
           </h1>

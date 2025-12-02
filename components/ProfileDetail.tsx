@@ -95,7 +95,7 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ onOpenSettings }) 
 
   return (
     <div className={`h-full overflow-y-auto no-scrollbar pb-24 transition-colors duration-500 ${themeStyles.bg}`}>
-      <div className={`sticky top-0 z-30 backdrop-blur-lg px-6 py-4 flex justify-between items-center border-b transition-colors duration-500 ${themeStyles.header}`}>
+      <div className={`sticky top-0 z-30 backdrop-blur-lg px-6 md:px-8 lg:px-12 py-4 flex justify-between items-center border-b transition-colors duration-500 ${themeStyles.header}`}>
         <h1 className={`text-lg font-bold tracking-wide ${themeStyles.textMain}`}>Mon Profil</h1>
         <div className="flex items-center gap-3">
           <button className={`px-3 py-1.5 rounded-full text-[11px] font-semibold border transition ${isDarkMode ? 'bg-white/5 text-gray-300 border-white/10 hover:bg-white/10' : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200'}`}>
@@ -139,22 +139,22 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ onOpenSettings }) 
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          <div className={`rounded-2xl p-3 flex flex-col items-center justify-center gap-1 border transition-colors duration-500 ${themeStyles.surface}`}>
+        <div className="grid grid-cols-3 lg:flex lg:gap-6 gap-3 mb-8">
+          <div className={`rounded-2xl p-3 lg:flex-1 flex flex-col items-center justify-center gap-1 border transition-colors duration-500 card-premium ${themeStyles.surface}`}>
             <div className="w-8 h-8 rounded-full bg-action-red/20 flex items-center justify-center mb-1">
               <Heart size={16} className="text-action-red fill-current" />
             </div>
             <span className={`text-xl font-bold ${themeStyles.textMain}`}>128</span>
             <span className={`text-[10px] uppercase tracking-wider font-semibold ${themeStyles.textSub}`}>Likes</span>
           </div>
-          <div className={`rounded-2xl p-3 flex flex-col items-center justify-center gap-1 border transition-colors duration-500 ${themeStyles.surface}`}>
+          <div className={`rounded-2xl p-3 lg:flex-1 flex flex-col items-center justify-center gap-1 border transition-colors duration-500 card-premium ${themeStyles.surface}`}>
             <div className="w-8 h-8 rounded-full bg-action-purple/20 flex items-center justify-center mb-1">
               <Users size={16} className="text-action-purple fill-current" />
             </div>
             <span className={`text-xl font-bold ${themeStyles.textMain}`}>43</span>
             <span className={`text-[10px] uppercase tracking-wider font-semibold ${themeStyles.textSub}`}>Matchs</span>
           </div>
-          <div className={`rounded-2xl p-3 flex flex-col items-center justify-center gap-1 border transition-colors duration-500 ${themeStyles.surface}`}>
+          <div className={`rounded-2xl p-3 lg:flex-1 flex flex-col items-center justify-center gap-1 border transition-colors duration-500 card-premium ${themeStyles.surface}`}>
             <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center mb-1">
               <Eye size={16} className="text-blue-400 fill-current" />
             </div>
@@ -200,7 +200,7 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ onOpenSettings }) 
             <h3 className={`text-xs font-semibold uppercase tracking-wider ${themeStyles.textSub}`}>L'essentiel</h3>
             <button className="text-action-purple text-xs font-medium hover:underline">Modifier</button>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div className={`rounded-xl p-3 flex items-center gap-3 border transition-colors duration-500 ${themeStyles.surface}`}>
               <Briefcase size={18} className={themeStyles.textSub} />
               <div>
@@ -258,7 +258,7 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ onOpenSettings }) 
             <h3 className={`text-xs font-semibold uppercase tracking-wider ${themeStyles.textSub}`}>Ma Galerie</h3>
             <span className={`text-[10px] ${themeStyles.textSub}`}>Maintenez pour réorganiser</span>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
             {GALLERY_IMAGES.map((src, index) => (
               <div 
                 key={index} 

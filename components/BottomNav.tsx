@@ -35,7 +35,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView }) =>
   [isDarkMode]);
 
   return (
-    <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
+    <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none px-4 lg:hidden">
       <div className={containerClass}>
         <div className="absolute inset-0 z-0 pointer-events-none">
           <div className="absolute top-0 left-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-x-12 animate-shimmer-continuous"></div>

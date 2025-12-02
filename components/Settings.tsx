@@ -71,7 +71,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
         <h1 className={`text-lg font-bold ${theme.textMain}`}>Paramètres</h1>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-24 no-scrollbar">
+      <div className="flex-1 overflow-y-auto pb-24 lg:pb-8 no-scrollbar max-w-2xl mx-auto w-full styled-scrollbar">
         <div className="relative w-full rounded-2xl p-5 m-4 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700]/10 via-[#FFA500]/10 to-[#FFD700]/5 border border-[#FFD700]/20 rounded-2xl bg-[#121214]"></div>
           <div className="absolute -right-10 -top-10 w-32 h-32 bg-[#FFD700]/20 blur-3xl rounded-full"></div>
@@ -96,7 +96,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           <h3 className={`text-xs font-semibold uppercase tracking-wider px-4 mb-2 ${theme.textSub}`}>
             Compte
           </h3>
-          <div className={`rounded-2xl border overflow-hidden ${theme.surface}`}>
+          <div className={`rounded-2xl md:rounded-3xl border overflow-hidden ${theme.surface}`}>
             <SettingRow
               icon={isDarkMode ? <Moon size={20} className="text-action-purple" /> : <Sun size={20} className="text-yellow-500" />}
               label="Mode sombre"
@@ -119,7 +119,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           <h3 className={`text-xs font-semibold uppercase tracking-wider px-4 mb-2 ${theme.textSub}`}>
             Préférences de recherche
           </h3>
-          <div className={`rounded-2xl border overflow-hidden ${theme.surface}`}>
+          <div className={`rounded-2xl md:rounded-3xl border overflow-hidden ${theme.surface}`}>
             <div className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
@@ -174,7 +174,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           <h3 className={`text-xs font-semibold uppercase tracking-wider px-4 mb-2 ${theme.textSub}`}>
             Support
           </h3>
-          <div className={`rounded-2xl border overflow-hidden ${theme.surface}`}>
+          <div className={`rounded-2xl md:rounded-3xl border overflow-hidden ${theme.surface}`}>
             <SettingRow
               icon={<Shield size={20} className="text-blue-500" />}
               label="Confidentialité"
@@ -187,7 +187,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
         </div>
 
         <div className="px-4 mt-6">
-          <div className={`rounded-2xl border overflow-hidden ${theme.surface}`}>
+          <div className={`rounded-2xl md:rounded-3xl border overflow-hidden ${theme.surface}`}>
             <SettingRow
               icon={<LogOut size={20} className="text-action-red" />}
               label="Se déconnecter"

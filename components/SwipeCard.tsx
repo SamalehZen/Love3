@@ -147,7 +147,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   const cardBorder = isDarkMode ? 'border-white/5' : 'border-black/5';
 
   return (
-    <div className={`relative w-full h-full flex flex-col pt-4 pb-24 px-4 overflow-hidden select-none transition-colors duration-500 ${bgClass}`}>
+    <div className={`relative w-full h-full flex flex-col pt-4 pb-24 lg:pb-8 px-4 md:px-8 lg:px-12 overflow-hidden select-none transition-colors duration-500 ${bgClass}`}>
       <div className="flex justify-between items-center mb-4 px-2 z-50">
         <div className="flex items-center gap-3">
           <div className={`w-10 h-10 rounded-full overflow-hidden p-0.5 border ${isDarkMode ? 'border-white/20' : 'border-gray-200'}`}>
@@ -176,7 +176,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 relative w-full perspective-[1000px]">
+      <div className="flex-1 relative w-full max-w-[420px] mx-auto lg:max-w-[480px] perspective-[1000px]">
         {nextProfile && (
           <div 
             className={`absolute inset-0 z-10 rounded-[36px] overflow-hidden shadow-xl border ${cardBorder}`}
@@ -289,11 +289,11 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         </div>
       </div>
 
-      <div className="w-full flex items-center justify-between px-8 pb-4 pt-2 z-50">
+      <div className="w-full max-w-[400px] mx-auto flex items-center justify-between px-8 lg:px-4 pb-4 pt-2 z-50">
         <button 
           onClick={() => handleButtonAction('reject')}
           style={{ transform: `scale(${leftBtnScale})` }}
-          className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full ${iconBtnBg} border ${iconBtnBorder} flex items-center justify-center text-action-red shadow-lg transition-transform duration-200 active:scale-95 group hover:bg-action-red hover:text-white`}
+          className={`w-14 h-14 sm:w-16 sm:h-16 lg:w-18 lg:h-18 rounded-full ${iconBtnBg} border ${iconBtnBorder} flex items-center justify-center text-action-red shadow-lg transition-transform duration-200 active:scale-95 group hover:bg-action-red hover:text-white touch-target`}
         >
           <HeartCrack size={28} strokeWidth={2} className="group-hover:rotate-12 transition-transform duration-300 sm:w-8 sm:h-8" />
         </button>
@@ -308,7 +308,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
         <button 
           onClick={() => handleButtonAction('like')}
           style={{ transform: `scale(${rightBtnScale})` }}
-          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#32D583] to-[#22C55E] flex items-center justify-center text-white shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-transform duration-200 active:scale-95 group hover:shadow-[0_0_30px_rgba(34,197,94,0.5)]"
+          className="w-14 h-14 sm:w-16 sm:h-16 lg:w-18 lg:h-18 rounded-full bg-gradient-to-br from-[#32D583] to-[#22C55E] flex items-center justify-center text-white shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-transform duration-200 active:scale-95 group hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] touch-target"
         >
           <Heart size={28} fill="currentColor" className="group-hover:scale-110 transition-transform duration-300 sm:w-8 sm:h-8" />
         </button>
