@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
+import './src/index.css';
 import { App } from './App';
 
 // Error Boundary Component to catch crashes
