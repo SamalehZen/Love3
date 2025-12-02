@@ -131,10 +131,7 @@ const MapComponent = memo(
               
               ${place.isOnline ? `
               <div class="absolute -bottom-0.5 -right-0.5 w-5 h-5 ${isDarkMode ? 'bg-[#121214]' : 'bg-white'} rounded-full flex items-center justify-center z-30 shadow-lg">
-                <div class="w-3.5 h-3.5 bg-[#32D583] rounded-full shadow-[0_0_12px_#32D583] animate-pulse"></div>
-              </div>
-              <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-[#32D583] rounded-full z-30 shadow-lg">
-                <span class="text-[8px] font-bold text-black uppercase tracking-wide">En ligne</span>
+                <div class="w-4 h-4 bg-[#32D583] rounded-full shadow-[0_0_12px_#32D583] animate-pulse"></div>
               </div>` : ''}
             </div>
           </div>
@@ -143,7 +140,7 @@ const MapComponent = memo(
         const icon = L.divIcon({
           html,
           className: 'custom-marker-wrapper',
-          iconSize: [size, size + (place.isOnline ? 16 : 0)],
+          iconSize: [size, size],
           iconAnchor: [anchor, anchor],
         });
 
