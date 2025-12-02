@@ -171,7 +171,7 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ onOpenSettings }) 
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Crown size={20} className="text-[#FFD700] fill-current" />
-                <h3 className="text-[#FFD700] font-bold text-lg">Connexa Gold</h3>
+                <h3 className="text-[#FFD700] font-bold text-lg">Overlay Gold</h3>
               </div>
               <p className="text-gray-300 text-xs max-w-[200px] leading-relaxed">
                 Boostez votre visibilité x10 et voyez qui vous a liké.

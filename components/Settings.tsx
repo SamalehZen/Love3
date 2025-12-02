@@ -80,7 +80,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Crown size={20} className="text-[#FFD700] fill-current" />
-                <h3 className="text-[#FFD700] font-bold text-lg">Passer à Gold</h3>
+                <h3 className="text-[#FFD700] font-bold text-lg">Overlay Gold</h3>
               </div>
               <p className="text-gray-300 text-xs max-w-[200px] leading-relaxed">
                 Likes illimités, voir qui vous aime, et plus encore.
@@ -197,7 +197,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
         </div>
 
         <p className={`text-center text-xs mt-8 pb-4 ${theme.textSub}`}>
-          Connexa v1.0.0
+          Overlay v1.0.0
         </p>
       </div>
     </div>

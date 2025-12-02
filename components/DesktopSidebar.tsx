@@ -2,6 +2,7 @@ import React from 'react';
 import { Home, MapPin, MessageCircle, Heart, User, Crown, Settings } from 'lucide-react';
 import { ViewState } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { Logo, BRAND } from './Logo';
 
 interface DesktopSidebarProps {
   currentView: ViewState;
@@ -23,12 +24,15 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentView, set
   return (
     <div className={`h-full flex flex-col py-6 px-4 animate-sidebar-slide ${theme.bg}`}>
       <div className="px-4 mb-8">
-        <h1 className="text-2xl font-bold">
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#32D583] to-[#22C55E]">
-            Connexa
-          </span>
-        </h1>
-        <p className={`text-xs mt-1 ${theme.textSub}`}>Trouvez votre match</p>
+        <div className="flex items-center gap-3">
+          <Logo variant="icon-filled" size="md" />
+          <div>
+            <h1 className="text-xl font-bold" style={{ color: BRAND.colors.primary }}>
+              {BRAND.name}
+            </h1>
+            <p className={`text-[10px] ${theme.textSub}`}>{BRAND.tagline}</p>
+          </div>
+        </div>
       </div>
 
       <nav className="flex-1 space-y-2">
@@ -70,7 +74,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentView, set
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-2">
               <Crown size={18} className="text-[#FFD700] fill-current" />
-              <span className="text-[#FFD700] font-bold text-sm">Connexa Gold</span>
+              <span className="text-[#FFD700] font-bold text-sm">{BRAND.name} Gold</span>
             </div>
             <p className="text-gray-400 text-xs mb-3">Débloquez toutes les fonctionnalités</p>
             <button className="w-full py-2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] rounded-lg text-black font-semibold text-sm hover:opacity-90 transition-opacity active:scale-95">

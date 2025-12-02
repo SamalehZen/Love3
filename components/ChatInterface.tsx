@@ -11,7 +11,7 @@ export const ChatInterface: React.FC = () => {
     {
       id: '1',
       role: 'model',
-      text: "Hey! I'm Connexa AI. Need a catchy opener or profile advice? I'm here to help you win the dating game! 😉",
+      text: "Hey! I'm Overlay AI. Need a catchy opener or profile advice? I'm here to help you win the dating game! 😉",
       timestamp: new Date()
     }
   ]);
@@ -92,7 +92,7 @@ export const ChatInterface: React.FC = () => {
             <Bot className="text-white" size={24} />
           </div>
           <div>
-            <h2 className={`font-semibold ${themeStyles.textMain}`}>Connexa AI</h2>
+            <h2 className={`font-semibold ${themeStyles.textMain}`}>Overlay AI</h2>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 bg-action-green rounded-full animate-pulse"></span>
               <span className={`text-xs ${themeStyles.textSub}`}>Online</span>

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Heart, X } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useHaptic } from '../hooks/useHaptic';
+import { Logo, BRAND } from './Logo';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -82,8 +83,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const themeStyles = useMemo(() => ({
     bg: isDarkMode ? 'bg-[#0f0f0f]' : 'bg-[#F2F2F7]',
     overlay: isDarkMode 
-      ? 'from-[#32D583]/20 via-[#121214] to-[#121214]' 
-      : 'from-[#32D583]/10 via-[#F2F2F7] to-[#F2F2F7]',
+      ? 'from-[#474FE7]/20 via-[#121214] to-[#121214]' 
+      : 'from-[#474FE7]/10 via-[#F2F2F7] to-[#F2F2F7]',
     textTitle: isDarkMode ? 'text-white' : 'text-gray-900',
     textSub: isDarkMode ? 'text-gray-400' : 'text-gray-500',
     cardBorder: isDarkMode ? 'border-white/10' : 'border-white',
@@ -103,7 +104,11 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     <div className={`h-full flex flex-col relative overflow-hidden transition-colors duration-500 ${themeStyles.bg}`}>
       <div className={`absolute inset-0 bg-gradient-to-b ${themeStyles.overlay} pointer-events-none transition-colors duration-500`}></div>
 
-      <div className="flex-1 flex flex-col items-center justify-center relative z-10 -mt-6">
+      <div className="absolute top-6 left-0 right-0 z-20 flex justify-center">
+        <Logo variant="full" size="lg" className={isDarkMode ? 'text-white' : 'text-gray-900'} />
+      </div>
+
+      <div className="flex-1 flex flex-col items-center justify-center relative z-10 mt-8">
         <div className="relative w-[85vw] max-w-[320px] md:max-w-[400px] lg:max-w-[450px] h-[360px] md:h-[420px] lg:h-[480px] flex items-center justify-center">
           <div 
             className={`absolute w-44 h-64 sm:w-48 sm:h-72 md:w-56 md:h-80 lg:w-64 lg:h-96 rounded-[28px] overflow-hidden shadow-2xl border-[3px] animate-float-back transition-colors duration-500 ${isDarkMode ? 'border-white/5' : 'border-white'}`}
@@ -147,7 +152,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           </div>
 
           <div className="absolute bottom-10 sm:bottom-12 -right-0 sm:-right-2 z-30">
-            <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#32D583] flex items-center justify-center shadow-lg shadow-[#32D583]/30 border-4 transition-colors duration-500 ${isDarkMode ? 'border-[#121214]' : 'border-[#F2F2F7]'}`}>
+            <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-lg border-4 transition-colors duration-500 ${isDarkMode ? 'border-[#121214]' : 'border-[#F2F2F7]'}`} style={{ backgroundColor: BRAND.colors.primary, boxShadow: `0 10px 25px ${BRAND.colors.primary}40` }}>
               <Heart className="text-white fill-current" size={20} />
             </div>
           </div>
@@ -156,7 +161,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         <div className="text-center mt-6 sm:mt-8 px-8 relative z-20">
           <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 tracking-tight leading-tight transition-colors duration-500 ${themeStyles.textTitle}`}>
             Trouvez Votre <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#32D583] to-[#22C55E]">Match Idéal</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#535BF3] to-[#474FE7]">Match Idéal</span>
           </h1>
           <p className={`text-xs sm:text-sm leading-relaxed max-w-[280px] mx-auto transition-colors duration-500 ${themeStyles.textSub}`}>
             Rencontrez de nouvelles personnes, créez de vraies connexions et voyez où cela mène.
@@ -167,14 +172,14 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       <div className="px-6 pb-8 sm:pb-12 w-full max-w-sm mx-auto z-20">
         <div 
           ref={containerRef}
-          className={`relative h-14 sm:h-16 rounded-full flex items-center px-2 overflow-hidden border transition-all duration-500 ${isCompleted ? 'border-action-green/50' : ''} ${themeStyles.sliderBg}`}
+          className={`relative h-14 sm:h-16 rounded-full flex items-center px-2 overflow-hidden border transition-all duration-500 ${isCompleted ? 'border-[#474FE7]/50' : ''} ${themeStyles.sliderBg}`}
         >
           <div className="absolute inset-0 flex items-center justify-center">
             <span className={`text-xs sm:text-sm font-semibold tracking-widest uppercase transition-all duration-500 ${
               isCompleted 
-              ? 'text-action-green scale-110' 
+              ? 'scale-110' 
               : 'animate-pulse'
-            }`}>
+            }`} style={isCompleted ? { color: BRAND.colors.primary } : {}}>
               {isCompleted ? 'Bienvenue' : (
                 <span className={`bg-gradient-to-r ${themeStyles.shimmerText} bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer-text`}>
                   Commencer &gt;&gt;&gt;
@@ -184,15 +189,15 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           </div>
 
           <div 
-            className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-action-green/20 to-action-green/5 transition-all duration-75"
+            className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-[#474FE7]/20 to-[#474FE7]/5 transition-all duration-75"
             style={{ width: `${dragX + 56}px` }}
           />
 
           <div
             className={`absolute w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-lg flex items-center justify-center cursor-grab active:cursor-grabbing z-10 transition-transform duration-75 ${
-              isCompleted ? 'bg-action-green text-black scale-110' : 'bg-action-red text-white'
+              isCompleted ? 'text-white scale-110' : 'text-white'
             }`}
-            style={handleStyle}
+            style={{ ...handleStyle, backgroundColor: BRAND.colors.primary }}
             onMouseDown={handleDragStart}
             onTouchStart={handleDragStart}
           >
