@@ -27,7 +27,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentView, set
         <div className="flex items-center gap-3">
           <Logo variant="icon-filled" size="md" />
           <div>
-            <h1 className="text-xl font-bold" style={{ color: BRAND.colors.primary }}>
+            <h1 className="text-xl font-bold text-[#32D583]">
               {BRAND.name}
             </h1>
             <p className={`text-[10px] ${theme.textSub}`}>{BRAND.tagline}</p>

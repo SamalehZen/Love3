@@ -67,7 +67,7 @@ export const Logo: React.FC<LogoProps> = ({
       >
         <g clipPath="url(#clip0_logo)">
           <g filter="url(#filter0_logo)">
-            <rect x="1" y="0.358643" width="44" height="44" rx="9.5" fill="#474FE7"/>
+            <rect x="1" y="0.358643" width="44" height="44" rx="9.5" fill="#32D583"/>
             <rect x="1.91667" y="1.27531" width="42.1667" height="42.1667" rx="8.58333" stroke="url(#paint0_logo)" strokeWidth="1.83333"/>
             <rect opacity="0.4" x="12.6328" y="11.988" width="20.741" height="20.741" rx="4.1482" fill="white"/>
             <rect opacity="0.2" x="9" y="15.6177" width="20.741" height="20.741" rx="4.1482" fill="white"/>
@@ -83,12 +83,12 @@ export const Logo: React.FC<LogoProps> = ({
             <feOffset dy="-17.875"/>
             <feGaussianBlur stdDeviation="11"/>
             <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
-            <feColorMatrix type="matrix" values="0 0 0 0 0.278431 0 0 0 0 0.309804 0 0 0 0 0.905882 0 0 0 0.3 0"/>
+            <feColorMatrix type="matrix" values="0 0 0 0 0.196 0 0 0 0 0.835 0 0 0 0 0.514 0 0 0 0.3 0"/>
             <feBlend mode="normal" in2="shape" result="effect1_innerShadow"/>
           </filter>
           <linearGradient id="paint0_logo" x1="23" y1="0.358643" x2="23" y2="44.3586" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#535BF3"/>
-            <stop offset="1" stopColor="#3B43DB"/>
+            <stop stopColor="#4ADE80"/>
+            <stop offset="1" stopColor="#22C55E"/>
           </linearGradient>
           <clipPath id="clip0_logo">
             <rect x="1" y="0.358643" width="44" height="44" rx="9.5" fill="white"/>
@@ -112,7 +112,7 @@ export const Logo: React.FC<LogoProps> = ({
       >
         <g clipPath="url(#clip0_full)">
           <g filter="url(#filter0_full)">
-            <rect x="1" y="0.358643" width="44" height="44" rx="9.5" fill="#474FE7"/>
+            <rect x="1" y="0.358643" width="44" height="44" rx="9.5" fill="#32D583"/>
             <rect x="1.91667" y="1.27531" width="42.1667" height="42.1667" rx="8.58333" stroke="url(#paint0_full)" strokeWidth="1.83333"/>
             <rect opacity="0.4" x="12.6328" y="11.988" width="20.741" height="20.741" rx="4.1482" fill="white"/>
             <rect opacity="0.2" x="9" y="15.6177" width="20.741" height="20.741" rx="4.1482" fill="white"/>
@@ -129,12 +129,12 @@ export const Logo: React.FC<LogoProps> = ({
             <feOffset dy="-17.875"/>
             <feGaussianBlur stdDeviation="11"/>
             <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
-            <feColorMatrix type="matrix" values="0 0 0 0 0.278431 0 0 0 0 0.309804 0 0 0 0 0.905882 0 0 0 0.3 0"/>
+            <feColorMatrix type="matrix" values="0 0 0 0 0.196 0 0 0 0 0.835 0 0 0 0 0.514 0 0 0 0.3 0"/>
             <feBlend mode="normal" in2="shape" result="effect1_innerShadow"/>
           </filter>
           <linearGradient id="paint0_full" x1="23" y1="0.358643" x2="23" y2="44.3586" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#535BF3"/>
-            <stop offset="1" stopColor="#3B43DB"/>
+            <stop stopColor="#4ADE80"/>
+            <stop offset="1" stopColor="#22C55E"/>
           </linearGradient>
           <clipPath id="clip0_full">
             <rect x="1" y="0.358643" width="44" height="44" rx="9.5" fill="white"/>
@@ -149,7 +149,7 @@ export const Logo: React.FC<LogoProps> = ({
 
 export const LogoText: React.FC<{ className?: string; isDark?: boolean }> = ({ className = '', isDark = true }) => (
   <span className={`font-bold text-xl tracking-tight ${className}`}>
-    <span style={{ color: '#474FE7' }}>Overlay</span>
+    <span style={{ color: '#32D583' }}>Overlay</span>
   </span>
 );
 
@@ -157,9 +157,9 @@ export const BRAND = {
   name: 'Overlay',
   tagline: 'Trouvez votre match',
   colors: {
-    primary: '#474FE7',
-    primaryLight: '#535BF3',
-    primaryDark: '#3B43DB',
-    gradient: 'linear-gradient(180deg, #535BF3 0%, #3B43DB 100%)',
+    primary: '#32D583',
+    primaryLight: '#4ADE80',
+    primaryDark: '#22C55E',
+    gradient: 'linear-gradient(180deg, #4ADE80 0%, #22C55E 100%)',
   }
 };
