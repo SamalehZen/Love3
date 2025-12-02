@@ -3,6 +3,7 @@ import { Heart, X } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useHaptic } from '../hooks/useHaptic';
 import { Logo, BRAND } from './Logo';
+import { GridBackground, Spotlight } from './SpotlightBackground';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -102,10 +103,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   return (
     <div className={`h-full flex flex-col relative overflow-hidden transition-colors duration-500 ${themeStyles.bg}`}>
-      <div className={`absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r ${themeStyles.overlay} pointer-events-none transition-colors duration-500`}></div>
+      <GridBackground />
+      <Spotlight />
+      <div className={`absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-black/80 via-transparent to-[#010f08]/80 pointer-events-none transition-colors duration-500`}></div>
       
-      <div className="absolute top-4 sm:top-6 left-0 right-0 z-20 flex justify-center lg:justify-start lg:left-8 xl:left-12">
-        <Logo variant="full" size="lg" className={isDarkMode ? 'text-white' : 'text-gray-900'} />
+      <div className="absolute top-4 sm:top-6 left-0 right-0 z-30 flex justify-center lg:justify-start lg:left-8 xl:left-12">
+        <Logo variant="full" size="lg" className={isDarkMode ? 'text-white drop-shadow-lg' : 'text-gray-900 drop-shadow-lg'} />
       </div>
 
       <div className="flex-1 flex flex-col lg:flex-row items-center justify-center relative z-10 pt-16 lg:pt-0 lg:px-8 xl:px-16 gap-8 lg:gap-16 xl:gap-24">
