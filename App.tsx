@@ -3,6 +3,7 @@ import { Onboarding } from './components/Onboarding';
 import { SwipeCard } from './components/SwipeCard';
 import { ProfileDetail } from './components/ProfileDetail';
 import { BottomNav } from './components/BottomNav';
+import { DesktopSidebar } from './components/DesktopSidebar';
 import { ChatInterface } from './components/ChatInterface';
 import { MapContainer, Place } from './components/NearbyMap';
 import { Settings } from './components/Settings';
@@ -296,23 +297,37 @@ export function App() {
   };
 
   return (
-    <div className="flex justify-center min-h-screen bg-black font-sans">
-      <div className="w-full max-w-md h-[100dvh] relative bg-background shadow-2xl overflow-hidden flex flex-col">
-        <div className="flex-1 relative overflow-hidden">
-          {renderContent()}
-        </div>
-
+    <div className="min-h-screen bg-black font-sans">
+      <div className="flex h-[100dvh]">
         {view !== 'onboarding' && !showSettings && (
-          <BottomNav currentView={view} setView={setView} />
+          <aside className="hidden lg:flex lg:w-72 xl:w-80 flex-col bg-background border-r border-white/5">
+            <DesktopSidebar 
+              currentView={view} 
+              setView={setView} 
+              onOpenSettings={() => setShowSettings(true)}
+            />
+          </aside>
         )}
+        
+        <main className="flex-1 flex justify-center">
+          <div className="w-full max-w-md lg:max-w-2xl xl:max-w-4xl h-[100dvh] relative bg-background shadow-2xl overflow-hidden flex flex-col">
+            <div className="flex-1 relative overflow-hidden">
+              {renderContent()}
+            </div>
 
-        {showMatch && matchedProfile && (
-          <MatchAnimation
-            profiles={[USER_PROFILE, matchedProfile]}
-            onClose={handleMatchClose}
-            onMessage={handleMatchMessage}
-          />
-        )}
+            {view !== 'onboarding' && !showSettings && (
+              <BottomNav currentView={view} setView={setView} />
+            )}
+
+            {showMatch && matchedProfile && (
+              <MatchAnimation
+                profiles={[USER_PROFILE, matchedProfile]}
+                onClose={handleMatchClose}
+                onMessage={handleMatchMessage}
+              />
+            )}
+          </div>
+        </main>
       </div>
     </div>
   );

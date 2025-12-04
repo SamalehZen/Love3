@@ -11,7 +11,7 @@ export const ChatInterface: React.FC = () => {
     {
       id: '1',
       role: 'model',
-      text: "Hey! I'm Connexa AI. Need a catchy opener or profile advice? I'm here to help you win the dating game! 😉",
+      text: "Hey! I'm Overlay AI. Need a catchy opener or profile advice? I'm here to help you win the dating game! 😉",
       timestamp: new Date()
     }
   ]);
@@ -85,14 +85,14 @@ export const ChatInterface: React.FC = () => {
   }), [isDarkMode]);
 
   return (
-    <div className={`flex flex-col h-full pt-4 pb-24 transition-colors duration-500 ${themeStyles.bg}`}>
+    <div className={`flex flex-col h-full pt-4 pb-24 lg:pb-8 transition-colors duration-500 ${themeStyles.bg}`}>
       <div className={`px-6 pb-4 border-b flex items-center justify-between ${themeStyles.headerBorder}`}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-action-purple to-blue-500 flex items-center justify-center shadow-md">
             <Bot className="text-white" size={24} />
           </div>
           <div>
-            <h2 className={`font-semibold ${themeStyles.textMain}`}>Connexa AI</h2>
+            <h2 className={`font-semibold ${themeStyles.textMain}`}>Overlay AI</h2>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 bg-action-green rounded-full animate-pulse"></span>
               <span className={`text-xs ${themeStyles.textSub}`}>Online</span>
@@ -109,7 +109,7 @@ export const ChatInterface: React.FC = () => {
           const isUser = msg.role === 'user';
           return (
             <div key={msg.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`}>
-              <div className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-sm ${
+              <div className={`max-w-[80%] md:max-w-[70%] lg:max-w-[60%] rounded-2xl px-4 py-3 shadow-sm ${
                 isUser 
                   ? `${themeStyles.userBubble} rounded-tr-none font-medium` 
                   : `${themeStyles.aiBubble} rounded-tl-none`
@@ -137,7 +137,7 @@ export const ChatInterface: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="px-4">
+      <div className="px-4 md:px-8 lg:px-12 max-w-3xl mx-auto w-full">
         <div className="mb-2 flex gap-2 overflow-x-auto no-scrollbar">
           <button 
             onClick={handleFastIcebreaker}

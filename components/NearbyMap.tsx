@@ -192,7 +192,7 @@ const MapComponent = memo(
     }, [center.lat, center.lng]);
 
     return (
-      <div className={`relative w-full h-full overflow-hidden transition-colors duration-500 ${isDarkMode ? 'bg-[#121214]' : 'bg-[#F5F5F7]'} ${className}`}>
+      <div className={`relative w-full h-full overflow-hidden transition-colors duration-500 lg:rounded-2xl ${isDarkMode ? 'bg-[#121214]' : 'bg-[#F5F5F7]'} ${className}`}>
         <div className="absolute top-0 left-0 w-full z-[400] px-4 sm:px-6 pt-6 flex justify-between items-start pointer-events-none">
           <button className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border shadow-sm pointer-events-auto transition-colors active:scale-95 ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10 text-white' : 'bg-white/80 border-black/5 text-gray-800'} backdrop-blur-xl`}>
             <Menu size={20} />
@@ -216,7 +216,7 @@ const MapComponent = memo(
         <div ref={mapRef} className="absolute inset-0 z-0" />
 
         {activePlace && !isProfileOpen && (
-          <div className="absolute bottom-24 sm:bottom-28 left-4 right-4 z-[400] flex justify-center pointer-events-none">
+          <div className="absolute bottom-24 sm:bottom-28 lg:bottom-8 left-4 right-4 z-[400] flex justify-center pointer-events-none">
             <div className={`w-full max-w-sm p-3 sm:p-4 rounded-[24px] border shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-6 fade-in duration-500 pointer-events-auto ${isDarkMode ? 'bg-[#1C1C1E]/90 border-white/10 text-white' : 'bg-white/90 border-white/40 text-gray-900'}`}>
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="relative">
@@ -344,7 +344,7 @@ const MapComponent = memo(
           </div>
         )}
 
-        <div className="absolute bottom-24 sm:bottom-28 right-4 sm:right-6 z-[300]">
+        <div className="absolute bottom-24 sm:bottom-28 lg:bottom-8 right-4 sm:right-6 z-[300]">
           <button 
             className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border shadow-xl transition active:scale-95 backdrop-blur-md ${isDarkMode ? 'bg-[#1C1C1E]/80 border-white/10 text-white hover:bg-[#2C2C2E]' : 'bg-white/80 border-black/5 text-gray-800 hover:bg-gray-50'}`}
             onClick={handleRecenter}
