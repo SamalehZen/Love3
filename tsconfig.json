@@ -15,12 +15,34 @@
     ],
     "moduleResolution": "bundler",
     "isolatedModules": true,
+    "baseUrl": ".",
     "moduleDetection": "force",
     "allowJs": true,
     "jsx": "react-jsx",
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@components/*": [
+        "components/*"
+      ],
+      "@contexts/*": [
+        "contexts/*"
+      ],
+      "@hooks/*": [
+        "hooks/*"
+      ],
+      "@lib/*": [
+        "lib/*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@constants/*": [
+        "constants/*"
+      ],
+      "@types": [
+        "types.ts"
       ]
     },
     "allowImportingTsExtensions": true,

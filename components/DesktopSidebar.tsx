@@ -1,7 +1,10 @@
 import React from 'react';
-import { Home, MapPin, MessageCircle, Heart, User, Crown, Settings } from 'lucide-react';
-import { ViewState } from '../types';
-import { useTheme } from '../contexts/ThemeContext';
+import { MapPin, Inbox, MessageCircle, User, Crown, Settings } from 'lucide-react';
+import type { ViewState } from '@types';
+import { useTheme } from '@contexts/ThemeContext';
+import { useRequests } from '@contexts/RequestsContext';
+import { useConversations } from '@contexts/ConversationsContext';
+import { useAuth } from '@contexts/AuthContext';
 import { Logo, BRAND } from './Logo';
 
 interface DesktopSidebarProps {
@@ -11,15 +14,18 @@ interface DesktopSidebarProps {
 }
 
 const navItems = [
-  { id: 'swipe', icon: Home, label: 'Découvrir' },
-  { id: 'nearby', icon: MapPin, label: 'À proximité' },
-  { id: 'chat', icon: MessageCircle, label: 'Messages' },
-  { id: 'matches', icon: Heart, label: 'Mes Fans' },
+  { id: 'nearby', icon: MapPin, label: 'Carte' },
+  { id: 'requests', icon: Inbox, label: 'Demandes', badgeKey: 'requests' },
+  { id: 'conversations', icon: MessageCircle, label: 'Messages', badgeKey: 'messages' },
   { id: 'profile', icon: User, label: 'Mon Profil' },
 ] as const;
 
 export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentView, setView, onOpenSettings }) => {
   const { isDarkMode, theme } = useTheme();
+  const { pendingCount } = useRequests();
+  const { conversations } = useConversations();
+  const { profile } = useAuth();
+  const unreadCount = conversations.reduce((sum, conv) => sum + (conv.unread_count ?? 0), 0);
 
   return (
     <div className={`h-full flex flex-col py-6 px-4 animate-sidebar-slide ${theme.bg}`}>
@@ -39,6 +45,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentView, set
         {navItems.map((item) => {
           const isActive = currentView === item.id;
           const Icon = item.icon;
+          const badge = item.badgeKey === 'requests' ? pendingCount : item.badgeKey === 'messages' ? unreadCount : 0;
 
           return (
             <button
@@ -56,9 +63,12 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentView, set
               <span className={`font-medium ${isActive ? 'text-[#32D583]' : ''}`}>
                 {item.label}
               </span>
-              {isActive && (
-                <div className="ml-auto w-1.5 h-6 bg-[#32D583] rounded-full" />
-              )}
+              <div className="ml-auto flex items-center gap-2">
+                {badge > 0 && (
+                  <span className="px-2 py-0.5 rounded-full bg-action-purple text-white text-xs">{badge}</span>
+                )}
+                {isActive && <div className="w-1.5 h-6 bg-[#32D583] rounded-full" />}
+              </div>
             </button>
           );
         })}
@@ -85,12 +95,12 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentView, set
 
         <div className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${isDarkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-gray-100 hover:bg-gray-200'}`}>
           <img 
-            src="https://picsum.photos/100/100?random=1" 
+            src={profile?.photo_url ?? 'https://placehold.co/80x80?text=Moi'}
             className="w-10 h-10 rounded-full object-cover"
-            alt="Profile"
+            alt={profile?.name}
           />
           <div className="flex-1 min-w-0">
-            <p className={`font-medium text-sm truncate ${theme.textMain}`}>Lay M.</p>
+            <p className={`font-medium text-sm truncate ${theme.textMain}`}>{profile?.name ?? 'Mon profil'}</p>
             <p className={`text-xs ${theme.textSub}`}>Voir le profil</p>
           </div>
           <button 
