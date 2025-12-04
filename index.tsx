@@ -6,6 +6,9 @@ import { App } from './App';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { AuthProvider } from './contexts/AuthContext';
+import { ConversationsProvider } from './contexts/ConversationsContext';
+import { RequestsProvider } from './contexts/RequestsContext';
 
 const updateSW = registerSW({
   immediate: true,
@@ -28,7 +31,13 @@ root.render(
     <ErrorBoundary>
       <ThemeProvider>
         <NotificationProvider>
-          <App />
+          <AuthProvider>
+            <ConversationsProvider>
+              <RequestsProvider>
+                <App />
+              </RequestsProvider>
+            </ConversationsProvider>
+          </AuthProvider>
         </NotificationProvider>
       </ThemeProvider>
     </ErrorBoundary>

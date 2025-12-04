@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Heart, MessageCircle, X } from 'lucide-react';
-import { Profile } from '../types';
+import { Profile } from '@types';
 import { Button } from './ui/Button';
 
 interface MatchAnimationProps {
@@ -91,7 +91,7 @@ export const MatchAnimation: React.FC<MatchAnimationProps> = ({
           <div className="relative z-10 -mr-6 animate-slide-in-left">
             <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden border-4 border-white shadow-2xl">
               <img 
-                src={profiles[0].imageUrl} 
+                src={profiles[0].photo_url ?? 'https://placehold.co/200x200?text=Profil'} 
                 alt={profiles[0].name}
                 className="w-full h-full object-cover" 
               />
@@ -101,7 +101,7 @@ export const MatchAnimation: React.FC<MatchAnimationProps> = ({
           <div className="relative z-20 animate-slide-in-right">
             <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden border-4 border-white shadow-2xl">
               <img 
-                src={profiles[1].imageUrl} 
+                src={profiles[1].photo_url ?? 'https://placehold.co/200x200?text=Profil'} 
                 alt={profiles[1].name}
                 className="w-full h-full object-cover" 
               />

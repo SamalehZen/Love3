@@ -1,178 +1,276 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { Send, Sparkles, User, Bot, Bolt } from 'lucide-react';
-import { Message } from '../types';
-import { generateChatResponse, generateFastWittyReply } from '../services/geminiService';
-import { useTheme } from '../contexts/ThemeContext';
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, Heart, MapPin, Send, CheckCheck, Loader2 } from 'lucide-react';
+import { useAuth } from '@contexts/AuthContext';
+import { useTheme } from '@contexts/ThemeContext';
+import { useConversations } from '@contexts/ConversationsContext';
+import { useNotification } from '@contexts/NotificationContext';
+import { useRealtimeMessages } from '@hooks/useRealtimeMessages';
+import { supabase } from '@lib/supabase';
+import type { Message } from '@types';
+import { MatchAnimation } from './MatchAnimation';
 
-export const ChatInterface: React.FC = () => {
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'model',
-      text: "Hey! I'm Overlay AI. Need a catchy opener or profile advice? I'm here to help you win the dating game! 😉",
-      timestamp: new Date()
+interface ChatInterfaceProps {
+  onBack?: () => void;
+  onOpenPlaces: () => void;
+}
+
+interface SystemMessageContent {
+  type: 'system';
+  subtype: 'place_match';
+  place: {
+    name: string;
+    address?: string;
+  };
+}
+
+const parseSystemMessage = (content: string): SystemMessageContent | null => {
+  try {
+    const data = JSON.parse(content);
+    if (data?.type === 'system') {
+      return data as SystemMessageContent;
     }
-  ]);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { isDarkMode, theme } = useTheme();
+    return null;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onBack, onOpenPlaces }) => {
+  const { user, profile: currentProfile } = useAuth();
+  const { theme } = useTheme();
+  const { currentConversation } = useConversations();
+  const { success, error } = useNotification();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [showMatchAnimation, setShowMatchAnimation] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const partner = useMemo(
+    () => currentConversation?.participants?.find((p) => p.id !== user?.id) ?? null,
+    [currentConversation?.participants, user?.id]
+  );
+
+  const bothMatched = Boolean(currentConversation?.user1_matched && currentConversation?.user2_matched);
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping, scrollToBottom]);
-
-  const handleSend = useCallback(async () => {
-    if (!input.trim()) return;
-
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      text: input,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMsg]);
-    setInput('');
-    setIsTyping(true);
-
-    const aiResponseText = await generateChatResponse(messages, userMsg.text);
-
-    const aiMsg: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'model',
-      text: aiResponseText,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, aiMsg]);
-    setIsTyping(false);
-  }, [input, messages]);
-
-  const handleFastIcebreaker = useCallback(async () => {
-    setIsTyping(true);
-    const lastUserMsg = messages.filter(m => m.role === 'user').pop()?.text || "Hi there";
-    
-    const wittyReply = await generateFastWittyReply(lastUserMsg);
-    
-    setInput(wittyReply);
-    setIsTyping(false);
-  }, [messages]);
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+  const markAsRead = useCallback(async () => {
+    if (!currentConversation || !user) return;
+    try {
+      await supabase
+        .from('messages')
+        .update({ is_read: true })
+        .eq('conversation_id', currentConversation.id)
+        .neq('sender_id', user.id);
+    } catch (err) {
+      console.error('Failed to mark read', err);
     }
-  }, [handleSend]);
+  }, [currentConversation, user]);
 
-  const themeStyles = useMemo(() => ({
-    bg: isDarkMode ? 'bg-background' : 'bg-[#F2F2F7]',
-    headerBorder: isDarkMode ? 'border-white/5' : 'border-gray-200',
-    textMain: isDarkMode ? 'text-white' : 'text-gray-900',
-    textSub: isDarkMode ? 'text-gray-400' : 'text-gray-500',
-    userBubble: 'bg-[#32D583] text-black',
-    aiBubble: isDarkMode ? 'bg-surface border border-white/5 text-gray-200' : 'bg-white border border-gray-200 text-gray-800 shadow-sm',
-    inputBg: isDarkMode ? 'bg-surface' : 'bg-white',
-    inputBorder: isDarkMode ? 'border-white/10' : 'border-gray-200',
-    typingDot: isDarkMode ? 'bg-gray-500' : 'bg-gray-400',
-    suggestionBg: isDarkMode ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-gray-200 hover:bg-gray-50 shadow-sm',
-    suggestionText: isDarkMode ? 'text-gray-300' : 'text-gray-700',
-  }), [isDarkMode]);
+  useEffect(() => {
+    if (!currentConversation) {
+      setMessages([]);
+      return;
+    }
+    setLoading(true);
+    const loadMessages = async () => {
+      const { data, error: fetchError } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('conversation_id', currentConversation.id)
+        .order('created_at', { ascending: true });
+      if (fetchError) {
+        console.error(fetchError);
+        error('Impossible de charger les messages');
+      } else {
+        setMessages(data as Message[]);
+        markAsRead();
+      }
+      setLoading(false);
+      scrollToBottom();
+    };
+
+    loadMessages();
+  }, [currentConversation, error, markAsRead, scrollToBottom]);
+
+  useRealtimeMessages(currentConversation?.id ?? null, {
+    onInsert: (message) => {
+      setMessages((prev) => [...prev, message]);
+      if (message.sender_id !== user?.id) {
+        markAsRead();
+      }
+      scrollToBottom();
+    },
+    onUpdate: (message) => {
+      setMessages((prev) => prev.map((msg) => (msg.id === message.id ? message : msg)));
+    },
+  });
+
+  useEffect(() => {
+    if (bothMatched) {
+      setShowMatchAnimation(true);
+    }
+  }, [bothMatched]);
+
+  const handleSend = async (event?: FormEvent) => {
+    event?.preventDefault();
+    if (!input.trim() || !currentConversation || !user) return;
+    setSending(true);
+    try {
+      await supabase.from('messages').insert({
+        conversation_id: currentConversation.id,
+        sender_id: user.id,
+        content: input.trim(),
+      });
+      setInput('');
+      scrollToBottom();
+    } catch (err) {
+      error('Envoi impossible');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleMatchClick = async () => {
+    if (!currentConversation || !user) return;
+    const field = currentConversation.user1_id === user.id ? 'user1_matched' : 'user2_matched';
+    try {
+      await supabase.from('conversations').update({ [field]: true }).eq('id', currentConversation.id);
+      success('Match envoyé');
+    } catch (err) {
+      error('Action impossible');
+    }
+  };
+
+  const renderMessage = (message: Message) => {
+    const isOwn = message.sender_id === user?.id;
+    const systemContent = parseSystemMessage(message.content);
+
+    if (systemContent?.subtype === 'place_match') {
+      return (
+        <div key={message.id} className="w-full flex justify-center">
+          <button
+            className="px-4 py-2 rounded-2xl bg-action-green/10 text-action-green text-sm flex items-center gap-2"
+            onClick={() => {
+              const query = encodeURIComponent(systemContent.place.name + ' ' + (systemContent.place.address ?? ''));
+              window.open(`https://maps.google.com/?q=${query}`, '_blank');
+            }}
+          >
+            <MapPin size={14} /> 🎉 Match! Vous vous retrouvez à {systemContent.place.name}
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div key={message.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
+        <div
+          className={`max-w-[75%] rounded-3xl px-4 py-3 mb-2 ${
+            isOwn ? 'bg-action-green text-black rounded-br-sm' : 'bg-white/5 text-white rounded-bl-sm'
+          }`}
+        >
+          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+          <div className="flex items-center gap-1 justify-end text-[10px] mt-1 opacity-70">
+            <span>{new Date(message.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+            {isOwn && (
+              <CheckCheck size={12} className={message.is_read ? 'text-black' : 'text-black/60'} />
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  if (!currentConversation) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-400">
+        Sélectionnez une conversation.
+      </div>
+    );
+  }
 
   return (
-    <div className={`flex flex-col h-full pt-4 pb-24 lg:pb-8 transition-colors duration-500 ${themeStyles.bg}`}>
-      <div className={`px-6 pb-4 border-b flex items-center justify-between ${themeStyles.headerBorder}`}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-action-purple to-blue-500 flex items-center justify-center shadow-md">
-            <Bot className="text-white" size={24} />
-          </div>
-          <div>
-            <h2 className={`font-semibold ${themeStyles.textMain}`}>Overlay AI</h2>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 bg-action-green rounded-full animate-pulse"></span>
-              <span className={`text-xs ${themeStyles.textSub}`}>Online</span>
-            </div>
-          </div>
-        </div>
-        <button className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isDarkMode ? 'bg-surface hover:bg-white/5 border-white/10' : 'bg-white hover:bg-gray-50 border-gray-200 shadow-sm'} border`}>
-          <Sparkles className="text-[#32D583]" size={20} />
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
-        {messages.map((msg) => {
-          const isUser = msg.role === 'user';
-          return (
-            <div key={msg.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`}>
-              <div className={`max-w-[80%] md:max-w-[70%] lg:max-w-[60%] rounded-2xl px-4 py-3 shadow-sm ${
-                isUser 
-                  ? `${themeStyles.userBubble} rounded-tr-none font-medium` 
-                  : `${themeStyles.aiBubble} rounded-tl-none`
-              }`}>
-                <p className="text-sm leading-relaxed">{msg.text}</p>
-                <p className={`text-[10px] opacity-60 mt-1 text-right ${isUser ? 'text-black/70' : themeStyles.textSub}`}>
-                  {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-        
-        {isTyping && (
-          <div className="flex justify-start animate-fade-in">
-            <div className={`rounded-2xl rounded-tl-none px-4 py-3 ${themeStyles.aiBubble}`}>
-              <div className="flex gap-1">
-                <span className={`w-2 h-2 rounded-full animate-bounce ${themeStyles.typingDot}`}></span>
-                <span className={`w-2 h-2 rounded-full animate-bounce ${themeStyles.typingDot}`} style={{ animationDelay: '0.1s' }}></span>
-                <span className={`w-2 h-2 rounded-full animate-bounce ${themeStyles.typingDot}`} style={{ animationDelay: '0.2s' }}></span>
-              </div>
-            </div>
-          </div>
+    <div className="flex flex-col h-full">
+      <header className="flex items-center gap-4 px-6 py-4 border-b border-white/5">
+        {onBack && (
+          <button onClick={onBack} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center">
+            <ArrowLeft />
+          </button>
         )}
-        <div ref={messagesEndRef} />
-      </div>
-
-      <div className="px-4 md:px-8 lg:px-12 max-w-3xl mx-auto w-full">
-        <div className="mb-2 flex gap-2 overflow-x-auto no-scrollbar">
-          <button 
-            onClick={handleFastIcebreaker}
-            className="flex items-center gap-2 bg-action-purple/10 border border-action-purple/30 text-action-purple px-3 py-1.5 rounded-full text-xs whitespace-nowrap hover:bg-action-purple/20 transition-colors"
-          >
-            <Bolt size={12} />
-            Generate Witty Reply
-          </button>
-          <button 
-            onClick={() => setInput("How do I improve my bio?")}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-colors border ${themeStyles.suggestionBg} ${themeStyles.suggestionText}`}
-          >
-            <User size={12} />
-            Bio Help
-          </button>
-        </div>
-
-        <div className="relative flex items-center gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
-            className={`flex-1 rounded-full pl-5 pr-12 py-3.5 border focus:outline-none focus:border-[#32D583]/50 text-sm transition-colors ${themeStyles.inputBg} ${themeStyles.textMain} ${themeStyles.inputBorder} placeholder-gray-400`}
+        <div className="flex items-center gap-4">
+          <img
+            src={partner?.photo_url ?? 'https://placehold.co/80x80?text=Chat'}
+            alt={partner?.name}
+            className="w-12 h-12 rounded-2xl object-cover"
           />
-          <button 
-            onClick={handleSend}
-            disabled={!input.trim()}
-            className="absolute right-2 p-2 bg-[#32D583] rounded-full text-black disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform shadow-md"
+          <div>
+            <h2 className={`text-lg font-semibold ${theme.textMain}`}>{partner?.name}</h2>
+            <p className="text-xs text-gray-400 flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${partner?.is_online ? 'bg-action-green' : 'bg-gray-500'}`} />
+              {partner?.is_online ? 'En ligne' : 'Hors ligne'}
+            </p>
+          </div>
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            onClick={handleMatchClick}
+            disabled={currentConversation.user1_id === user?.id ? currentConversation.user1_matched : currentConversation.user2_matched}
+            className={`px-4 py-2 rounded-full border flex items-center gap-2 ${
+              bothMatched ? 'border-action-green text-action-green' : 'border-white/10 text-white'
+            }`}
           >
-            <Send size={18} />
+            <Heart className="fill-current" size={18} /> Match
+          </button>
+          <button
+            onClick={onOpenPlaces}
+            className="px-4 py-2 rounded-full border border-white/10 text-white flex items-center gap-2"
+          >
+            <MapPin size={18} /> Lieux
           </button>
         </div>
+      </header>
+
+      <div className="flex-1 overflow-y-auto px-4 py-6">
+        {loading ? (
+          <div className="flex items-center justify-center h-full text-gray-400">
+            <Loader2 className="animate-spin" />
+          </div>
+        ) : (
+          messages.map(renderMessage)
+        )}
+        <div ref={bottomRef} />
       </div>
+
+      <form onSubmit={handleSend} className="px-6 py-4 border-t border-white/5 flex items-center gap-3">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Écrire un message"
+          className="flex-1 rounded-full bg-white/5 border border-white/10 px-5 py-3 text-white focus:outline-none"
+        />
+        <button
+          type="submit"
+          className="w-12 h-12 rounded-full bg-action-green text-black flex items-center justify-center"
+          disabled={sending || !input.trim()}
+        >
+          {sending ? <Loader2 className="animate-spin" /> : <Send size={18} />}
+        </button>
+      </form>
+
+      {showMatchAnimation && partner && currentProfile && (
+        <MatchAnimation
+          profiles={[currentProfile, partner]}
+          onClose={() => setShowMatchAnimation(false)}
+          onMessage={() => {
+            setShowMatchAnimation(false);
+            onOpenPlaces();
+          }}
+        />
+      )}
     </div>
   );
 };
