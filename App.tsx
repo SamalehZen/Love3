@@ -25,7 +25,7 @@ export function App() {
 
   const [view, setView] = useState<ViewState>('onboarding');
   const [placeConversationId, setPlaceConversationId] = useState<string | null>(null);
-  const { location } = useGeolocation(Boolean(user) && view !== 'onboarding');
+  const { location, isAcquiring } = useGeolocation(Boolean(user) && view !== 'onboarding');
 
   useEffect(() => {
     if (!authLoading && user && profile && view === 'onboarding') {
@@ -62,7 +62,7 @@ export function App() {
 
     switch (view) {
       case 'nearby':
-        return <NearbyMap location={location} />;
+        return <NearbyMap location={location} isAcquiring={isAcquiring} />;
       case 'requests':
         return <Requests />;
       case 'conversations':
@@ -87,7 +87,7 @@ export function App() {
       case 'profile':
         return <ProfileDetail onOpenSettings={() => null} />;
       default:
-        return <NearbyMap location={location} />;
+        return <NearbyMap location={location} isAcquiring={isAcquiring} />;
     }
   };
 

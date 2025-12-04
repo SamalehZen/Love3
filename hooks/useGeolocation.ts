@@ -12,9 +12,14 @@ export const useGeolocation = (enabled: boolean) => {
   const [permission, setPermission] = useState<PermissionState>('prompt');
   const [location, setLocation] = useState<Coordinates | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isAcquiring, setIsAcquiring] = useState(false);
   const watchIdRef = useRef<number | null>(null);
   const keepAliveRef = useRef<number | null>(null);
   const latestCoordsRef = useRef<Coordinates | null>(null);
+
+  useEffect(() => {
+    console.log('[useGeolocation] enabled:', enabled, 'user:', !!user, 'location:', location);
+  }, [enabled, user, location]);
 
   const updatePresence = useCallback(
     async (isOnline: boolean, coords?: Coordinates | null) => {
@@ -52,6 +57,8 @@ export const useGeolocation = (enabled: boolean) => {
       throw new Error('Geolocation unsupported');
     }
 
+    console.log('[useGeolocation] requestPermission called');
+    setIsAcquiring(true);
     return new Promise<void>((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -59,14 +66,18 @@ export const useGeolocation = (enabled: boolean) => {
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
           };
+          console.log('[useGeolocation] position acquired:', coords);
           latestCoordsRef.current = coords;
           setLocation(coords);
           setPermission('granted');
+          setIsAcquiring(false);
           updatePresence(true, coords).finally(resolve);
         },
         (err) => {
+          console.error('[useGeolocation] position error:', err);
           setError(err.message);
           setPermission('denied');
+          setIsAcquiring(false);
           reject(err);
         },
         { enableHighAccuracy: true }
@@ -86,10 +97,13 @@ export const useGeolocation = (enabled: boolean) => {
     let canceled = false;
 
     const track = async () => {
+      console.log('[useGeolocation] Starting GPS tracking...');
+      setIsAcquiring(true);
       try {
         if ('permissions' in navigator && (navigator.permissions as any)?.query) {
           const status = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
           if (!canceled) {
+            console.log('[useGeolocation] Permission status:', status.state);
             setPermission(status.state as PermissionState);
             status.onchange = () => setPermission(status.state as PermissionState);
           }
@@ -104,13 +118,17 @@ export const useGeolocation = (enabled: boolean) => {
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
           };
+          console.log('[useGeolocation] watchPosition success:', coords);
           latestCoordsRef.current = coords;
           setLocation(coords);
           setPermission('granted');
+          setIsAcquiring(false);
           updatePresence(true, coords);
         },
         (err) => {
+          console.error('[useGeolocation] watchPosition error:', err);
           setError(err.message);
+          setIsAcquiring(false);
         },
         { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
       );
@@ -152,5 +170,6 @@ export const useGeolocation = (enabled: boolean) => {
     error,
     requestPermission,
     isTracking: Boolean(enabled && user),
+    isAcquiring,
   };
 };

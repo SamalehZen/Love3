@@ -13,6 +13,7 @@ import { Skeleton } from './ui/Skeleton';
 
 interface NearbyMapProps {
   location: Coordinates | null;
+  isAcquiring?: boolean;
 }
 
 interface NearbyProfile extends Profile {
@@ -101,7 +102,7 @@ const LeafletMap = memo(
 
 LeafletMap.displayName = 'LeafletMap';
 
-export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
+export const NearbyMap: React.FC<NearbyMapProps> = ({ location, isAcquiring = false }) => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const { sendRequest } = useRequests();
@@ -193,8 +194,10 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
   if (!location) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center text-gray-400 p-8">
-        <MapPin size={32} />
-        <p className="mt-4">Activez la géolocalisation pour voir les couples proches.</p>
+        <MapPin size={32} className={isAcquiring ? 'animate-pulse' : ''} />
+        <p className="mt-4">
+          {isAcquiring ? 'Acquisition GPS en cours...' : 'Activez la géolocalisation pour voir les couples proches.'}
+        </p>
       </div>
     );
   }
