@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
-import { Filter, MapPin, SlidersHorizontal, UserPlus } from 'lucide-react';
+import { MapPin, SlidersHorizontal, UserPlus, AlertTriangle } from 'lucide-react';
 import type { Coordinates, MapFilters, Profile } from '@types';
 import { useAuth } from '@contexts/AuthContext';
 import { useTheme } from '@contexts/ThemeContext';
@@ -110,6 +110,7 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
   const [profiles, setProfiles] = useState<NearbyProfile[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [lastError, setLastError] = useState<string | null>(null);
 
   const fetchProfiles = useCallback(async () => {
     if (!user || !location) return;
@@ -130,14 +131,17 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
       }
       const { data, error: fetchError } = await query;
       if (fetchError) throw fetchError;
+      setLastError(null);
       const normalized = (data ?? []).map(normalizeProfile).filter((profile) => profile.location);
       setProfiles(normalized);
       if (normalized.length) {
         setSelectedId(normalized[0].id);
       }
     } catch (err) {
-      console.error(err);
-      error('Impossible de charger les couples à proximité');
+      const message = err instanceof Error ? err.message : 'Erreur inconnue';
+      console.error('NearbyMap fetchProfiles error:', err);
+      setLastError(message);
+      error(`Impossible de charger les couples à proximité (${message})`);
     } finally {
       setLoading(false);
     }
@@ -254,6 +258,24 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center">
           <Skeleton className="w-32 h-32 rounded-full" />
+        </div>
+      )}
+
+      {lastError && !loading && (
+        <div className="absolute top-[120px] left-4 right-4 z-[450]">
+          <div className="flex items-start gap-3 rounded-2xl border border-red-500/30 bg-[#1c0f10]/80 p-4 text-sm text-red-200 backdrop-blur">
+            <AlertTriangle className="text-red-400 flex-shrink-0" size={18} />
+            <div className="flex-1">
+              <p className="font-semibold text-red-100">Erreur Supabase</p>
+              <p className="mt-1 text-red-200/80 text-xs break-words">{lastError}</p>
+            </div>
+            <button
+              onClick={fetchProfiles}
+              className="text-xs font-semibold text-white/90 px-3 py-1 rounded-full bg-red-500/30 border border-red-500/40 hover:bg-red-500/40"
+            >
+              Réessayer
+            </button>
+          </div>
         </div>
       )}
 
