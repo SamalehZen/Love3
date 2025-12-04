@@ -130,7 +130,10 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
         query = query.eq('is_online', true);
       }
       const { data, error: fetchError } = await query;
-      if (fetchError) throw fetchError;
+      if (fetchError) {
+        const payload = fetchError.details || fetchError.hint || fetchError.message;
+        throw new Error(payload || fetchError.message);
+      }
       setLastError(null);
       const normalized = (data ?? []).map(normalizeProfile).filter((profile) => profile.location);
       setProfiles(normalized);
@@ -139,7 +142,8 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erreur inconnue';
-      console.error('NearbyMap fetchProfiles error:', err);
+      const stack = err instanceof Error && err.stack ? err.stack : String(err);
+      console.error('NearbyMap fetchProfiles error:', stack);
       setLastError(message);
       error(`Impossible de charger les couples à proximité (${message})`);
     } finally {
@@ -267,7 +271,7 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
             <AlertTriangle className="text-red-400 flex-shrink-0" size={18} />
             <div className="flex-1">
               <p className="font-semibold text-red-100">Erreur Supabase</p>
-              <p className="mt-1 text-red-200/80 text-xs break-words">{lastError}</p>
+              <p className="mt-1 text-red-200/80 text-xs break-words whitespace-pre-wrap">{lastError}</p>
             </div>
             <button
               onClick={fetchProfiles}
