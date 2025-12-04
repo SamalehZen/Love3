@@ -120,7 +120,8 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
         .from('profiles')
         .select('*')
         .neq('id', user.id)
-        .filter('location', 'st_d_within', `SRID=4326;POINT(${location.lng} ${location.lat}),50000`)
+                .filter('location', 'cs', `SRID=4326;POINT(${location.lng} ${location.lat})`)
+        .filter('location', 'dwithin', `SRID=4326;POINT(${location.lng} ${location.lat}),50000`)
         .gte('age', filters.minAge)
         .lte('age', filters.maxAge);
       if (filters.gender !== 'tous') {
