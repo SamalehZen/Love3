@@ -50,6 +50,7 @@ export interface PlaceSuggestion {
   rating?: number;
   lat?: number;
   lng?: number;
+  dataId?: string;
 }
 
 export interface Conversation {

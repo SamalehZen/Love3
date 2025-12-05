@@ -12,6 +12,7 @@ Application React/Vite transformée pour aider les couples existants à trouver 
 3. **Initialiser la base Supabase**
    - Créez un projet Supabase.
    - Dans le SQL Editor, exécutez le contenu de `supabase/schema.sql` pour créer les tables, contraintes et activer la RLS.
+   - Exécutez également `supabase/nearby_profiles_function.sql` afin de créer la fonction RPC utilisée par la carte.
    - Activez Realtime sur `profiles`, `connection_requests`, `conversations` et `messages`.
 4. **Lancer l’application**
    ```bash
@@ -24,21 +25,20 @@ Application React/Vite transformée pour aider les couples existants à trouver 
 | --- | --- |
 | `VITE_SUPABASE_URL` | URL du projet Supabase |
 | `VITE_SUPABASE_ANON_KEY` | Clé Anon publique Supabase |
-| `VITE_SERPER_API_KEY` | Clé Serper pour la recherche de lieux Google |
-| `VITE_GOOGLE_MAPS_API_KEY` | Clé Google Maps (utilisée pour ouvrir les lieux matchés) |
+| `VITE_SERPAPI_KEY` | Clé SerpApi utilisée pour Google Maps (search, photos, place) |
 
 ## Fonctionnalités principales
 
 - **Auth & Profil** : email/password + Google OAuth, création de profil enrichi, persistance via Supabase.
 - **Géolocalisation** : hook dédié pour suivre la présence, mettre à jour `profiles.location` et l’état en ligne.
-- **Carte temps réel** : Leaflet + Supabase/PostGIS pour afficher les couples dans un rayon de 50 km avec filtres avancés.
+- **Carte temps réel** : Leaflet + Supabase/PostGIS + SerpApi pour afficher les couples dans un rayon de 50 km avec filtres avancés.
 - **Demandes** : contexte dédié avec subscriptions Realtime, onglets “Reçues / Envoyées”, toasts et redirection automatique vers le chat.
 - **Chat** : conversations Supabase, messages live, indicateur “vu”, bouton ❤️ Match et transition automatique vers le swipe de lieux.
-- **Match de lieux** : intégration Serper, stockage de la liste partagée dans `conversations.places_list`, enregistrement des swipes et animation quand un lieu est validé par les deux.
+- **Match de lieux** : intégration SerpApi (Google Maps search/photos/place), stockage de la liste partagée dans `conversations.places_list`, enregistrement des swipes et animation quand un lieu est validé par les deux.
 
 ## Structure Supabase
 
-Le schéma complet (tables `profiles`, `connection_requests`, `conversations`, `messages`, `place_swipes`) se trouve dans `supabase/schema.sql`. Pensez à ajouter vos politiques RLS personnalisées selon vos règles métier.
+Le schéma complet (tables `profiles`, `connection_requests`, `conversations`, `messages`, `place_swipes`, fonction `nearby_profiles`) se trouve dans `supabase/schema.sql` et `supabase/nearby_profiles_function.sql`. Pensez à ajouter vos politiques RLS personnalisées selon vos règles métier.
 
 ## Scripts utiles
 

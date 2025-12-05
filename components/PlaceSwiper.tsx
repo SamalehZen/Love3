@@ -10,7 +10,6 @@ import { useHaptic } from '@hooks/useHaptic';
 import { PlaceMatchAnimation } from './PlaceMatchAnimation';
 import { Button } from './ui/Button';
 
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 interface PlaceSwiperProps {
   conversation: Conversation;
@@ -228,9 +227,7 @@ export const PlaceSwiper: React.FC<PlaceSwiperProps> = ({ conversation, coordina
           placeAddress={matchedPlace.address}
           onOpenMaps={() => {
             const query = encodeURIComponent(matchedPlace.name + ' ' + (matchedPlace.address ?? ''));
-            const url = GOOGLE_MAPS_API_KEY
-              ? `https://www.google.com/maps/embed/v1/search?key=${GOOGLE_MAPS_API_KEY}&q=${query}`
-              : `https://maps.google.com/?q=${query}`;
+            const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
             window.open(url, '_blank');
           }}
           onContinue={() => {
