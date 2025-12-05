@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ViewState } from '@types';
 import { Onboarding } from '@components/Onboarding';
-import { NearbyMap } from '@components/NearbyMap';
+import { OnlineUsersList } from '@components/OnlineUsersList';
 import { Requests } from '@components/Requests';
 import { ConversationsList } from '@components/ConversationsList';
 import { ChatInterface } from '@components/ChatInterface';
@@ -62,7 +62,7 @@ export function App() {
 
     switch (view) {
       case 'nearby':
-        return <NearbyMap location={location} isAcquiring={isAcquiring} />;
+        return <OnlineUsersList />;
       case 'requests':
         return <Requests />;
       case 'conversations':
@@ -87,7 +87,7 @@ export function App() {
       case 'profile':
         return <ProfileDetail onOpenSettings={() => null} />;
       default:
-        return <NearbyMap location={location} isAcquiring={isAcquiring} />;
+        return <OnlineUsersList />;
     }
   };
 

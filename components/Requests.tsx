@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Inbox, Send, Check, X, Loader2, Bell } from 'lucide-react';
+import { Inbox, Send, Check, X, Loader2, Bell, MessageSquare } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useRequests } from '@contexts/RequestsContext';
 import { useTheme } from '@contexts/ThemeContext';
@@ -172,6 +172,36 @@ export const Requests = () => {
                       <Button
                         variant="ghost"
                         onClick={() => handleReject(request.id)}
+                        className="border border-white/10 text-gray-300 hover:bg-white/5"
+                      >
+                        <X size={16} /> Refuser
+                      </Button>
+                      <Button variant="primary" onClick={() => handleAccept(request.id)}>
+                        <Check size={16} /> Accepter
+                      </Button>
+                    </div>
+                  )}
+
+                  {activeTab === 'sent' && request.status === 'pending' && (
+                    <div className="mt-3 text-xs text-amber-400">En attente de réponse</div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-32 h-2 rounded-full bg-white/10">
+          <div
+            className="h-full bg-action-green rounded-full transition-all"
+            style={{ width: `${progress * 100}%`, opacity: isRefreshing ? 1 : progress }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+=> handleReject(request.id)}
                         className="border border-white/10 text-gray-300 hover:bg-white/5"
                       >
                         <X size={16} /> Refuser

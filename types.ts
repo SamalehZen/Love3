@@ -22,11 +22,17 @@ export interface Profile {
   updated_at?: string;
 }
 
+export interface QuestionAnswer {
+  question: string;
+  answer: string;
+}
+
 export interface ConnectionRequest {
   id: string;
   from_user_id: string;
   to_user_id: string;
   status: 'pending' | 'accepted' | 'rejected';
+  introduction_answers?: QuestionAnswer[] | null;
   created_at: string;
   from_user?: Profile;
   to_user?: Profile;

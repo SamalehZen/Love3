@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Inbox, MessageCircle, User, Crown, Settings } from 'lucide-react';
+import { Users, Inbox, MessageCircle, User, Crown, Settings } from 'lucide-react';
 import type { ViewState } from '@types';
 import { useTheme } from '@contexts/ThemeContext';
 import { useRequests } from '@contexts/RequestsContext';
@@ -14,7 +14,7 @@ interface DesktopSidebarProps {
 }
 
 const navItems = [
-  { id: 'nearby', icon: MapPin, label: 'Carte' },
+  { id: 'nearby', icon: Users, label: 'Connexions' },
   { id: 'requests', icon: Inbox, label: 'Demandes', badgeKey: 'requests' },
   { id: 'conversations', icon: MessageCircle, label: 'Messages', badgeKey: 'messages' },
   { id: 'profile', icon: User, label: 'Mon Profil' },

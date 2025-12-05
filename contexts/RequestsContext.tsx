@@ -13,7 +13,7 @@ interface RequestsContextValue {
   lastAcceptedConversationId: string | null;
   acknowledgeAcceptedConversation: () => void;
   refreshRequests: () => Promise<void>;
-  sendRequest: (userId: string) => Promise<void>;
+  sendRequest: (userId: string, introductionAnswers?: { question: string; answer: string }[]) => Promise<void>;
   acceptRequest: (requestId: string) => Promise<void>;
   rejectRequest: (requestId: string) => Promise<void>;
 }
@@ -93,6 +93,7 @@ export const RequestsProvider = ({ children }: { children: ReactNode }) => {
             from_user_id: req.from_user_id,
             to_user_id: req.to_user_id,
             status: req.status,
+            introduction_answers: req.introduction_answers,
             created_at: req.created_at,
             from_user: req.from_user ? mapProfile(req.from_user) : undefined,
             to_user: req.to_user ? mapProfile(req.to_user) : undefined,
@@ -160,7 +161,7 @@ export const RequestsProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchRequests, info, openConversationWithUser, selectConversation, success, user]);
 
   const sendRequest = useCallback(
-    async (targetUserId: string) => {
+    async (targetUserId: string, introductionAnswers?: { question: string; answer: string }[]) => {
       if (!user) {
         errorToast('Vous devez être connecté.');
         return;
@@ -168,6 +169,7 @@ export const RequestsProvider = ({ children }: { children: ReactNode }) => {
       const { error } = await supabase.from('connection_requests').insert({
         from_user_id: user.id,
         to_user_id: targetUserId,
+        introduction_answers: introductionAnswers || null,
       });
       if (error) {
         if (error.code === '23505') {
