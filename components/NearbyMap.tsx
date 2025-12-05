@@ -13,6 +13,7 @@ import { Skeleton } from './ui/Skeleton';
 
 interface NearbyMapProps {
   location: Coordinates | null;
+  isAcquiring?: boolean;
 }
 
 interface NearbyProfile extends Profile {
@@ -101,7 +102,7 @@ const LeafletMap = memo(
 
 LeafletMap.displayName = 'LeafletMap';
 
-export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
+export const NearbyMap: React.FC<NearbyMapProps> = ({ location, isAcquiring = false }) => {
   const { user } = useAuth();
   const { theme } = useTheme();
   const { sendRequest } = useRequests();
@@ -116,21 +117,17 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
     if (!user || !location) return;
     setLoading(true);
     try {
-      let query = supabase
-        .from('profiles')
-        .select('*')
-        .neq('id', user.id)
-                .filter('location', 'cs', `SRID=4326;POINT(${location.lng} ${location.lat})`)
-        .filter('location', 'dwithin', `SRID=4326;POINT(${location.lng} ${location.lat}),50000`)
-        .gte('age', filters.minAge)
-        .lte('age', filters.maxAge);
-      if (filters.gender !== 'tous') {
-        query = query.eq('gender', filters.gender);
-      }
-      if (filters.onlineOnly) {
-        query = query.eq('is_online', true);
-      }
-      const { data, error: fetchError } = await query;
+      const { data, error: fetchError } = await supabase.rpc('nearby_profiles', {
+        user_lat: location.lat,
+        user_lng: location.lng,
+        radius_meters: 50000,
+        min_age: filters.minAge,
+        max_age: filters.maxAge,
+        filter_gender: filters.gender === 'tous' ? null : filters.gender,
+        online_only: filters.onlineOnly,
+        current_user_id: user.id
+      });
+      
       if (fetchError) {
         const payload = fetchError.details || fetchError.hint || fetchError.message;
         throw new Error(payload || fetchError.message);
@@ -197,8 +194,10 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location }) => {
   if (!location) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center text-gray-400 p-8">
-        <MapPin size={32} />
-        <p className="mt-4">Activez la géolocalisation pour voir les couples proches.</p>
+        <MapPin size={32} className={isAcquiring ? 'animate-pulse' : ''} />
+        <p className="mt-4">
+          {isAcquiring ? 'Acquisition GPS en cours...' : 'Activez la géolocalisation pour voir les couples proches.'}
+        </p>
       </div>
     );
   }
