@@ -112,21 +112,26 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location, isAcquiring = fa
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
   const fetchProfiles = useCallback(async () => {
     if (!user || !location) return;
     setLoading(true);
+    const params = {
+      user_lat: location.lat,
+      user_lng: location.lng,
+      radius_meters: 50000,
+      min_age: filters.minAge,
+      max_age: filters.maxAge,
+      filter_gender: filters.gender === 'tous' ? null : filters.gender,
+      online_only: filters.onlineOnly,
+      current_user_id: user.id
+    };
+    console.log('[NearbyMap] RPC params:', params);
     try {
-      const { data, error: fetchError } = await supabase.rpc('nearby_profiles', {
-        user_lat: location.lat,
-        user_lng: location.lng,
-        radius_meters: 50000,
-        min_age: filters.minAge,
-        max_age: filters.maxAge,
-        filter_gender: filters.gender === 'tous' ? null : filters.gender,
-        online_only: filters.onlineOnly,
-        current_user_id: user.id
-      });
+      const { data, error: fetchError } = await supabase.rpc('nearby_profiles', params);
+      
+      console.log('[NearbyMap] RPC response:', { data, error: fetchError });
       
       if (fetchError) {
         const payload = fetchError.details || fetchError.hint || fetchError.message;
@@ -134,7 +139,9 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location, isAcquiring = fa
       }
       setLastError(null);
       const normalized = (data ?? []).map(normalizeProfile).filter((profile) => profile.location);
+      console.log('[NearbyMap] Normalized profiles:', normalized.length, normalized);
       setProfiles(normalized);
+      setDebugInfo(`RPC OK: ${normalized.length} profils trouvés (rayon 50km, user=${user.id.slice(0,8)}...)`);
       if (normalized.length) {
         setSelectedId(normalized[0].id);
       }
@@ -279,6 +286,14 @@ export const NearbyMap: React.FC<NearbyMapProps> = ({ location, isAcquiring = fa
             >
               Réessayer
             </button>
+          </div>
+        </div>
+      )}
+
+      {debugInfo && !lastError && (
+        <div className="absolute top-[120px] left-4 right-4 z-[450]">
+          <div className="rounded-2xl border border-blue-500/30 bg-[#0f1520]/80 p-3 text-xs text-blue-200 backdrop-blur">
+            <p className="font-mono">{debugInfo}</p>
           </div>
         </div>
       )}
