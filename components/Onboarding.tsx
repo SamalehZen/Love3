@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, Loader2, Heart, Sparkles, Users } from 'lucide-react';
+import { Eye, EyeOff, Loader2, ChevronRight, Heart } from 'lucide-react';
 import { useTheme } from '@contexts/ThemeContext';
 import { useAuth } from '@contexts/AuthContext';
 import { useNotification } from '@contexts/NotificationContext';
@@ -47,6 +47,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     looking_for: 'tous' as LookingFor,
   });
   const [submitting, setSubmitting] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const geolocationEnabled = step === 'location' && Boolean(user);
   const { permission, requestPermission, error: geoError } = useGeolocation(geolocationEnabled);
@@ -76,7 +77,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     setSubmitting(true);
     try {
       await signInWithEmail(authValues.email, authValues.password);
-      success('Connexion réussie');
+      success('Welcome back');
       if (profile) {
         setStep('location');
       } else {
@@ -92,7 +93,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const handleSignUp = async (event: FormEvent) => {
     event.preventDefault();
     if (!signupValues.firstName || !signupValues.email || !signupValues.password) {
-      error('Prénom, email et mot de passe requis');
+      error('All fields are required');
       return;
     }
     setSubmitting(true);
@@ -102,7 +103,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         ...prev,
         name: `${signupValues.firstName} ${signupValues.lastName}`.trim()
       }));
-      success('Compte créé');
+      success('Account created');
       setStep('profile');
     } catch (err) {
       error((err as Error).message);
@@ -127,7 +128,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       : profileValues.age;
     
     if (!fullName || !profileValues.age) {
-      error('Nom et âge requis');
+      error('Name and age required');
       return;
     }
     setSubmitting(true);
@@ -144,7 +145,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         gender: profileValues.gender,
         looking_for: profileValues.looking_for,
       });
-      success('Profil enregistré');
+      success('Profile saved');
       setStep('location');
     } catch (err) {
       error((err as Error).message);
@@ -153,76 +154,60 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     }
   };
 
+  // Custom UI Components to match the design
+  const YellowButton = ({ children, onClick, disabled, className = '', type = 'button' }: any) => (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`w-full py-4 rounded-full bg-[#FDC500] text-black font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all ${className} disabled:opacity-50 shadow-lg`}
+    >
+      {children}
+    </button>
+  );
+
+  const DarkInput = ({ label, ...props }: any) => (
+    <div className="space-y-2">
+      {label && <label className="text-white/70 text-sm font-medium ml-1">{label}</label>}
+      <input
+        {...props}
+        className={`w-full bg-[#1C1C1E] border-none rounded-xl px-4 py-4 text-white placeholder-white/30 focus:ring-2 focus:ring-[#FDC500] outline-none transition-all ${props.className || ''}`}
+      />
+    </div>
+  );
+
   if (step === 'welcome') {
     return (
-      <div className="h-full w-full relative overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-gradient-to-br from-[#C17B4A] via-[#8B5A3C] to-[#1a1410]"
-          style={{
-            backgroundImage: `
-              linear-gradient(135deg, rgba(193, 123, 74, 0.8) 0%, rgba(139, 90, 60, 0.9) 50%, rgba(26, 20, 16, 1) 100%),
-              repeating-linear-gradient(45deg, transparent, transparent 100px, rgba(0,0,0,0.1) 100px, rgba(0,0,0,0.1) 200px),
-              repeating-linear-gradient(-45deg, transparent, transparent 100px, rgba(0,0,0,0.05) 100px, rgba(0,0,0,0.05) 200px)
-            `
-          }}
-        />
-        
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-64 h-64 bg-[#FF6B35]/20 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-[#FFD23F]/15 rounded-full blur-[80px]" />
+      <div className="h-full w-full relative bg-black overflow-hidden flex flex-col">
+        {/* Background Image Section */}
+        <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black z-10" />
+            <img 
+              src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1000" 
+              alt="Luxury Car Background" 
+              className="w-full h-full object-cover opacity-60"
+            />
+        </div>
 
-        <div className="relative h-full flex flex-col items-center justify-between p-8 pt-16 pb-12">
-          <Logo variant="icon-white" size="lg" className="text-white drop-shadow-2xl" />
-
-          <div className="text-center space-y-6 px-4">
-            <h1 className="text-5xl font-bold text-white leading-tight drop-shadow-lg">
-              Overlay
+        {/* Content */}
+        <div className="relative z-20 flex-1 flex flex-col justify-end p-6 pb-12 bg-gradient-to-t from-black via-black/80 to-transparent">
+          <div className="space-y-4 mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+              Get started with Love3
             </h1>
-            <p className="text-xl text-white/90 leading-relaxed max-w-sm mx-auto drop-shadow-md">
-              Trouvez l'amour et partagez des moments inoubliables
+            <p className="text-gray-300 text-lg max-w-xs font-medium">
+              Experience Seamless Connections With Love3 – Your Ultimate Match Companion.
             </p>
-            
-            <div className="flex items-center justify-center gap-8 pt-4">
-              <div className="flex flex-col items-center">
-                <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center mb-2">
-                  <Heart size={28} className="text-white" fill="white" />
-                </div>
-                <span className="text-xs text-white/80">Connexions</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center mb-2">
-                  <Users size={28} className="text-white" />
-                </div>
-                <span className="text-xs text-white/80">Communauté</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center mb-2">
-                  <Sparkles size={28} className="text-white" />
-                </div>
-                <span className="text-xs text-white/80">Expériences</span>
-              </div>
-            </div>
           </div>
 
-          <div className="w-full max-w-sm space-y-4">
-            <button
-              onClick={() => {
-                trigger('soft');
-                setStep('signup');
-              }}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-[#FF8C42] via-[#FFD23F] to-[#FFEA85] text-black font-bold text-lg shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-transform"
-            >
-              Créer un compte
-            </button>
-            <button
-              onClick={() => {
-                trigger('soft');
-                setStep('signin');
-              }}
-              className="w-full py-4 rounded-full bg-transparent border-2 border-white/30 text-white font-semibold text-base hover:bg-white/10 transition-colors backdrop-blur-sm"
-            >
-              J'ai déjà un compte
-            </button>
-          </div>
+          <YellowButton onClick={() => setStep('signin')}>
+            <span>Continue</span>
+            <div className="flex -space-x-1">
+               <ChevronRight size={20} />
+               <ChevronRight size={20} className="text-black/50" />
+               <ChevronRight size={20} className="text-black/20" />
+            </div>
+          </YellowButton>
         </div>
       </div>
     );
@@ -230,217 +215,170 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   if (step === 'signin') {
     return (
-      <div className="h-full w-full bg-gradient-to-b from-[#2d1f1a] via-[#1a1410] to-black px-6 py-12 overflow-auto">
-        <div className="max-w-md mx-auto">
-          <button
-            onClick={() => setStep('welcome')}
-            className="text-white/60 text-sm mb-8 hover:text-white transition-colors underline"
-          >
-            ← Retour
-          </button>
-
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FF8C42]/30 to-[#FFD23F]/30 rounded-3xl blur-2xl" />
-              <div className="relative w-32 h-32 bg-gradient-to-br from-[#4a3428] to-[#2d1f1a] rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl transform rotate-12 hover:rotate-0 transition-transform duration-500">
-                <Logo variant="icon-white" size="lg" className="text-white" />
-              </div>
+      <div className="h-full w-full bg-black text-white flex flex-col overflow-auto">
+        {/* Header */}
+        <div className="pt-12 pb-6 px-6">
+            <div className="flex justify-between items-center mb-8">
+                 <button onClick={() => setStep('welcome')} className="p-2 -ml-2 text-white/60 hover:text-white flex items-center gap-2 transition-colors">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                    <span className="text-sm font-medium">Back</span>
+                 </button>
             </div>
-          </div>
+            <h2 className="text-3xl font-bold mb-3">Hop In - Log In to Your Love3 Account</h2>
+            <p className="text-gray-400 text-sm leading-relaxed max-w-md">
+                Access your matches, chat history, manage profile, and connect anywhere with ease.
+            </p>
+        </div>
 
-          <h2 className="text-3xl font-bold text-white text-center mb-2">
-            Se connecter à Overlay
-          </h2>
-          <p className="text-white/60 text-center mb-8">
-            Retrouvez votre compte
-          </p>
-
-          <form onSubmit={handleSignIn} className="space-y-5">
-            <div>
-              <label className="text-white/80 text-sm block mb-2">Email</label>
-              <div className="relative">
-                <input
-                  type="email"
-                  value={authValues.email}
-                  onChange={(e) => setAuthValues(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="Entrez votre email"
-                  className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-[#FF8C42]/50 transition-colors"
+        {/* Form */}
+        <div className="flex-1 px-6 pb-8 space-y-6">
+            <form onSubmit={handleSignIn} className="space-y-5">
+                <DarkInput 
+                    label="Email"
+                    type="email"
+                    placeholder="name@example.com"
+                    value={authValues.email}
+                    onChange={(e: any) => setAuthValues(prev => ({ ...prev, email: e.target.value }))}
                 />
-              </div>
-            </div>
 
-            <div>
-              <label className="text-white/80 text-sm block mb-2">Mot de passe</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={authValues.password}
-                  onChange={(e) => setAuthValues(prev => ({ ...prev, password: e.target.value }))}
-                  placeholder="Entrez votre mot de passe"
-                  className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-[#FF8C42]/50 transition-colors"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+                <div className="space-y-2">
+                    <label className="text-white/70 text-sm font-medium ml-1">Password</label>
+                    <div className="relative">
+                        <input
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="••••••"
+                            value={authValues.password}
+                            onChange={(e) => setAuthValues(prev => ({ ...prev, password: e.target.value }))}
+                            className="w-full bg-[#1C1C1E] border-none rounded-xl px-4 py-4 pr-12 text-white placeholder-white/30 focus:ring-2 focus:ring-[#FDC500] outline-none transition-all"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                        >
+                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                    <label className="flex items-center gap-3 cursor-pointer group select-none">
+                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${rememberMe ? 'bg-[#FDC500] border-[#FDC500]' : 'border-white/30 bg-transparent'}`}>
+                             {rememberMe && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>}
+                        </div>
+                        <input type="checkbox" className="hidden" checked={rememberMe} onChange={() => setRememberMe(!rememberMe)} />
+                        <span className="text-white/60 text-sm group-hover:text-white transition-colors">Remember Me</span>
+                    </label>
+                    <button type="button" className="text-[#FDC500] text-sm font-medium hover:underline hover:text-[#eeb800] transition-colors">
+                        Forgot Password?
+                    </button>
+                </div>
+                
+                {/* Spacer for 'Or' divider */}
+                <div className="relative py-4">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-white/10"></div>
+                    </div>
+                    <div className="relative flex justify-center">
+                        <span className="px-4 bg-black text-white/40 text-xs uppercase tracking-wider font-medium">Or</span>
+                    </div>
+                </div>
+                
+                <YellowButton onClick={handleGoogleLogin} className="!bg-[#FDC500] !text-black">
+                   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg"><g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)"><path fill="#000000" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/><path fill="#000000" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"/><path fill="#000000" d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.734 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"/><path fill="#000000" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"/></g></svg>
+                   Continue With Google
+                </YellowButton>
+
+                <YellowButton onClick={() => error("Apple login not configured")} className="!bg-[#FDC500] !text-black">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2 w-5 h-5">
+                    <path d="M17.05 20.28c-.98.95-2.05.87-3.08.47-1.05-.4-2.03-.4-3.05 0-1.03.4-2.1.48-3.08-.47-2.2-2.14-3.67-7.5 1.48-9.58 1.3-.52 2.54.03 3.35.49.81.46 2.03.46 2.84 0 .81-.46 2.05-1.01 3.35-.49.66.27 1.66.97 2.21 1.78-.17.1-.98.62-.98 2.15 0 1.8 1.43 2.42 1.68 2.53-.17.52-.41 1.16-.72 1.62-.66.96-1.36 1.91-2.33 2.06-.97.15-1.67-.56-1.67-.56s-.7.71-1.67.56c-.4-.06-.82-.28-1.25-.62zM12.03 7.25c-.15-1.54 1.08-3.03 2.48-3.25.24 1.68-1.34 3.2-2.48 3.25z" fill="#000000"/>
+                  </svg>
+                  Continue With Apple
+                </YellowButton>
+            
+            </form>
+
+            <div className="text-center mt-6">
+              <p className="text-white/60 text-sm">
+                Don't Have An Account!{' '}
+                <button 
+                  onClick={() => setStep('signup')} 
+                  className="text-[#FDC500] font-bold hover:underline ml-1"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  Register
                 </button>
-              </div>
+              </p>
             </div>
-
-            <div className="text-right">
-              <button type="button" className="text-white/60 text-sm hover:text-white transition-colors">
-                Mot de passe oublié ?
-              </button>
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-[#FF8C42] via-[#FFD23F] to-[#FFEA85] text-black font-bold text-lg shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-transform disabled:opacity-50"
-            >
-              {submitting ? <Loader2 className="animate-spin mx-auto" /> : 'Se connecter'}
-            </button>
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-[#1a1410] text-white/40">Ou continuer avec</span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="w-full py-3.5 rounded-full bg-black/60 border border-white/10 text-white font-medium flex items-center justify-center gap-3 hover:bg-black/80 transition-colors"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-              </svg>
-              Google
-            </button>
-          </form>
         </div>
       </div>
     );
   }
-
+  
   if (step === 'signup') {
     return (
-      <div className="h-full w-full bg-gradient-to-b from-[#2d1f1a] via-[#1a1410] to-black px-6 py-12 overflow-auto">
-        <div className="max-w-md mx-auto">
-          <button
-            onClick={() => setStep('welcome')}
-            className="text-white/60 text-sm mb-8 hover:text-white transition-colors underline"
-          >
-            ← Retour
-          </button>
-
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FF8C42]/30 to-[#FFD23F]/30 rounded-3xl blur-2xl" />
-              <div className="relative w-32 h-32 bg-gradient-to-br from-[#4a3428] to-[#2d1f1a] rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl transform rotate-12 hover:rotate-0 transition-transform duration-500">
-                <Logo variant="icon-white" size="lg" className="text-white" />
-              </div>
+      <div className="h-full w-full bg-black text-white flex flex-col overflow-auto px-6 py-12">
+        <div className="max-w-md mx-auto w-full">
+            <div className="flex justify-between items-center mb-8">
+                 <button onClick={() => setStep('signin')} className="p-2 -ml-2 text-white/60 hover:text-white flex items-center gap-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+                    Back to Login
+                 </button>
             </div>
-          </div>
 
-          <h2 className="text-3xl font-bold text-white text-center mb-2">
-            Rejoindre Overlay
-          </h2>
-          <p className="text-white/60 text-center mb-8">
-            Créez votre compte gratuitement
-          </p>
+            <h2 className="text-3xl font-bold mb-2">Create Account</h2>
+             <p className="text-gray-400 text-sm mb-8">
+                Join Love3 and start your journey.
+            </p>
 
           <form onSubmit={handleSignUp} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-white/80 text-sm block mb-2">Prénom</label>
-                <input
+               <DarkInput 
+                  label="First Name"
                   value={signupValues.firstName}
-                  onChange={(e) => setSignupValues(prev => ({ ...prev, firstName: e.target.value }))}
-                  placeholder="Prénom"
-                  className="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-4 text-white placeholder-white/30 focus:outline-none focus:border-[#FF8C42]/50 transition-colors"
+                  onChange={(e: any) => setSignupValues(prev => ({ ...prev, firstName: e.target.value }))}
+                  placeholder="First"
                 />
-              </div>
-              <div>
-                <label className="text-white/80 text-sm block mb-2">Nom</label>
-                <input
+                <DarkInput 
+                  label="Last Name"
                   value={signupValues.lastName}
-                  onChange={(e) => setSignupValues(prev => ({ ...prev, lastName: e.target.value }))}
-                  placeholder="Nom"
-                  className="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-4 text-white placeholder-white/30 focus:outline-none focus:border-[#FF8C42]/50 transition-colors"
+                  onChange={(e: any) => setSignupValues(prev => ({ ...prev, lastName: e.target.value }))}
+                  placeholder="Last"
                 />
-              </div>
             </div>
 
-            <div>
-              <label className="text-white/80 text-sm block mb-2">Email</label>
-              <input
+            <DarkInput 
+                label="Email"
                 type="email"
                 value={signupValues.email}
-                onChange={(e) => setSignupValues(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="Entrez votre email"
-                className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-[#FF8C42]/50 transition-colors"
-              />
+                onChange={(e: any) => setSignupValues(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="name@example.com"
+            />
+
+            <div className="space-y-2">
+                <label className="text-white/70 text-sm font-medium ml-1">Password</label>
+                <div className="relative">
+                    <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={signupValues.password}
+                        onChange={(e) => setSignupValues(prev => ({ ...prev, password: e.target.value }))}
+                         placeholder="Create a password"
+                        className="w-full bg-[#1C1C1E] border-none rounded-xl px-4 py-4 pr-12 text-white placeholder-white/30 focus:ring-2 focus:ring-[#FDC500] outline-none transition-all"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                    >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                </div>
             </div>
 
-            <div>
-              <label className="text-white/80 text-sm block mb-2">Mot de passe</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={signupValues.password}
-                  onChange={(e) => setSignupValues(prev => ({ ...prev, password: e.target.value }))}
-                  placeholder="Créez un mot de passe"
-                  className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 pr-12 text-white placeholder-white/30 focus:outline-none focus:border-[#FF8C42]/50 transition-colors"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-[#FF8C42] via-[#FFD23F] to-[#FFEA85] text-black font-bold text-lg shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-transform disabled:opacity-50"
-            >
-              {submitting ? <Loader2 className="animate-spin mx-auto" /> : 'Continuer'}
-            </button>
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-[#1a1410] text-white/40">Ou continuer avec</span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleGoogleLogin}
-              className="w-full py-3.5 rounded-full bg-black/60 border border-white/10 text-white font-medium flex items-center justify-center gap-3 hover:bg-black/80 transition-colors"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-              </svg>
-              Google
-            </button>
+            <YellowButton type="submit" disabled={submitting} className="mt-8">
+              {submitting ? <Loader2 className="animate-spin mx-auto" /> : 'Create Account'}
+            </YellowButton>
           </form>
         </div>
       </div>
@@ -449,93 +387,91 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   if (step === 'profile') {
     return (
-      <div className="h-full w-full bg-gradient-to-b from-[#2d1f1a] via-[#1a1410] to-black px-6 py-12 overflow-auto">
+      <div className="h-full w-full bg-black px-6 py-12 overflow-auto">
         <div className="max-w-md mx-auto">
           <h2 className="text-3xl font-bold text-white mb-2">
             Complétez votre profil
           </h2>
-          <p className="text-white/60 mb-8">
+          <p className="text-gray-400 mb-8">
             Quelques informations pour personnaliser votre expérience
           </p>
 
           <form onSubmit={handleProfileSubmit} className="space-y-5">
-            <div>
-              <label className="text-white/80 text-sm block mb-2">Âge</label>
-              <input
-                type="number"
-                min={18}
-                value={profileValues.age}
-                onChange={(e) => setProfileValues(prev => ({ ...prev, age: e.target.value }))}
-                placeholder="25"
-                className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-[#FF8C42]/50 transition-colors"
-              />
-            </div>
+            <DarkInput
+              label="Âge"
+              type="number"
+              min={18}
+              value={profileValues.age}
+              onChange={(e: any) => setProfileValues(prev => ({ ...prev, age: e.target.value }))}
+              placeholder="25"
+            />
 
-            <div>
-              <label className="text-white/80 text-sm block mb-2">Photo de profil (URL)</label>
-              <input
-                value={profileValues.photo_url}
-                onChange={(e) => setProfileValues(prev => ({ ...prev, photo_url: e.target.value }))}
-                placeholder="https://..."
-                className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-[#FF8C42]/50 transition-colors"
-              />
-            </div>
+            <DarkInput
+              label="Photo de profil (URL)"
+              value={profileValues.photo_url}
+              onChange={(e: any) => setProfileValues(prev => ({ ...prev, photo_url: e.target.value }))}
+              placeholder="https://..."
+            />
 
-            <div>
-              <label className="text-white/80 text-sm block mb-2">Bio</label>
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium ml-1">Bio</label>
               <textarea
                 value={profileValues.bio}
                 onChange={(e) => setProfileValues(prev => ({ ...prev, bio: e.target.value }))}
                 placeholder="Parlez-nous de vous..."
                 rows={3}
-                className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-[#FF8C42]/50 transition-colors resize-none"
+                className="w-full bg-[#1C1C1E] border-none rounded-xl px-5 py-4 text-white placeholder-white/30 focus:ring-2 focus:ring-[#FDC500] outline-none transition-all resize-none"
               />
             </div>
 
-            <div>
-              <label className="text-white/80 text-sm block mb-2">Intérêts (séparés par des virgules)</label>
-              <input
-                value={profileValues.interests}
-                onChange={(e) => setProfileValues(prev => ({ ...prev, interests: e.target.value }))}
-                placeholder="Voyages, Musique, Sport"
-                className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/30 focus:outline-none focus:border-[#FF8C42]/50 transition-colors"
-              />
-            </div>
+            <DarkInput
+              label="Intérêts (séparés par des virgules)"
+              value={profileValues.interests}
+              onChange={(e: any) => setProfileValues(prev => ({ ...prev, interests: e.target.value }))}
+              placeholder="Voyages, Musique, Sport"
+            />
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-white/80 text-sm block mb-2">Genre</label>
-                <select
-                  value={profileValues.gender}
-                  onChange={(e) => setProfileValues(prev => ({ ...prev, gender: e.target.value as Gender }))}
-                  className="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-4 text-white focus:outline-none focus:border-[#FF8C42]/50 transition-colors"
-                >
-                  {genders.map(g => (
-                    <option key={g} value={g} className="bg-black">{g}</option>
-                  ))}
-                </select>
+              <div className="space-y-2">
+                <label className="text-white/70 text-sm font-medium ml-1">Genre</label>
+                <div className="relative">
+                    <select
+                    value={profileValues.gender}
+                    onChange={(e) => setProfileValues(prev => ({ ...prev, gender: e.target.value as Gender }))}
+                    className="w-full bg-[#1C1C1E] border-none rounded-xl px-4 py-4 text-white focus:ring-2 focus:ring-[#FDC500] outline-none appearance-none"
+                    >
+                    {genders.map(g => (
+                        <option key={g} value={g} className="bg-[#1C1C1E]">{g}</option>
+                    ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                </div>
               </div>
-              <div>
-                <label className="text-white/80 text-sm block mb-2">Recherche</label>
-                <select
-                  value={profileValues.looking_for}
-                  onChange={(e) => setProfileValues(prev => ({ ...prev, looking_for: e.target.value as LookingFor }))}
-                  className="w-full bg-black/40 border border-white/10 rounded-2xl px-4 py-4 text-white focus:outline-none focus:border-[#FF8C42]/50 transition-colors"
-                >
-                  {lookingForOptions.map(l => (
-                    <option key={l} value={l} className="bg-black">{l}</option>
-                  ))}
-                </select>
+              
+              <div className="space-y-2">
+                <label className="text-white/70 text-sm font-medium ml-1">Recherche</label>
+                 <div className="relative">
+                    <select
+                    value={profileValues.looking_for}
+                    onChange={(e) => setProfileValues(prev => ({ ...prev, looking_for: e.target.value as LookingFor }))}
+                    className="w-full bg-[#1C1C1E] border-none rounded-xl px-4 py-4 text-white focus:ring-2 focus:ring-[#FDC500] outline-none appearance-none"
+                    >
+                    {lookingForOptions.map(l => (
+                        <option key={l} value={l} className="bg-[#1C1C1E]">{l}</option>
+                    ))}
+                    </select>
+                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                </div>
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-4 rounded-full bg-gradient-to-r from-[#FF8C42] via-[#FFD23F] to-[#FFEA85] text-black font-bold text-lg shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-transform disabled:opacity-50 mt-6"
-            >
+            <YellowButton type="submit" disabled={submitting} className="mt-6">
               {submitting ? <Loader2 className="animate-spin mx-auto" /> : 'Continuer'}
-            </button>
+            </YellowButton>
           </form>
         </div>
       </div>
@@ -544,10 +480,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   if (step === 'location') {
     return (
-      <div className="h-full w-full bg-gradient-to-b from-[#2d1f1a] via-[#1a1410] to-black px-6 py-12 flex items-center justify-center">
+      <div className="h-full w-full bg-black px-6 py-12 flex items-center justify-center">
         <div className="max-w-md mx-auto text-center">
-          <div className="w-24 h-24 bg-gradient-to-br from-[#FF8C42]/20 to-[#FFD23F]/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
-            <Heart size={48} className="text-[#FF8C42]" />
+          <div className="w-24 h-24 bg-[#FDC500]/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <Heart size={48} className="text-[#FDC500]" />
           </div>
 
           <h2 className="text-3xl font-bold text-white mb-4">
@@ -557,13 +493,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             Pour trouver des personnes près de chez vous et découvrir les meilleurs endroits pour vos rendez-vous
           </p>
 
-          <button
+          <YellowButton
             onClick={() => requestPermission().catch(() => null)}
             disabled={permission === 'granted'}
-            className="w-full py-4 rounded-full bg-gradient-to-r from-[#FF8C42] via-[#FFD23F] to-[#FFEA85] text-black font-bold text-lg shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-transform disabled:opacity-50"
           >
             {permission === 'granted' ? '✓ Localisation activée' : 'Autoriser la localisation'}
-          </button>
+          </YellowButton>
 
           {geoError && (
             <p className="text-red-400 text-sm mt-4">{geoError}</p>
