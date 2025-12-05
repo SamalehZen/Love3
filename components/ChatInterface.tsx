@@ -138,6 +138,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onBack, onOpenPlac
   const handleMatchClick = async () => {
     if (!currentConversation || !user) return;
     const field = currentConversation.user1_id === user.id ? 'user1_matched' : 'user2_matched';
+    const alreadyMatched = currentConversation.user1_id === user.id ? currentConversation.user1_matched : currentConversation.user2_matched;
+    
+    if (alreadyMatched) {
+      onOpenPlaces();
+      return;
+    }
+    
     try {
       await supabase.from('conversations').update({ [field]: true }).eq('id', currentConversation.id);
       success('Match envoyé');
@@ -216,21 +223,29 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onBack, onOpenPlac
           </div>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <button
-            onClick={handleMatchClick}
-            disabled={currentConversation.user1_id === user?.id ? currentConversation.user1_matched : currentConversation.user2_matched}
-            className={`px-4 py-2 rounded-full border flex items-center gap-2 ${
-              bothMatched ? 'border-action-green text-action-green' : 'border-white/10 text-white'
-            }`}
-          >
-            <Heart className="fill-current" size={18} /> Match
-          </button>
-          <button
-            onClick={onOpenPlaces}
-            className="px-4 py-2 rounded-full border border-white/10 text-white flex items-center gap-2"
-          >
-            <MapPin size={18} /> Lieux
-          </button>
+          {!bothMatched ? (
+            <button
+              onClick={handleMatchClick}
+              disabled={currentConversation.user1_id === user?.id ? currentConversation.user1_matched : currentConversation.user2_matched}
+              className={`px-4 py-2 rounded-full border flex items-center gap-2 transition-colors ${
+                (currentConversation.user1_id === user?.id ? currentConversation.user1_matched : currentConversation.user2_matched)
+                  ? 'border-action-green/50 text-action-green/50 cursor-wait'
+                  : 'border-white/10 text-white hover:border-action-green hover:text-action-green'
+              }`}
+            >
+              <Heart className="fill-current" size={18} />
+              {(currentConversation.user1_id === user?.id ? currentConversation.user1_matched : currentConversation.user2_matched)
+                ? 'En attente...'
+                : 'Match'}
+            </button>
+          ) : (
+            <button
+              onClick={onOpenPlaces}
+              className="px-4 py-2 rounded-full border border-action-green bg-action-green text-black font-semibold flex items-center gap-2 hover:bg-action-green/90 transition-colors"
+            >
+              <MapPin size={18} /> Choisir un lieu
+            </button>
+          )}
         </div>
       </header>
 
