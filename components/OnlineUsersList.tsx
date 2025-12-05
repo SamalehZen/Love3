@@ -8,6 +8,7 @@ import { useNotification } from '@contexts/NotificationContext';
 import { supabase } from '@lib/supabase';
 import { Button } from './ui/Button';
 import { Skeleton } from './ui/Skeleton';
+import { DebugPanel } from './DebugPanel';
 
 interface OnlineUsersListProps {
   className?: string;
@@ -151,18 +152,28 @@ export const OnlineUsersList: React.FC<OnlineUsersListProps> = ({ className = ''
   };
 
   const handleSendInvitation = async (finalAnswers: QuestionAnswer[]) => {
-    if (!selectedProfile) return;
+    if (!selectedProfile) {
+      console.error('[OnlineUsersList] Pas de profil sélectionné');
+      error('Profil non sélectionné');
+      return;
+    }
+    
+    console.log('[OnlineUsersList] Envoi invitation à:', selectedProfile.id);
+    console.log('[OnlineUsersList] Réponses:', finalAnswers);
     
     try {
       await sendRequest(selectedProfile.id, finalAnswers);
+      console.log('[OnlineUsersList] Invitation envoyée avec succès');
       setShowQuestions(false);
       setSelectedProfile(null);
       setAnswers([]);
       setCurrentQuestionIndex(0);
       setCurrentAnswer('');
     } catch (err) {
-      console.error('Erreur lors de l\'envoi de l\'invitation:', err);
-      error('Impossible d\'envoyer l\'invitation. Réessayez.');
+      console.error('[OnlineUsersList] Erreur complète lors de l\'envoi:', err);
+      console.error('[OnlineUsersList] Message d\'erreur:', (err as Error).message);
+      console.error('[OnlineUsersList] Stack:', (err as Error).stack);
+      error(`Impossible d'envoyer l'invitation: ${(err as Error).message}`);
     }
   };
 
@@ -456,6 +467,8 @@ export const OnlineUsersList: React.FC<OnlineUsersListProps> = ({ className = ''
           </div>
         </div>
       )}
+      
+      <DebugPanel />
     </div>
   );
 };
