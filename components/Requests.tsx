@@ -167,41 +167,30 @@ export const Requests = () => {
                     </div>
                   </div>
 
+                  {request.introduction_answers && request.introduction_answers.length > 0 && (
+                    <div className="mt-4 p-3 rounded-2xl bg-white/5 border border-white/5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <MessageSquare size={14} className="text-action-green" />
+                        <span className="text-xs font-semibold text-action-green">
+                          {activeTab === 'received' ? 'Leur présentation' : 'Votre présentation'}
+                        </span>
+                      </div>
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {request.introduction_answers.map((qa, idx) => (
+                          <div key={idx} className="text-xs">
+                            <p className="text-gray-400 font-medium mb-1">{qa.question}</p>
+                            <p className={`${theme.textMain}`}>{qa.answer}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {activeTab === 'received' && request.status === 'pending' && (
                     <div className="mt-4 grid grid-cols-2 gap-3">
                       <Button
                         variant="ghost"
                         onClick={() => handleReject(request.id)}
-                        className="border border-white/10 text-gray-300 hover:bg-white/5"
-                      >
-                        <X size={16} /> Refuser
-                      </Button>
-                      <Button variant="primary" onClick={() => handleAccept(request.id)}>
-                        <Check size={16} /> Accepter
-                      </Button>
-                    </div>
-                  )}
-
-                  {activeTab === 'sent' && request.status === 'pending' && (
-                    <div className="mt-3 text-xs text-amber-400">En attente de réponse</div>
-                  )}
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
-
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-32 h-2 rounded-full bg-white/10">
-          <div
-            className="h-full bg-action-green rounded-full transition-all"
-            style={{ width: `${progress * 100}%`, opacity: isRefreshing ? 1 : progress }}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
-=> handleReject(request.id)}
                         className="border border-white/10 text-gray-300 hover:bg-white/5"
                       >
                         <X size={16} /> Refuser
