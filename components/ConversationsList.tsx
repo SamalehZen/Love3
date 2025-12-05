@@ -98,7 +98,7 @@ export const ConversationsList: React.FC<ConversationsListProps> = ({ onConversa
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <p className={`font-semibold ${theme.textMain}`}>{name}</p>
-                      {profileToShow?.is_online && <span className="w-2 h-2 rounded-full bg-action-green" />}
+                      {partnerProfile?.is_online && <span className="w-2 h-2 rounded-full bg-action-green" />}
                     </div>
                     <p className={`text-sm truncate ${theme.textSub}`}>
                       {lastMessage?.content ?? 'Commencez à discuter'}

@@ -120,15 +120,39 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ onBack, onOpenPlac
     event?.preventDefault();
     if (!input.trim() || !currentConversation || !user) return;
     setSending(true);
+    const messageContent = input.trim();
+    setInput('');
+    
     try {
-      await supabase.from('messages').insert({
+      console.log('[ChatInterface] Envoi message:', {
         conversation_id: currentConversation.id,
         sender_id: user.id,
-        content: input.trim(),
+        content: messageContent
       });
-      setInput('');
-      scrollToBottom();
+      
+      const { data, error: sendError } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: currentConversation.id,
+          sender_id: user.id,
+          content: messageContent,
+        })
+        .select()
+        .single();
+      
+      console.log('[ChatInterface] Résultat envoi:', { data, error: sendError });
+      
+      if (sendError) {
+        console.error('[ChatInterface] Erreur envoi:', sendError);
+        setInput(messageContent);
+        error(`Envoi impossible: ${sendError.message}`);
+        return;
+      }
+      
+      setTimeout(() => scrollToBottom(), 100);
     } catch (err) {
+      console.error('[ChatInterface] Exception envoi:', err);
+      setInput(messageContent);
       error('Envoi impossible');
     } finally {
       setSending(false);

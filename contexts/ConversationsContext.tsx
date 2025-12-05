@@ -49,6 +49,7 @@ export const ConversationsProvider = ({ children }: { children: ReactNode }) => 
       return [];
     }
 
+    console.log('[ConversationsContext] Chargement conversations pour user:', user.id);
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -62,9 +63,13 @@ export const ConversationsProvider = ({ children }: { children: ReactNode }) => 
         .order('updated_at', { ascending: false });
 
       if (error) {
-        console.error('Failed to fetch conversations', error);
+        console.error('[ConversationsContext] Erreur chargement conversations:', error);
+        setConversations(latestConversationsRef.current);
+        setLoading(false);
         return latestConversationsRef.current;
       }
+      
+      console.log('[ConversationsContext] Conversations chargées:', data?.length ?? 0);
 
       const ids = data?.map((conv) => conv.id) ?? [];
       let lastMessageMap = new Map<string, Message>();
@@ -112,6 +117,7 @@ export const ConversationsProvider = ({ children }: { children: ReactNode }) => 
         } satisfies Conversation;
       });
 
+      console.log('[ConversationsContext] Conversations normalisées:', normalized.length);
       setConversations(normalized);
       latestConversationsRef.current = normalized;
       return normalized;
@@ -171,8 +177,13 @@ export const ConversationsProvider = ({ children }: { children: ReactNode }) => 
 
   const openConversationWithUser = useCallback(
     async (otherUserId: string) => {
-      if (!user) return null;
+      if (!user) {
+        console.error('[ConversationsContext] Pas d\'utilisateur pour ouvrir conversation');
+        return null;
+      }
+      
       const [user1_id, user2_id] = [user.id, otherUserId].sort();
+      console.log('[ConversationsContext] Ouverture conversation:', { user1_id, user2_id });
 
       const { data, error } = await supabase
         .from('conversations')
@@ -181,15 +192,21 @@ export const ConversationsProvider = ({ children }: { children: ReactNode }) => 
         .single();
 
       if (error) {
-        console.error('Unable to open conversation', error);
+        console.error('[ConversationsContext] Erreur ouverture conversation:', error);
         throw error;
       }
 
+      console.log('[ConversationsContext] Conversation créée/trouvée:', data.id);
       const updated = await refreshConversations();
       const match = updated.find((conv) => conv.id === data.id) ?? null;
+      
       if (match) {
+        console.log('[ConversationsContext] Conversation sélectionnée:', match.id);
         setCurrentConversationId(match.id);
+      } else {
+        console.warn('[ConversationsContext] Conversation non trouvée après refresh');
       }
+      
       return match;
     },
     [refreshConversations, user]
