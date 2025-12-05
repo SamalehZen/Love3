@@ -21,6 +21,7 @@ CREATE TABLE connection_requests (
   from_user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
   to_user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected')),
+  introduction_answers JSONB,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(from_user_id, to_user_id)
 );

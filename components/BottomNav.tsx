@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { MapPin, Inbox, MessageCircle, User } from 'lucide-react';
+import { Users, Inbox, MessageCircle, User } from 'lucide-react';
 import type { ViewState } from '@types';
 import { useTheme } from '@contexts/ThemeContext';
 import { useHaptic } from '@hooks/useHaptic';
@@ -24,7 +24,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView }) =>
 
   const items = useMemo(
     () => [
-      { id: 'nearby' as ViewState, icon: MapPin, label: 'Carte' },
+      { id: 'nearby' as ViewState, icon: Users, label: 'Connexions' },
       { id: 'requests' as ViewState, icon: Inbox, label: 'Demandes', badge: pendingCount },
       { id: 'conversations' as ViewState, icon: MessageCircle, label: 'Messages', badge: unreadCount },
       { id: 'profile' as ViewState, icon: User, label: 'Profil' },

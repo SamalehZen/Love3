@@ -13,7 +13,7 @@ interface RequestsContextValue {
   lastAcceptedConversationId: string | null;
   acknowledgeAcceptedConversation: () => void;
   refreshRequests: () => Promise<void>;
-  sendRequest: (userId: string) => Promise<void>;
+  sendRequest: (userId: string, introductionAnswers?: { question: string; answer: string }[]) => Promise<void>;
   acceptRequest: (requestId: string) => Promise<void>;
   rejectRequest: (requestId: string) => Promise<void>;
 }
@@ -93,6 +93,7 @@ export const RequestsProvider = ({ children }: { children: ReactNode }) => {
             from_user_id: req.from_user_id,
             to_user_id: req.to_user_id,
             status: req.status,
+            introduction_answers: req.introduction_answers,
             created_at: req.created_at,
             from_user: req.from_user ? mapProfile(req.from_user) : undefined,
             to_user: req.to_user ? mapProfile(req.to_user) : undefined,
@@ -160,23 +161,32 @@ export const RequestsProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchRequests, info, openConversationWithUser, selectConversation, success, user]);
 
   const sendRequest = useCallback(
-    async (targetUserId: string) => {
+    async (targetUserId: string, introductionAnswers?: { question: string; answer: string }[]) => {
       if (!user) {
         errorToast('Vous devez être connecté.');
-        return;
+        throw new Error('User not authenticated');
       }
-      const { error } = await supabase.from('connection_requests').insert({
+      
+      console.log('[RequestsContext] Envoi de la demande:', {
         from_user_id: user.id,
         to_user_id: targetUserId,
+        introduction_answers: introductionAnswers,
       });
+      const { data, error } = await supabase.from('connection_requests').insert({
+        from_user_id: user.id,
+        to_user_id: targetUserId,
+        introduction_answers: introductionAnswers || null,
+      }).select();
+      
+      console.log('[RequestsContext] Résultat:', { data, error });
       if (error) {
         if (error.code === '23505') {
           info('Demande déjà envoyée.');
-          return;
+          throw new Error('Duplicate request');
         }
-        errorToast('Impossible d’envoyer la demande.');
-        console.error(error);
-        return;
+        errorToast(`Impossible d'envoyer la demande: ${error.message}`);
+        console.error('[RequestsContext] Erreur complète:', error);
+        throw error;
       }
       success('Demande envoyée ✅');
       fetchRequests();

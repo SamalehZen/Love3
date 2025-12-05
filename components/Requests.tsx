@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Inbox, Send, Check, X, Loader2, Bell } from 'lucide-react';
+import { Inbox, Send, Check, X, Loader2, Bell, MessageSquare } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useRequests } from '@contexts/RequestsContext';
 import { useTheme } from '@contexts/ThemeContext';
@@ -166,6 +166,25 @@ export const Requests = () => {
                       </p>
                     </div>
                   </div>
+
+                  {request.introduction_answers && request.introduction_answers.length > 0 && (
+                    <div className="mt-4 p-3 rounded-2xl bg-white/5 border border-white/5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <MessageSquare size={14} className="text-action-green" />
+                        <span className="text-xs font-semibold text-action-green">
+                          {activeTab === 'received' ? 'Leur présentation' : 'Votre présentation'}
+                        </span>
+                      </div>
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {request.introduction_answers.map((qa, idx) => (
+                          <div key={idx} className="text-xs">
+                            <p className="text-gray-400 font-medium mb-1">{qa.question}</p>
+                            <p className={`${theme.textMain}`}>{qa.answer}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {activeTab === 'received' && request.status === 'pending' && (
                     <div className="mt-4 grid grid-cols-2 gap-3">
