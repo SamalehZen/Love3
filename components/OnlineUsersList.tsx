@@ -153,14 +153,17 @@ export const OnlineUsersList: React.FC<OnlineUsersListProps> = ({ className = ''
   const handleSendInvitation = async (finalAnswers: QuestionAnswer[]) => {
     if (!selectedProfile) return;
     
-    await sendRequest(selectedProfile.id, finalAnswers);
-    success('Invitation envoyée avec vos réponses');
-    
-    setShowQuestions(false);
-    setSelectedProfile(null);
-    setAnswers([]);
-    setCurrentQuestionIndex(0);
-    setCurrentAnswer('');
+    try {
+      await sendRequest(selectedProfile.id, finalAnswers);
+      setShowQuestions(false);
+      setSelectedProfile(null);
+      setAnswers([]);
+      setCurrentQuestionIndex(0);
+      setCurrentAnswer('');
+    } catch (err) {
+      console.error('Erreur lors de l\'envoi de l\'invitation:', err);
+      error('Impossible d\'envoyer l\'invitation. Réessayez.');
+    }
   };
 
   const handleCloseQuestions = () => {

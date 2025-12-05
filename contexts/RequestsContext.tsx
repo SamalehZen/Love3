@@ -164,21 +164,29 @@ export const RequestsProvider = ({ children }: { children: ReactNode }) => {
     async (targetUserId: string, introductionAnswers?: { question: string; answer: string }[]) => {
       if (!user) {
         errorToast('Vous devez être connecté.');
-        return;
+        throw new Error('User not authenticated');
       }
-      const { error } = await supabase.from('connection_requests').insert({
+      
+      console.log('[RequestsContext] Envoi de la demande:', {
+        from_user_id: user.id,
+        to_user_id: targetUserId,
+        introduction_answers: introductionAnswers,
+      });
+      const { data, error } = await supabase.from('connection_requests').insert({
         from_user_id: user.id,
         to_user_id: targetUserId,
         introduction_answers: introductionAnswers || null,
-      });
+      }).select();
+      
+      console.log('[RequestsContext] Résultat:', { data, error });
       if (error) {
         if (error.code === '23505') {
           info('Demande déjà envoyée.');
-          return;
+          throw new Error('Duplicate request');
         }
-        errorToast('Impossible d’envoyer la demande.');
-        console.error(error);
-        return;
+        errorToast(`Impossible d'envoyer la demande: ${error.message}`);
+        console.error('[RequestsContext] Erreur complète:', error);
+        throw error;
       }
       success('Demande envoyée ✅');
       fetchRequests();
